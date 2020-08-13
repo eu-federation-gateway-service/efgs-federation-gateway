@@ -22,7 +22,7 @@ The goal of this project is to develop the official European solution for the in
 This repository contains the **federation gateway service**.
 
 ## Status
-![ci](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/workflows/ci/badge.svg)
+![ci](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/workflows/ci-master/badge.svg)
 [![quality gate](https://sonarcloud.io/api/project_badges/measure?project=eu-federation-gateway-service_efgs-federation-gateway&metric=alert_status)](https://sonarcloud.io/dashboard?id=eu-federation-gateway-service_efgs-federation-gateway)
 
 ### Prerequisites
