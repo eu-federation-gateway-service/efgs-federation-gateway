@@ -1,0 +1,76 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-diagnosis-key-entity-table
+      author: mschulte-tsi
+      changes:
+        - createTable:
+            tableName: diagnosiskey
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    unique: true
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: created_at
+                  type: datetime(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: batch_tag
+                  type: varchar(64)
+              - column:
+                  name: payload_hash
+                  type: varchar(64)
+                  constraints:
+                    unique: true
+              - column:
+                  name: payload_key_data
+                  type: varbinary(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payload_rolling_start_interval_number
+                  type: int
+              - column:
+                  name: payload_rolling_period
+                  type: int
+              - column:
+                  name: payload_transmission_risk_level
+                  type: int
+              - column:
+                  name: payload_visited_countries
+                  type: varchar(64)
+              - column:
+                  name: payload_origin
+                  type: varchar(64)
+              - column:
+                  name: payload_report_type
+                  type: int
+              - column:
+                  name: payload_days_since_onset_of_symptoms
+                  type: int unsigned
+              - column:
+                  name: format_format
+                  type: varchar(64)
+              - column:
+                  name: format_major_version
+                  type: int unsigned
+              - column:
+                  name: format_minor_version
+                  type: int unsigned
+              - column:
+                  name: uploader_information_batch_tag
+                  type: varchar(64)
+              - column:
+                  name: uploader_information_batch_signature
+                  type: varchar(2080)
+              - column:
+                  name: uploader_information_thumbprint
+                  type: varchar(64)
+              - column:
+                  name: uploader_information_country
+                  type: varchar(2)

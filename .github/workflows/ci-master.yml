@@ -1,0 +1,52 @@
+name: ci-master
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/cache@v1
+      env:
+        cache-name: m2
+      with:
+        path: ~/.m2/repository
+        key: ${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ env.cache-name }}-
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: environment
+      run: |
+        sudo apt-get install --yes --no-install-recommends libxml-xpath-perl
+        export ARTIFACT_ID=$(xpath -q -e "/project/artifactId/text()" pom.xml)
+        echo "::set-env name=ARTIFACT_ID::${ARTIFACT_ID}"
+        export VERSION=$(xpath -q -e "/project/version/text()" pom.xml)
+        export VERSION=${VERSION//-SNAPSHOT}-$(git rev-parse --short ${GITHUB_SHA})
+        echo "::set-env name=VERSION::${VERSION}"
+    - name: mvn version
+      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}    
+    - name: mvn deploy
+      run: mvn --batch-mode deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - name: mvn sonar
+#      run: |
+#        mvn --batch-mode verify sonar:sonar \
+#        -Dsonar.login=${SONAR_TOKEN} \
+#        -Dsonar.host.url=${SONAR_URL} \
+#        -Dsonar.organization=${GITHUB_REPOSITORY_OWNER} \
+#        -Dsonar.projectKey=${GITHUB_REPOSITORY/\//_}
+#      env:
+#        SONAR_URL: https://sonarcloud.io
+#        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#    - uses: actions/upload-artifact@v1
+#      with:
+#        name: target
+#        path: target

@@ -1,0 +1,40 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-certificate-entity-table
+      author: f11h
+      changes:
+        - createTable:
+            tableName: certificate
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    unique: true
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: created_at
+                  type: datetime(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: thumbprint
+                  type: varchar(64)
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: country
+                  type: varchar(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(14)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: revoked
+                  type: boolean

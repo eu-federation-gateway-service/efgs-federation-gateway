@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: h2-set-transaction-isolation-level-serializable
+      author: dfischer-tech
+      dbms: 'h2'
+      changes:
+        - sql:
+          comment: set in H2 the transaction isolation level to serializable
+          endDelimiter: \nGO
+          splitStatements: true
+          sql: SET SESSION CHARACTERISTICS AS TRANSACTION ISOLATION LEVEL SERIALIZABLE
+          stripComments: true
+  - changeSet:
+      id: mysql-set-transaction-isolation-level-serializable
+      author: dfischer-tech
+      dbms: 'mysql'
+      changes:
+        - sql:
+          comment: set in mysql the transaction isolation level to serializable
+          endDelimiter: \nGO
+          splitStatements: true
+          sql: SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE
+          stripComments: true

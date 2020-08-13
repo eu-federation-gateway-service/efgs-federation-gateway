@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-diagnosis-key-batch-entity-table
+      author: dfischer-tech
+      changes:
+        - createTable:
+            tableName: diagnosiskeybatch
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    unique: true
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: created_at
+                  type: datetime(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: batchname
+                  type: varchar(64)
+              - column:
+                  name: batchlink
+                  type: varchar(64)
+  - changeSet:
+      id: create-diagnosis-key-batch-entity-table-increment
+      author: dfischer-tech
+      changes:
+        - addAutoIncrement:
+            tableName: diagnosiskeybatch
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
+  - changeSet:
+      id: create-diagnosis-key-batch-entity-table-indexes
+      author: dfischer-tech
+      changes:
+        - createIndex:
+            tableName: diagnosiskeybatch
+            indexName: idx_diagnosiskeybatch_batchname
+            columns:
+              - column:
+                  name: batchname
+                  type: varchar(64)

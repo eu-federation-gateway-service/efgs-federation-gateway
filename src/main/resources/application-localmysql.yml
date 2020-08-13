@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/fg
+    username: sa
+    password: sa
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+efgs:
+  upload-settings:
+    maximum-upload-batch-size: 3
+  batching:
+    timeinterval: 300000
+    doclimit: 5
