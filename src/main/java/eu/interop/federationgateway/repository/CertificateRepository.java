@@ -29,4 +29,6 @@ public interface CertificateRepository extends JpaRepository<CertificateEntity, 
   Optional<CertificateEntity> getFirstByThumbprintAndCountryAndType(
     String thumbprint, String country, CertificateEntity.CertificateType type);
 
+  Optional<CertificateEntity> getFirstByCountryAndTypeIs(String country, CertificateEntity.CertificateType type);
+
 }

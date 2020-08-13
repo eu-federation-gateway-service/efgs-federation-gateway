@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-certificate-entity-table
+      id: create-callback-entity-table
       author: f11h
       changes:
         - createTable:
-            tableName: certificate
+            tableName: callback_task
             columns:
               - column:
                   name: id
@@ -20,30 +20,35 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: thumbprint
-                  type: varchar(64)
+                  name: execution_lock
+                  type: datetime(2)
                   constraints:
-                    unique: true
-                    nullable: false
+                    nullable: true
               - column:
-                  name: country
-                  type: varchar(2)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: type
-                  type: varchar(14)
+                  name: retries
+                  type: int
                   constraints:
                     nullable: false
               - column:
-                  name: revoked
-                  type: boolean
+                  name: batch_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_callbacktask_batch
+                    references: diagnosiskeybatch(id)
+              - column:
+                  name: subscription_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_callbacktask_callbacksubscription
+                    references: callback_subscription(id)
   - changeSet:
-      id: create-certificate-entity-table-increment
+      id: create-callback-task-entity-table-increment
       author: f11h
       changes:
         - addAutoIncrement:
-            tableName: certificate
+            tableName: callback_task
             columnName: id
             columnDataType: bigint
             startWith: 1

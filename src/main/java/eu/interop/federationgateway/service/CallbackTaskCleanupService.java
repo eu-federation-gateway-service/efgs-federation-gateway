@@ -20,26 +20,36 @@
 
 package eu.interop.federationgateway.service;
 
-import eu.interop.federationgateway.entity.CertificateEntity;
-import eu.interop.federationgateway.repository.CertificateRepository;
-import java.util.Optional;
+import eu.interop.federationgateway.config.EfgsProperties;
+import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-@Slf4j
 @Component
 @RequiredArgsConstructor
-public class CertificateService {
+@Slf4j
+public class CallbackTaskCleanupService {
 
-  private final CertificateRepository certificateRepository;
+  private final CallbackTaskService callbackTaskService;
 
-  public Optional<CertificateEntity> getCertificate(
-    String thumbprint, String country, CertificateEntity.CertificateType type) {
-    return certificateRepository.getFirstByThumbprintAndCountryAndType(thumbprint, country, type);
+  private final EfgsProperties efgsProperties;
+
+
+  /**
+   * Removes periodically the execution locks from abandoned tasks.
+   */
+  @Scheduled(fixedDelay = 60000)
+  public void deleteAbandonedLocks() {
+    log.info("Deleting task locks of abandoned tasks");
+
+    ZonedDateTime timestamp = ZonedDateTime.now().minusSeconds(efgsProperties.getCallback().getTaskLockTimeout());
+
+    int updateCount = callbackTaskService.removeTaskLocksOlderThan(timestamp);
+
+    log.info("Removing of task locks of abandoned tasks finished.\", taskCount=\"{}", updateCount);
+
   }
 
-  public Optional<CertificateEntity> getCallbackCertificateForCountry(String country) {
-    return certificateRepository.getFirstByCountryAndTypeIs(country, CertificateEntity.CertificateType.CALLBACK);
-  }
+
 }

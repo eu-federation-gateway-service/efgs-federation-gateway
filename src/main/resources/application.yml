@@ -23,6 +23,14 @@ springdoc:
   swagger-ui:
     path: /swagger
 efgs:
+  callback:
+    task-lock-timeout: 300
+    proxy-host: localhost
+    proxy-port: 1234
+    timeout: 10000
+    core-thread-pool-size: 0
+    max-retries: 5
+    retry-wait: 300000
   content-negotiation:
     protobuf-version: 1.0
     json-version: 1.0

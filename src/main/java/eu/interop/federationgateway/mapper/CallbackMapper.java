@@ -18,27 +18,20 @@
  * ---license-end
  */
 
-package eu.interop.federationgateway.model;
+package eu.interop.federationgateway.mapper;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
+import eu.interop.federationgateway.model.Callback;
+import java.util.List;
+import org.mapstruct.Mapper;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Schema(
-  description = "Entity representation of a callback."
-)
-public class Callback {
+@Mapper(componentModel = "spring")
+public interface CallbackMapper {
 
-  @Schema(example = "12345")
-  private String callbackId;
+  CallbackSubscriptionEntity callbackToEntity(String callbackId, String url, String country);
 
-  @Schema(example = "https://example42.com")
-  private String url;
+  Callback entityToCallback(CallbackSubscriptionEntity entity);
+
+  List<Callback> entityToCallback(List<CallbackSubscriptionEntity> callbackEntities);
 
 }

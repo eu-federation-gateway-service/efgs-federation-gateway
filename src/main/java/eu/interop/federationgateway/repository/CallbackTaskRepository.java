@@ -18,27 +18,21 @@
  * ---license-end
  */
 
-package eu.interop.federationgateway.model;
+package eu.interop.federationgateway.repository;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import eu.interop.federationgateway.entity.CallbackTaskEntity;
+import java.time.ZonedDateTime;
+import javax.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Schema(
-  description = "Entity representation of a callback."
-)
-public class Callback {
+public interface CallbackTaskRepository extends JpaRepository<CallbackTaskEntity, Long> {
 
-  @Schema(example = "12345")
-  private String callbackId;
-
-  @Schema(example = "https://example42.com")
-  private String url;
+  @Modifying
+  @Query("UPDATE CallbackTaskEntity c SET c.executionLock = null WHERE c.executionLock < :timestamp")
+  @Transactional(Transactional.TxType.REQUIRED)
+  int removeTaskLocksOlderThan(@Param("timestamp") ZonedDateTime timestamp);
 
 }
