@@ -2,7 +2,8 @@
 by Alexander Stiefel (alexander.stiefel@t-systems.com)
 
 ##	Introduction
-This documents describes detailed aspects of the implementation of the European Federation Gateway Service. Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
+This documents describes detailed aspects of the implementation of the European Federation Gateway Service. It is closely related to the document [European Proximity Tracing An Interoperability Architecture](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf), 
+to which it adds details. Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
 
 This document is not finished and major aspects are missing.
 This document is still in proposal state, meaning feedback is welcome and will change its content.
@@ -167,7 +168,7 @@ In this section, we define the security concept and security requirements for th
 
 ## 1. Definitions 
 
-**Client**: It refers to a National Backend (see [Federation Gateway Architecture Specification](./20200603_CWA_Interop_Architecture.pdf)) that uploads or downloads diagnosis keys to/from the Federation Gateway. In the section "Client Authentication", Client and National Backend are used interchangeably. 
+**Client**: It refers to a National Backend (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf)) that uploads or downloads diagnosis keys to/from the Federation Gateway. In the section "Client Authentication", Client and National Backend are used interchangeably. 
 
 **Federation Gateway Components**
 
@@ -315,7 +316,7 @@ sorted by KeyData (see method **sortBatchByKeyData** in [BatchSignatureUtils.jav
 
 **SecReq-026**  To verify whether a Signing Certificate is whitelisted, the FG upload endpoint MUST execute the next steps:
 
-1. Extract the *Origin* value from the DiagnosisKeyBatch (see [Federation Gateway Architecture Specification](./20200603_CWA_Interop_Architecture.pdf)).
+1. Extract the *Origin* value from the DiagnosisKeyBatch (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf)).
 
 2. Extract the *Country (C)* attribute from the X-SSL-Client-DN request header (see SecReq-011).
 
@@ -335,7 +336,7 @@ sorted by KeyData (see method **sortBatchByKeyData** in [BatchSignatureUtils.jav
 
 ## 4. Callback
 
-The Federation Gateway provides a notification service (callback), which informs the national backends when a new batch is available (see [Federation Gateway Architecture Specification](./20200603_CWA_Interop_Architecture.docx)) . The Federation Gateway Service sends the notifications via an HTTP Proxy, which performs mutual TLS with the national backends. 
+The Federation Gateway provides a notification service (callback), which informs the national backends when a new batch is available (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf)) . The Federation Gateway Service sends the notifications via an HTTP Proxy, which performs mutual TLS with the national backends. 
 
 **TODO:** The requirements defined in this section still need to be analyzed. For example, questions to be answered are, how exactly the thumbprint of the Callback Certificate is going to verified by the HTTP Proxy? which HTTP proxy could fulfill the requirements defined below? 
 
