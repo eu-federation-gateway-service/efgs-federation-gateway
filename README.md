@@ -25,6 +25,8 @@ This repository contains the **federation gateway service**.
 ![ci](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/workflows/ci-master/badge.svg)
 [![quality gate](https://sonarcloud.io/api/project_badges/measure?project=eu-federation-gateway-service_efgs-federation-gateway&metric=alert_status)](https://sonarcloud.io/dashboard?id=eu-federation-gateway-service_efgs-federation-gateway)
 
+SonarCloud supports the EU Federation Gateway Service project! SonarCloud (www.sonarcloud.io) catches Bugs and Vulnerabilities in your repositories, and provides clear resolution guidance for any Code Quality or Security issue it detects. SonarCloud makes applications maintainable, reliable and safe!
+
 ### Prerequisites
  - [Open JDK 11](https://openjdk.java.net)  
  - [Maven](https://maven.apache.org)
