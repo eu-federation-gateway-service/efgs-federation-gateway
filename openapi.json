@@ -1,0 +1,507 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "efgs-federation-gateway",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    },
+    "version": "0.2.0-SNAPSHOT"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8090",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/diagnosiskeys/download/{date}": {
+      "get": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Download"
+        ],
+        "summary": "Downloads diagnosis keys dataset by date.",
+        "description": "Downloads the latest data by date. The date indicates the start point for query. Means the last 5 Days are currentDate-5",
+        "operationId": "downloadDiagnosisKeys",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Date from where the query should start until today.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2020-07-31"
+          },
+          {
+            "name": "batchTag",
+            "in": "header",
+            "description": "Optional Tag to submit the last received batchTag of the day.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "20200731-1"
+          },
+          {
+            "name": "downloaderCountry",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "headers": {
+              "batchTag": {
+                "description": "Tag of the batch.",
+                "required": true,
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "nextBatchTag": {
+                "description": "Tag of the next available batch of the day. Has the value \"null\" if no further BatchTag exists for requested date",
+                "required": true,
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json+v1.0": {
+                "example": "diagnosisKeyBatch"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid BatchTag used."
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "404": {
+            "description": "BatchTag not found or no data exists."
+          },
+          "406": {
+            "description": "Data format or content is not valid."
+          },
+          "410": {
+            "description": "Date for download expired. Date does not more exists."
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Download"
+        ],
+        "summary": "Returns information about the download-endpoint.",
+        "operationId": "getEndpointInformation",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "headers": {
+              "Accept": {
+                "style": "simple",
+                "schema": {
+                  "example": "application/json; version=1.0,application/protobuf; version=1.0"
+                }
+              },
+              "Allow": {
+                "style": "simple",
+                "schema": {
+                  "example": "GET,OPTIONS"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/diagnosiskeys/audit/download/{batchTag}": {
+      "get": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Audit"
+        ],
+        "summary": "Gets audit information about the selected batchtag.",
+        "operationId": "getAuditInformation",
+        "parameters": [
+          {
+            "name": "batchTag",
+            "in": "path",
+            "description": "batchTag with which the database is searched.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "20200730-1"
+          },
+          {
+            "name": "Accept",
+            "in": "header",
+            "required": true,
+            "example": "application/json"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK. Returns the audit information to the selected batch.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEntry"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid BatchTag used."
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "404": {
+            "description": "BatchTag not found or no data exists."
+          },
+          "406": {
+            "description": "Data format or content is not valid."
+          }
+        }
+      }
+    },
+    "/diagnosiskeys/callback": {
+      "get": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Callback"
+        ],
+        "summary": "Gets the current callback URLs.",
+        "operationId": "getCallbacks",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Callback"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Callback"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/diagnosiskeys/callback/{id}": {
+      "put": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Callback"
+        ],
+        "summary": "Put or Update new callback URL.",
+        "operationId": "putOrUpdateCallback",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the entry",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ABC"
+          },
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "https://example.org"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK."
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "406": {
+            "description": "URL has not the expected format."
+          },
+          "500": {
+            "description": "Not able to write data. Retry please."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Callback"
+        ],
+        "summary": "Delete callback URL.",
+        "operationId": "deleteCallback",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the entry",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "OK."
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "500": {
+            "description": "Not able to write data. Retry please."
+          }
+        }
+      }
+    },
+    "/diagnosiskeys/upload": {
+      "post": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Upload"
+        ],
+        "summary": "Uploads diagnosis key datasets.",
+        "description": "Uploads the given batch to the server. Uploader Information is given by the client certificate.",
+        "operationId": "uploadDiagnosisKeys",
+        "parameters": [
+          {
+            "name": "batchTag",
+            "in": "header",
+            "description": "Required Tag to tag the send batch (must be not unique).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "20200731-1"
+          },
+          {
+            "name": "batchSignature",
+            "in": "header",
+            "description": "PKC7 Payload signature in Base64 encoding.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "ABDBJ345231DJ122..."
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "application/protobuf; version=1.0"
+          }
+        ],
+        "requestBody": {
+          "description": "Requestbody with payload. (limited)",
+          "content": {
+            "application/protobuf; version=1.0": {},
+            "application/json; version=1.0": {},
+            "application/protobuf": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uploaderCountry": {
+                    "type": "string"
+                  },
+                  "uploaderCertThumbprint": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uploaderCountry": {
+                    "type": "string"
+                  },
+                  "uploaderCertThumbprint": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Database Entries created.",
+            "headers": {
+              "batchTag": {
+                "description": "Tag of the batch.",
+                "required": true,
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "207": {
+            "description": "Data partially added with warnings. More details in document.",
+            "headers": {
+              "batchTag": {
+                "description": "Tag of the batch.",
+                "required": true,
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json+v1.0": {
+                "example": "{\n  '201': [1,2,5,8,9],\n  '409': [3,4,6,7],\n  '500': [10]\n}"
+              }
+            }
+          },
+          "400": {
+            "description": "Signature not valid. Bad request."
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "406": {
+            "description": "Data format or content is not valid."
+          },
+          "413": {
+            "description": "Data already exist."
+          },
+          "500": {
+            "description": "Not able to write data. Retry please."
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Upload"
+        ],
+        "summary": "Returns information about the upload-endpoint.",
+        "operationId": "getEndpointInformation_1",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "headers": {
+              "Accept": {
+                "style": "simple",
+                "schema": {
+                  "example": "application/json; version=1.0, application/protobuf; version=1.0"
+                }
+              },
+              "Allow": {
+                "style": "simple",
+                "schema": {
+                  "example": "POST,OPTIONS"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuditEntry": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "string",
+            "example": "DE"
+          },
+          "uploadedTime": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2020-07-31T11:24:43.086Z"
+          },
+          "uploaderThumbprint": {
+            "type": "string",
+            "example": "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int64",
+            "example": 3
+          },
+          "batchSignature": {
+            "type": "string",
+            "example": "exampleBatchSignature"
+          }
+        },
+        "description": "Entity representation per country in audit results."
+      },
+      "Callback": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        },
+        "description": "Entity representation of a callback."
+      }
+    }
+  }
+}
