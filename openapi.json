@@ -15,125 +15,6 @@
     }
   ],
   "paths": {
-    "/diagnosiskeys/download/{date}": {
-      "get": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Download"
-        ],
-        "summary": "Downloads diagnosis keys dataset by date.",
-        "description": "Downloads the latest data by date. The date indicates the start point for query. Means the last 5 Days are currentDate-5",
-        "operationId": "downloadDiagnosisKeys",
-        "parameters": [
-          {
-            "name": "date",
-            "in": "path",
-            "description": "Date from where the query should start until today.",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "date"
-            },
-            "example": "2020-07-31"
-          },
-          {
-            "name": "batchTag",
-            "in": "header",
-            "description": "Optional Tag to submit the last received batchTag of the day.",
-            "required": false,
-            "schema": {
-              "type": "string"
-            },
-            "example": "20200731-1"
-          },
-          {
-            "name": "downloaderCountry",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK.",
-            "headers": {
-              "batchTag": {
-                "description": "Tag of the batch.",
-                "required": true,
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              },
-              "nextBatchTag": {
-                "description": "Tag of the next available batch of the day. Has the value \"null\" if no further BatchTag exists for requested date",
-                "required": true,
-                "style": "simple",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            },
-            "content": {
-              "application/json+v1.0": {
-                "example": "diagnosisKeyBatch"
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid BatchTag used."
-          },
-          "403": {
-            "description": "Forbidden call in cause of missing or invalid client certificate."
-          },
-          "404": {
-            "description": "BatchTag not found or no data exists."
-          },
-          "406": {
-            "description": "Data format or content is not valid."
-          },
-          "410": {
-            "description": "Date for download expired. Date does not more exists."
-          }
-        }
-      },
-      "options": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Download"
-        ],
-        "summary": "Returns information about the download-endpoint.",
-        "operationId": "getEndpointInformation",
-        "responses": {
-          "200": {
-            "description": "OK.",
-            "headers": {
-              "Accept": {
-                "style": "simple",
-                "schema": {
-                  "example": "application/json; version=1.0,application/protobuf; version=1.0"
-                }
-              },
-              "Allow": {
-                "style": "simple",
-                "schema": {
-                  "example": "GET,OPTIONS"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/diagnosiskeys/audit/download/{batchTag}": {
       "get": {
         "tags": [
@@ -302,6 +183,117 @@
         }
       }
     },
+    "/diagnosiskeys/download/{date}": {
+      "get": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Download"
+        ],
+        "summary": "Downloads diagnosis keys dataset by date.",
+        "description": "Downloads the latest data by date. The date indicates the start point for query. Means the last 5 Days are currentDate-5",
+        "operationId": "downloadDiagnosisKeys",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "Date from where the query should start until today.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2020-07-31"
+          },
+          {
+            "name": "batchTag",
+            "in": "header",
+            "description": "Optional Tag to submit the last received batchTag of the day.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "example": "20200731-1"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "headers": {
+              "batchTag": {
+                "description": "Tag of the batch.",
+                "required": true,
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "nextBatchTag": {
+                "description": "Tag of the next available batch of the day. Has the value \"null\" if no further BatchTag exists for requested date",
+                "required": true,
+                "style": "simple",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json+v1.0": {
+                "example": "diagnosisKeyBatch"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid BatchTag used."
+          },
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "404": {
+            "description": "BatchTag not found or no data exists."
+          },
+          "406": {
+            "description": "Data format or content is not valid."
+          },
+          "410": {
+            "description": "Date for download expired. Date does not more exists."
+          }
+        }
+      },
+      "options": {
+        "tags": [
+          "Diagnosis Keys Exchange Interface",
+          "Download"
+        ],
+        "summary": "Returns information about the download-endpoint.",
+        "operationId": "getEndpointInformation",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "headers": {
+              "Accept": {
+                "style": "simple",
+                "schema": {
+                  "example": "application/json; version=1.0,application/protobuf; version=1.0"
+                }
+              },
+              "Allow": {
+                "style": "simple",
+                "schema": {
+                  "example": "GET,OPTIONS"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/diagnosiskeys/upload": {
       "post": {
         "tags": [
@@ -346,33 +338,7 @@
           "description": "Requestbody with payload. (limited)",
           "content": {
             "application/protobuf; version=1.0": {},
-            "application/json; version=1.0": {},
-            "application/protobuf": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "uploaderCountry": {
-                    "type": "string"
-                  },
-                  "uploaderCertThumbprint": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "uploaderCountry": {
-                    "type": "string"
-                  },
-                  "uploaderCertThumbprint": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
+            "application/json; version=1.0": {}
           }
         },
         "responses": {
