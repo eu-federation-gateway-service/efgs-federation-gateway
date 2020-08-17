@@ -122,7 +122,7 @@ All parameters which are defined as X have to be configurable.
 
 1.   Search for CallbackTaskEntities which:
      * execution_lock is older than X minutes
-2.   Set execution_lock to null
+1.   Set execution_lock to null
 
 ### Callback Unsubscribing
 
@@ -133,5 +133,7 @@ EFGS tasks when a country unsubscribes:
 1.   Query database for CallbackSubscriptionEntity which:
      * callbackId is given callbackId
      * country is country extracted from request properties
-2.   If found, delete.  
+1.   For each CallBackSubscriptionEntity c
+     * Delete all CallbackTaskEntities from database where callbackSubscription is c 
+1.   If found, delete.  
 
