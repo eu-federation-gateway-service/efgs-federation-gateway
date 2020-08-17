@@ -33,3 +33,4 @@ build/
 ~$*.docx
 *.b64
 testdata/
+*.log
