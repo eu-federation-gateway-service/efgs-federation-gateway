@@ -28,8 +28,6 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -50,7 +48,6 @@ import org.bouncycastle.cms.SignerInformation;
 import org.bouncycastle.cms.SignerInformationStore;
 import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.util.Store;
 import org.springframework.stereotype.Service;
@@ -66,7 +63,6 @@ public class BatchSignatureVerifier {
 
   public BatchSignatureVerifier(CertificateService certificateService) {
     this.certificateService = certificateService;
-    Security.addProvider(new BouncyCastleProvider());
   }
 
   /**
@@ -180,21 +176,19 @@ public class BatchSignatureVerifier {
       signature.initVerify(x509Certificate.getPublicKey());
       signature.update(x509Certificate.getTBSCertificate());
       return signature.verify(x509Certificate.getSignature());
-    } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException
-      | NoSuchProviderException e) {
+    } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException e) {
       log.error("Could not verify signature of signing certificate: " + e.getMessage());
       return false;
     }
   }
 
   private Signature createSignatureInstance(final X509Certificate x509Certificate)
-    throws NoSuchAlgorithmException, NoSuchProviderException {
-    return Signature.getInstance(x509Certificate.getSigAlgName(), BouncyCastleProvider.PROVIDER_NAME);
+    throws NoSuchAlgorithmException {
+    return Signature.getInstance(x509Certificate.getSigAlgName());
   }
 
   private X509Certificate toX509Certificate(final X509CertificateHolder certificate) throws CertificateException {
     final JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
-    converter.setProvider(BouncyCastleProvider.PROVIDER_NAME);
     return converter.getCertificate(certificate);
   }
 
@@ -238,7 +232,7 @@ public class BatchSignatureVerifier {
 
   private SignerInformationVerifier createSignerInfoVerifier(final X509CertificateHolder signerCert)
     throws OperatorCreationException, CertificateException {
-    return new JcaSimpleSignerInfoVerifierBuilder().setProvider(BouncyCastleProvider.PROVIDER_NAME).build(signerCert);
+    return new JcaSimpleSignerInfoVerifierBuilder().build(signerCert);
   }
 
 }
