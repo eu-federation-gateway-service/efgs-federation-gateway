@@ -53,7 +53,6 @@ import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
@@ -83,7 +82,6 @@ public class TestData {
   public static final String AUTH_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
   public static final int DAYS_SINCE_ONSET_OF_SYMPTOMS = 42;
   public static final String DIGEST_ALGORITHM = "SHA1withRSA";
-  public static final String CRYPTO_PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
   private static final String TEST_BATCH_TAG_DE = "uploaderBatchTag_DE";
   private static final String TEST_BATCH_TAG_NL = "uploaderBatchTag_NL";
   private static final String COMMON_NAME_SIGNING_CERT = "demo";
@@ -151,13 +149,13 @@ public class TestData {
     X500Name dnName = new X500Name("C=" + TestData.AUTH_CERT_COUNTRY + ", CN=" + COMMON_NAME_SIGNING_CERT);
     BigInteger certSerial = new BigInteger(Long.toString(System.currentTimeMillis()));
 
-    ContentSigner contentSigner = new JcaContentSignerBuilder(DIGEST_ALGORITHM).setProvider(CRYPTO_PROVIDER).build(TestData.keyPair.getPrivate());
+    ContentSigner contentSigner = new JcaContentSignerBuilder(DIGEST_ALGORITHM).build(TestData.keyPair.getPrivate());
     JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(dnName, certSerial, validFrom, validTo, dnName, TestData.keyPair.getPublic());
 
     BasicConstraints basicConstraints = new BasicConstraints(false);
     certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, basicConstraints);
 
-    return new JcaX509CertificateConverter().setProvider(Security.getProvider(CRYPTO_PROVIDER)).getCertificate(certBuilder.build(contentSigner));
+    return new JcaX509CertificateConverter().getCertificate(certBuilder.build(contentSigner));
   }
 
   public static void createCertificates() throws NoSuchAlgorithmException, CertificateException, CertIOException, OperatorCreationException {

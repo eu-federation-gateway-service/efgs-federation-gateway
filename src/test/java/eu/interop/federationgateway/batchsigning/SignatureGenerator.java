@@ -24,12 +24,12 @@ import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import org.bouncycastle.asn1.x509.Certificate;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cms.CMSAlgorithm;
@@ -44,7 +44,6 @@ import org.bouncycastle.cms.SignerInfoGenerator;
 import org.bouncycastle.cms.jcajce.JcaSignerInfoGeneratorBuilder;
 import org.bouncycastle.cms.jcajce.JceCMSContentEncryptorBuilder;
 import org.bouncycastle.cms.jcajce.JceKeyTransRecipientInfoGenerator;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.DigestCalculatorProvider;
@@ -56,7 +55,6 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 public class SignatureGenerator {
 
   public SignatureGenerator(CertificateRepository certificateRepository) throws CertificateException, NoSuchAlgorithmException, CertIOException, OperatorCreationException {
-    Security.addProvider(new BouncyCastleProvider());
     TestData.insertCertificatesForAuthentication(certificateRepository);
   }
 
@@ -87,12 +85,11 @@ public class SignatureGenerator {
     return Base64.getEncoder().encodeToString(singedData.getEncoded());
   }
 
-  public String encryptData(final byte[] data) throws CertificateEncodingException, CMSException, IOException, CertificateParsingException {
+  public String encryptData(final byte[] data) throws CertificateEncodingException, CMSException, IOException {
     final CMSEnvelopedDataGenerator cmsEnvelopedDataGenerator = new CMSEnvelopedDataGenerator();
-    final X509CertificateObject cert = new X509CertificateObject(createCertificateHolder(TestData.validCertificate).toASN1Structure());
-    cmsEnvelopedDataGenerator.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(cert));
+    cmsEnvelopedDataGenerator.addRecipientInfoGenerator(new JceKeyTransRecipientInfoGenerator(TestData.validCertificate));
     final CMSTypedData msg = new CMSProcessableByteArray(data);
-    final OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).setProvider(TestData.CRYPTO_PROVIDER).build();
+    final OutputEncryptor encryptor = new JceCMSContentEncryptorBuilder(CMSAlgorithm.AES128_CBC).build();
     final CMSEnvelopedData cmsEnvelopedData = cmsEnvelopedDataGenerator.generate(msg, encryptor);
     return Base64.getEncoder().encodeToString(cmsEnvelopedData.getEncoded());
   }
@@ -106,11 +103,11 @@ public class SignatureGenerator {
   }
 
   private DigestCalculatorProvider createDigestBuilder() throws OperatorCreationException {
-    return new JcaDigestCalculatorProviderBuilder().setProvider(TestData.CRYPTO_PROVIDER).build();
+    return new JcaDigestCalculatorProviderBuilder().build();
 
   }
 
   private ContentSigner createContentSigner() throws OperatorCreationException {
-    return new JcaContentSignerBuilder(TestData.DIGEST_ALGORITHM).setProvider(TestData.CRYPTO_PROVIDER).build(TestData.keyPair.getPrivate());
+    return new JcaContentSignerBuilder(TestData.DIGEST_ALGORITHM).build(TestData.keyPair.getPrivate());
   }
 }
