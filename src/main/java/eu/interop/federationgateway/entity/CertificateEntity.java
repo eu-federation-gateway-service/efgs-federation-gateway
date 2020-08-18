@@ -67,6 +67,9 @@ public class CertificateEntity implements Serializable {
   @Column(name = "revoked")
   private Boolean revoked;
 
+  @Column(name = "host")
+  private String host;
+
   public enum CertificateType {
     AUTHENTICATION,
     SIGNING,

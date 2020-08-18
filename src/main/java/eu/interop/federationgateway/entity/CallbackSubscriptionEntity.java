@@ -51,21 +51,17 @@ public class CallbackSubscriptionEntity implements Serializable {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "callback_id")
-  private String callbackId;
-
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
+
+  @Column(name = "callback_id")
+  private String callbackId;
 
   @Column(name = "url")
   private String url;
 
   @Column(name = "country")
   private String country;
-
-  @ManyToOne
-  @JoinColumn(name = "certificate_id")
-  private CertificateEntity certificateEntity;
 
 }
 

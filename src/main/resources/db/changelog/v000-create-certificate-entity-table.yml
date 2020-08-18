@@ -38,6 +38,11 @@ databaseChangeLog:
               - column:
                   name: revoked
                   type: boolean
+              - column:
+                  name: host
+                  type: varchar(256)
+                  constraints:
+                    nullable: true
   - changeSet:
       id: create-certificate-entity-table-increment
       author: f11h

@@ -91,13 +91,10 @@ public class CallbackTaskRepositoryTest {
     DiagnosisKeyBatchEntity diagnosisKeyBatchEntity = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batch", "link");
     diagnosisKeyBatchEntity = diagnosisKeyBatchRepository.save(diagnosisKeyBatchEntity);
 
-    CertificateEntity certificateEntity = new CertificateEntity(null, ZonedDateTime.now(), random, "DE", CertificateEntity.CertificateType.CALLBACK, false);
-    certificateEntity = certificateRepository.save(certificateEntity);
-
-    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity(null, random, ZonedDateTime.now(), "url", "DE", certificateEntity);
+    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity(null, ZonedDateTime.now(), random, "url", "DE");
     callbackSubscriptionEntity = subscriptionRepository.save(callbackSubscriptionEntity);
 
-    repository.save(new CallbackTaskEntity(null, ZonedDateTime.now(), timestamp, 0, diagnosisKeyBatchEntity, callbackSubscriptionEntity));
+    repository.save(new CallbackTaskEntity(null, ZonedDateTime.now(), timestamp, null, 0, null, diagnosisKeyBatchEntity, callbackSubscriptionEntity));
   }
 
 

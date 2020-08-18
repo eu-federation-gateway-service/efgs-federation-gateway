@@ -28,6 +28,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -51,8 +52,15 @@ public class CallbackTaskEntity {
   @Column(name = "execution_lock")
   private ZonedDateTime executionLock;
 
+  @Column(name = "last_try")
+  private ZonedDateTime lastTry;
+
   @Column(name = "retries")
   private int retries;
+
+  @OneToOne
+  @JoinColumn(name = "not_before_id")
+  private CallbackTaskEntity notBefore;
 
   @ManyToOne
   @JoinColumn(name = "batch_id")

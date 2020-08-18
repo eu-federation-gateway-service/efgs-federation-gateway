@@ -25,10 +25,22 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
+                  name: last_try
+                  type: datetime(2)
+                  constraints:
+                    nullable: true
+              - column:
                   name: retries
                   type: int
                   constraints:
                     nullable: false
+              - column:
+                  name: not_before_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_callbacktask_notbefore
+                    references: callback_task(id)
               - column:
                   name: batch_id
                   type: bigint

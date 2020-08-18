@@ -35,13 +35,6 @@ databaseChangeLog:
                   type: varchar(2)
                   constraints:
                     nullable: false
-              - column:
-                  name: certificate_id
-                  type: bigint
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk_callbacksubscription_certificate
-                    references: certificate(id)
   - changeSet:
       id: create-callback-subscription-entity-table-increment
       author: f11h

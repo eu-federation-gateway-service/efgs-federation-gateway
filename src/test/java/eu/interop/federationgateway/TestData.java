@@ -111,7 +111,8 @@ public class TestData {
       certHash,
       certCountry,
       CertificateEntity.CertificateType.SIGNING,
-      false
+      false,
+      null
     );
 
     Optional<CertificateEntity> certInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
@@ -139,7 +140,8 @@ public class TestData {
       AUTH_CERT_HASH,
       AUTH_CERT_COUNTRY,
       CertificateEntity.CertificateType.AUTHENTICATION,
-      false
+      false,
+      null
     );
 
     Optional<CertificateEntity> authCertInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
