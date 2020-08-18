@@ -7,7 +7,7 @@
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
   <version>0.2.0-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <name>efgs-federation-gateway</name>
   <description>European Federation Gateway Service project.</description>
@@ -126,6 +126,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
@@ -325,6 +330,13 @@
           <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
           <trimHeaderLine>true</trimHeaderLine>
           <emptyLineAfterHeader>true</emptyLineAfterHeader>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webXml>${project.basedir}/src/WEB-INF/web.xml</webXml>
         </configuration>
       </plugin>
     </plugins>
