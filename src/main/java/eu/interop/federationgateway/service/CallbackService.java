@@ -75,16 +75,6 @@ public class CallbackService {
   }
 
   /**
-   * Returns all entries of {@link CallbackSubscriptionEntity} for a specific thumbprint.
-   *
-   * @return a list of {@link CallbackSubscriptionEntity}
-   */
-  public List<CallbackSubscriptionEntity> getAllCallbackSubscriptionsByThumbprint(String thumbPrint) {
-    log.info("Requested all callback subscriptions for a thumbprint.");
-    return callbackSubscriptionRepository.findByCertificateEntity_Thumbprint(thumbPrint);
-  }
-
-  /**
    * Returns all entries of {@link CallbackSubscriptionEntity}.
    *
    * @return a list of {@link CallbackSubscriptionEntity}
@@ -111,7 +101,6 @@ public class CallbackService {
         thumbprint,
         callbackSubscriptionEntity.getCountry(),
         CertificateEntity.CertificateType.AUTHENTICATION);
-      callbackSubscriptionEntity.setCertificateEntity(certificate.get());
       callbackSubscriptionEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     } else {
       CallbackSubscriptionEntity callbackInDatabase = optional.get();
@@ -132,32 +121,52 @@ public class CallbackService {
     return callbackSubscriptionRepository.findByCallbackId(callbackId);
   }
 
-  public boolean checkUrl(String input) {
+  /**
+   * Checks whether a given URL can be accepted for callback.
+   * @param urlToCheck the url that has to be checked.
+   * @param country the country code to check whether a certificate exists.
+   * @return
+   */
+  public boolean checkUrl(String urlToCheck, String country) {
     URL url;
     InetAddress hostAddress;
 
     try {
-      url = new URL(input);
+      url = new URL(urlToCheck);
     } catch (MalformedURLException e) {
-      log.error("Could not parse URL\", url=\"{}", input);
+      log.error("Could not parse URL\", url=\"{}", urlToCheck);
       return false;
     }
 
 
     if (!url.getProtocol().equals("https")) {
-      log.error("Callback URL must use https\", url=\"{}", input);
+      log.error("Callback URL must use https\", url=\"{}", urlToCheck);
       return false;
     }
 
     if (url.getQuery() != null) {
-      log.error("URL must not contain any parameters\", url=\"{}", input);
+      log.error("URL must not contain any parameters\", url=\"{}", urlToCheck);
+      return false;
+    }
+
+    Optional<CertificateEntity> callbackCertificate =
+      certificateService.getCallbackCertificateForHost(url.getHost(), country);
+
+    if (callbackCertificate.isEmpty()) {
+      log.error("Could not find a Callback Certificate for host\", host=\"{}", url.getHost());
+      return false;
+    }
+
+    if (callbackCertificate.get().getRevoked()) {
+      log.error("Found Callback Certificate, but it is revoked\", thumbprint=\"{}",
+        callbackCertificate.get().getThumbprint());
       return false;
     }
 
     try {
       hostAddress = InetAddress.getByName(url.getHost());
     } catch (UnknownHostException e) {
-      log.error("Could not resolve host for callback\", url=\"{}\", hostname=\"{}", input, url.getHost());
+      log.error("Could not resolve host for callback\", url=\"{}\", hostname=\"{}", urlToCheck, url.getHost());
       return false;
     }
 
@@ -174,7 +183,7 @@ public class CallbackService {
 
     if (Arrays.stream(localSubnetMatchers)
       .anyMatch(matcher -> matcher.matches(hostAddress.getHostAddress()))) {
-      log.error("IP Address of callback host is from private IP range.\", url=\"{}\", hostname=\"{}", input,
+      log.error("IP Address of callback host is from private IP range.\", url=\"{}\", hostname=\"{}", urlToCheck,
         hostAddress.getHostAddress());
       return false;
     }
