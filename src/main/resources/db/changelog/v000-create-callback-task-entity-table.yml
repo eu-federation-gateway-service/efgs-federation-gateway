@@ -38,7 +38,7 @@ databaseChangeLog:
                   name: not_before_id
                   type: bigint
                   constraints:
-                    nullable: false
+                    nullable: true
                     foreignKeyName: fk_callbacktask_notbefore
                     references: callback_task(id)
               - column:

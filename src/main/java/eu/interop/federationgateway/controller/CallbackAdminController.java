@@ -25,7 +25,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.mapper.CallbackMapper;
 import eu.interop.federationgateway.model.Callback;
-import eu.interop.federationgateway.service.CallbackService;
+import eu.interop.federationgateway.service.CallbackSubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +60,7 @@ public class CallbackAdminController {
   private static final String CALLBACK_GET_ROUTE = "/callback";
   private static final String CALLBACK_CHANGE_ROUTE = "/callback/{id}";
 
-  private final CallbackService callbackService;
+  private final CallbackSubscriptionService callbackSubscriptionService;
 
   private final CallbackMapper callbackMapper;
 
@@ -83,10 +82,11 @@ public class CallbackAdminController {
     produces = MediaType.APPLICATION_JSON_VALUE)
   @CertificateAuthentificationRequired
   public ResponseEntity<List<Callback>> getCallbackSubscriptions(
-    @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT) String thumbprint
+    @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
     List<CallbackSubscriptionEntity> allCallbackEntities =
-      callbackService.getAllCallbackSubscriptionsByThumbprint(thumbprint);
+      callbackSubscriptionService.getAllCallbackSubscriptionsForCountry(country);
+
     List<Callback> callbacks = callbackMapper.entityToCallback(allCallbackEntities);
     return ResponseEntity
       .ok()
@@ -97,7 +97,7 @@ public class CallbackAdminController {
    * Put or Update new callback subscription URL.
    */
   @Operation(
-    summary = "Put or Update new callback subscription URL.",
+    summary = "Create or Update new callback subscription URL.",
     tags = {"Diagnosis Keys Exchange Interface", "Callback"},
     responses = {
       @ApiResponse(responseCode = "200", description = "OK.", content = @Content),
@@ -127,27 +127,22 @@ public class CallbackAdminController {
   public ResponseEntity<?> putOrUpdateCallbackSubscription(
     @PathVariable("id") String callbackId,
     @RequestHeader(name = "url") String url,
-    @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country,
-    @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT) String thumbprint
+    @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
-
-    if (!callbackService.checkUrl(url)) {
-      throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Callback URL is invalid");
+    if (!callbackSubscriptionService.checkUrl(url, country)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Callback URL is invalid");
     }
 
     CallbackSubscriptionEntity callbackSubscriptionEntity = callbackMapper.callbackToEntity(callbackId, url, country);
-    try {
-      callbackService.saveCallbackSubscription(callbackSubscriptionEntity, thumbprint);
-    } catch (DataAccessException e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not able to save the data.");
-    }
+
+    callbackSubscriptionService.saveCallbackSubscription(callbackSubscriptionEntity);
     return ResponseEntity
       .ok()
       .build();
   }
 
   /**
-   * Delete the callback subscription.
+   * Delete a callback subscription.
    *
    * @param callbackId A {@link String} containing the callbackId.
    */
@@ -173,20 +168,19 @@ public class CallbackAdminController {
   )
   @CertificateAuthentificationRequired
   public ResponseEntity<?> deleteCallbackSubscription(
-    @PathVariable("id") String callbackId
+    @PathVariable("id") String callbackId,
+    @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
+    Optional<CallbackSubscriptionEntity> callbackSubscription =
+      callbackSubscriptionService.getCallbackSubscription(callbackId, country);
 
-    Optional<CallbackSubscriptionEntity> callbackSubscription = callbackService.getCallbackSubscription(callbackId);
     if (callbackSubscription.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND,
         "Could not find any callback subscription for the given callbackId.");
     }
-    CallbackSubscriptionEntity callbackSubscriptionEntity = callbackSubscription.get();
-    try {
-      callbackService.deleteCallbackSubscription(callbackSubscriptionEntity);
-    } catch (DataAccessException e) {
-      throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Not able to save the data.");
-    }
+
+    callbackSubscriptionService.deleteCallbackSubscription(callbackSubscription.get());
+
     return ResponseEntity
       .ok()
       .build();

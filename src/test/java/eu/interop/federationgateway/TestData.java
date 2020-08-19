@@ -83,8 +83,8 @@ public class TestData {
   public static final String AUTH_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
   public static final String CALLBACK_ID_FIRST = "firstCallback";
   public static final String CALLBACK_ID_SECOND = "secondCallback";
-  public static final String CALLBACK_URL_EFGS = "http://federation-example.com";
-  public static final String CALLBACK_URL_EXAMPLE = "http://test-example.com";
+  public static final String CALLBACK_URL_EFGS = "https://federation-example.com";
+  public static final String CALLBACK_URL_EXAMPLE = "https://test-example.com";
   public static final int DAYS_SINCE_ONSET_OF_SYMPTOMS = 42;
   public static final String DIGEST_ALGORITHM = "SHA1withRSA";
   private static final String TEST_BATCH_TAG_DE = "uploaderBatchTag_DE";

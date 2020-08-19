@@ -20,7 +20,6 @@
 
 package eu.interop.federationgateway.service;
 
-import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
@@ -34,32 +33,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CallbackService {
+public class CallbackSubscriptionService {
 
   private final CallbackSubscriptionRepository callbackSubscriptionRepository;
 
   private final CertificateService certificateService;
 
-  private final EfgsProperties efgsProperties;
-
   /**
    * Creates a new instance of CallbackService. Instantiates a new ThreadPoolExecutor and WebClient
    *
    * @param callbackSubscriptionRepository Dependency: {@link CallbackSubscriptionRepository}
-   * @param efgsProperties                 Dependency: {@link EfgsProperties}
    */
-  public CallbackService(
+  public CallbackSubscriptionService(
     CallbackSubscriptionRepository callbackSubscriptionRepository,
-    EfgsProperties efgsProperties,
     CertificateService certificateService) {
     this.callbackSubscriptionRepository = callbackSubscriptionRepository;
-    this.efgsProperties = efgsProperties;
     this.certificateService = certificateService;
   }
 
@@ -68,8 +61,7 @@ public class CallbackService {
    *
    * @param callbackSubscriptionEntity the entity which needs to be deleted.
    */
-  public void deleteCallbackSubscription(CallbackSubscriptionEntity callbackSubscriptionEntity)
-    throws DataAccessException {
+  public void deleteCallbackSubscription(CallbackSubscriptionEntity callbackSubscriptionEntity) {
     log.info("Start deleting callback subscription.");
     callbackSubscriptionRepository.delete(callbackSubscriptionEntity);
   }
@@ -85,28 +77,33 @@ public class CallbackService {
   }
 
   /**
+   * Returns all entries of {@link CallbackSubscriptionEntity} for specified country.
+   *
+   * @return a list of {@link CallbackSubscriptionEntity}
+   */
+  public List<CallbackSubscriptionEntity> getAllCallbackSubscriptionsForCountry(String country) {
+    return callbackSubscriptionRepository.findAllByCountryIs(country);
+  }
+
+  /**
    * Persists the {@link CallbackSubscriptionEntity} instance.
    *
    * @param callbackSubscriptionEntity the entity which will be saved
-   * @param thumbprint                 the thumbprint
    * @return the {@link CallbackSubscriptionEntity}
    */
-  public CallbackSubscriptionEntity saveCallbackSubscription(CallbackSubscriptionEntity callbackSubscriptionEntity,
-                                                             String thumbprint) throws DataAccessException {
+  public CallbackSubscriptionEntity saveCallbackSubscription(CallbackSubscriptionEntity callbackSubscriptionEntity) {
     log.info("Start saving callback subscription.");
-    Optional<CallbackSubscriptionEntity> optional = getCallbackSubscription(callbackSubscriptionEntity.getCallbackId());
+    Optional<CallbackSubscriptionEntity> optional =
+      getCallbackSubscription(callbackSubscriptionEntity.getCallbackId(), callbackSubscriptionEntity.getCountry());
+
     if (optional.isEmpty()) {
-      //TODO: change to find by CertificateType.Callback
-      Optional<CertificateEntity> certificate = certificateService.getCertificate(
-        thumbprint,
-        callbackSubscriptionEntity.getCountry(),
-        CertificateEntity.CertificateType.AUTHENTICATION);
       callbackSubscriptionEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     } else {
       CallbackSubscriptionEntity callbackInDatabase = optional.get();
       callbackInDatabase.setUrl(callbackSubscriptionEntity.getUrl());
       callbackSubscriptionEntity = callbackInDatabase;
     }
+
     return callbackSubscriptionRepository.save(callbackSubscriptionEntity);
   }
 
@@ -116,16 +113,17 @@ public class CallbackService {
    * @param callbackId the id of the callback.
    * @return the {@link CallbackSubscriptionEntity} with the given id and thumbprint.
    */
-  public Optional<CallbackSubscriptionEntity> getCallbackSubscription(String callbackId) {
+  public Optional<CallbackSubscriptionEntity> getCallbackSubscription(String callbackId, String country) {
     log.info("Start finding callback subscription by callback id.");
-    return callbackSubscriptionRepository.findByCallbackId(callbackId);
+    return callbackSubscriptionRepository.findByCallbackIdAndCountryIs(callbackId, country);
   }
 
   /**
    * Checks whether a given URL can be accepted for callback.
+   *
    * @param urlToCheck the url that has to be checked.
-   * @param country the country code to check whether a certificate exists.
-   * @return
+   * @param country    the country code to check whether a certificate exists.
+   * @return returns true if the url can be used for callbacks.
    */
   public boolean checkUrl(String urlToCheck, String country) {
     URL url;

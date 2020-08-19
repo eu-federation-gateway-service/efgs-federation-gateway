@@ -39,7 +39,8 @@ public class CertificateService {
     return certificateRepository.getFirstByThumbprintAndCountryAndType(thumbprint, country, type);
   }
 
-  public Optional<CertificateEntity> getCallbackCertificateForCountry(String country) {
-    return certificateRepository.getFirstByCountryAndTypeIs(country, CertificateEntity.CertificateType.CALLBACK);
+  public Optional<CertificateEntity> getCallbackCertificateForHost(String host, String country) {
+    return certificateRepository.getFirstByHostIsAndCountryIsAndTypeIs(
+      host, country, CertificateEntity.CertificateType.CALLBACK);
   }
 }

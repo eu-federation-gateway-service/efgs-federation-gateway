@@ -27,7 +27,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CallbackSubscriptionRepository extends JpaRepository<CallbackSubscriptionEntity, Long> {
 
-  Optional<CallbackSubscriptionEntity> findByCallbackId(String callbackId);
+  Optional<CallbackSubscriptionEntity> findByCallbackIdAndCountryIs(String callbackId, String country);
 
-  List<CallbackSubscriptionEntity> findByCertificateEntity_Thumbprint(String thumbprint);
+  List<CallbackSubscriptionEntity> findAllByCountryIs(String country);
 }

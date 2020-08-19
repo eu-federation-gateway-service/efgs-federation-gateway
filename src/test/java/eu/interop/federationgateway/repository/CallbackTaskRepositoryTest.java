@@ -88,10 +88,10 @@ public class CallbackTaskRepositoryTest {
   }
 
   private void createEntity(ZonedDateTime timestamp, String random) {
-    DiagnosisKeyBatchEntity diagnosisKeyBatchEntity = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batch", "link");
+    DiagnosisKeyBatchEntity diagnosisKeyBatchEntity = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), random + "batch", null);
     diagnosisKeyBatchEntity = diagnosisKeyBatchRepository.save(diagnosisKeyBatchEntity);
 
-    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity(null, ZonedDateTime.now(), random, "url", "DE");
+    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity(null, ZonedDateTime.now(), random, random + "url", "DE");
     callbackSubscriptionEntity = subscriptionRepository.save(callbackSubscriptionEntity);
 
     repository.save(new CallbackTaskEntity(null, ZonedDateTime.now(), timestamp, null, 0, null, diagnosisKeyBatchEntity, callbackSubscriptionEntity));
