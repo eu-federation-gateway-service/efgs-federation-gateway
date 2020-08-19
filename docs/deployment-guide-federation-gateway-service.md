@@ -24,6 +24,14 @@ Preconditions
 - Tomcat 9 installed
 - Java 11 installed
 - (if desired) mySQL DB server with a admin user
+- (if needed) proxy for outward communication
+- certificates for TLS
+- registered domain (aka DNS entry)
+
+
+
+### Initial Configuration
+
 
 ## Environment Specific Configuration
 
