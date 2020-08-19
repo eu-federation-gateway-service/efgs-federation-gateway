@@ -27,10 +27,16 @@ Preconditions
 - (if needed) proxy for outward communication
 - certificates for TLS
 - registered domain (aka DNS entry)
+- TLS server certificate
+- List of client certificates owned by the countries
 
 
 
 ### Initial Configuration
+
+1. Upload TLS server certificates to load balancer F5 
+1. Confifure load balancer to accept client certificates
+1. Configuration Reverse Proxy Farm (Blue Coat) to accept the request and pass them
 
 
 ## Environment Specific Configuration
