@@ -64,6 +64,30 @@
     <url>https://github.com/eu-federation-gateway-service/efgs-federation-gateway/</url>
   </scm>
 
+  <profiles>
+    <profile>
+      <id>dev-env</id>
+      <properties>
+        <build.profile.id>dev</build.profile.id>
+      </properties>
+    </profile>
+    <profile>
+      <id>local-env</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <build.profile.id>local</build.profile.id>
+      </properties>
+    </profile>
+    <profile>
+      <id>docker-env</id>
+      <properties>
+        <build.profile.id>docker</build.profile.id>
+      </properties>
+    </profile>
+  </profiles>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -240,6 +264,10 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring.boot.version}</version>
+        <configuration>
+          <outputDirectory>${project.build.directory}/docker</outputDirectory>
+          <classifier>exec</classifier>
+        </configuration>
         <executions>
           <execution>
             <goals>
@@ -320,6 +348,36 @@
           <trimHeaderLine>true</trimHeaderLine>
           <emptyLineAfterHeader>true</emptyLineAfterHeader>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.2.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+        <executions>
+        <execution>
+          <id>copy-dockerfile</id>
+          <phase>validate</phase>
+          <goals>
+            <goal>copy-resources</goal>
+          </goals>
+          <configuration>
+            <outputDirectory>${project.build.directory}/docker</outputDirectory>
+            <resources>
+              <resource>
+                <directory>${project.basedir}/src/main/docker</directory>
+                <filtering>true</filtering>
+              </resource>
+            </resources>
+            <delimiters>
+              <delimiter>${*}</delimiter>
+              <delimiter>@</delimiter>
+            </delimiters>
+          </configuration>
+        </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
