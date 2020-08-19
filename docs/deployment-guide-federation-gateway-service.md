@@ -1,11 +1,19 @@
-# Deployment Guide Federation Gateway Service
+# Deployment Guide European Federation Gateway Service
 by Alexander Stiefel (alexander.stiefel@t-systems.com)
 
 ##	Introduction
+This document is intended to provide all needed information to deploy the European Federation Gateway Service (EFGS). Target audience are software engineers.
+
+This document is in draft status, expect major aspects to be changed.
 
 ## Overview
 
 # Deployment Guide
+
+## Common Aspects
+
+### DB Setup
+The DB setup is done automatically at the first start of the application using liquibase. Due to the configration needed to be executed a high priviledged (admin) user is needed.
 
 ## Local Isolated Deployment
 
@@ -15,6 +23,7 @@ Preconditions
 - EFGS Software artefact, aka "WAR File"
 - Tomcat 9 installed
 - Java 11 installed
+- (if desired) mySQL DB server with a admin user
 
 ## Environment Specific Configuration
 
@@ -30,7 +39,7 @@ Preconditions
 | efgs.callback.proxy-port   | proxy host port  | 1234 |
 
 
-
-
-
 # Smoke Testing
+
+# Test data provisioning
+
