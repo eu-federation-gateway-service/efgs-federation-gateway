@@ -28,15 +28,15 @@ Preconditions
 ## Environment Specific Configuration
 
 
-| property  | Content                                          | Example Value                          |
-| --------- | ------------------------------------------------ | -------------------------------------- |
-| spring.datasource.url | The jdbc connection string for the mySQL DB | jdbc:mysql://localhost:3306/fg |
-| spring.datasource.username     | db user name  | sa |
-| spring.datasource.password  | db user password | sa |
-| spring.datasource.driver-class-name       | **legacy propery is fixed for all environments, will be removed from the list in the next release** | com.mysql.cj.jdbc.Driver                                  |
-| spring.jpa.database-platform     | **legacy propery is fixed for all environments, will be removed from the list in the next release** | org.hibernate.dialect.MySQL5InnoDBDialect                       |
-| efgs.callback.proxy-host      | proxy host name  | localhost |
-| efgs.callback.proxy-port   | proxy host port  | 1234 |
+| property  | OS property name |   Content                                          | Example Value                          |
+| --------- | --------- | ------------------------------------------------ | -------------------------------------- |
+| spring.datasource.url | SPRING_DATASOURCE_URL | The jdbc connection string for the mySQL DB | jdbc:mysql://localhost:3306/fg |
+| spring.datasource.username     | SPRING_DATASOURCE_USERNAME  | sa |
+| spring.datasource.password  | SPRING_DATASOURCE_PASSWORD | sa |
+| spring.datasource.driver-class-name | SPRING_DATASOURCE_DRIVER-CLASS-NAME | **legacy propery is fixed for all environments, will be removed from the list in the next release** | com.mysql.cj.jdbc.Driver                                  |
+| spring.jpa.database-platform    | SPRING_JPA_DATABASE-PLATFORM |  **legacy propery is fixed for all environments, will be removed from the list in the next release** | org.hibernate.dialect.MySQL5InnoDBDialect                       |
+| efgs.callback.proxy-host      | EFGS_CALLBACK_PROXY-HOST |proxy host name  | localhost |
+| efgs.callback.proxy-port   | EFGS_CALLBACK_PROXY-PORT | proxy host port  | 1234 |
 
 
 # Smoke Testing
