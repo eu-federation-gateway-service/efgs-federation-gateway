@@ -1,15 +1,15 @@
 server:
-  port: 8090
+  port: ${SERVER_PORT:8090}
 spring:
   application:
     name: eu-interop-federation-gateway
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:federation;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;
-    username: sa
-    password: ''
+    driver-class-name: ${DB_DRIVER_CLASS}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: ${DB_PLATFORM}
     hibernate:
       ddl-auto: validate
       connection:
@@ -17,6 +17,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog.yml
+    user: ${DB_ADMIN_USERNAME}
+    password: ${DB_ADMIN_PASSWORD}
 springdoc:
   api-docs:
     path: /api/docs
