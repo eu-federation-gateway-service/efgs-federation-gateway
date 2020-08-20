@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>eu.interop.federationgateway</groupId>
-  <artifactId>efgs-federation-gateway</artifactId>
+  <artifactId>efgs-war</artifactId>
   <version>0.2.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
