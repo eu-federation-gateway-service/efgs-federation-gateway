@@ -273,6 +273,8 @@ As shown in the figure below, the Federation Gateway (FG) Load Balancer authenti
 
 **SecReq-021**  The PKCS#7 object MUST be sent Base64 encoded to the Federation Gateway.
 
+**SecReq-###**	The PKCS#7 signature object SHOULD contain a Date (UTC)
+
 ### 3.2. Signature Verification
 
 The uploaded diagnostic keys must be signed at a abstract content level, which means 
@@ -306,13 +308,35 @@ A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that th
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
 sorted by KeyData (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
 
-### 3.3. Certificate Verification
+### 3.3. Certificate Verification during OnBoarding
 
-**SecReq-023**  The Federation Gateway (FG) upload endpoint MUST validate the Signing Certificate, which is sent in the PKCS#7 object (see SecReq-017), based on the requirements specified below.
+**SecReq-023**  The Federation Gateway (FG) upload endpoint MUST validate the Signing Certificate, which is sent in the PKCS#7 object (see SecReq-017), based on the requirements specified below. The file format is PKCS#12 (pfx) with a password. The password is communicated by to the FG by the Designated Country Technical Contact (DCTC) during a verification call where the FG contacts the DCTC to verify the authenticity of the upload and get the password.
 
-**SecReq-024**  If the Signing Certificate has expired, the FG upload endpoint MUST reject the upload request. The expiration is determined by the "notAfter" field (see [RFC 5280](https://tools.ietf.org/html/rfc5280#page-22)) of the certificate.
+**SecReq-###** The Relative Distinguished Name(RDN) 'C' in the Distinguished Name (DN) must match the country of the the Country.
 
-**SecReq-025**  The FG upload endpoint MUST verify the signature of the Signing Certificate. If validation failed, the FG upload endpoint MUST reject the upload request.
+**SecReq-###** The RDN 'emailAddress' in the Distinguished Name (DN) must match the 24x7 email address of the Country.
+
+**SecReq-###** The RNDs CN, O and (optional OU) should be populated with a set of human readable and operationally correct set of values. Such as '/CN=FGS Netherlands/OU=National Health Institute/O=Ministry of Public Health/C=NL'.
+
+**SecReq-###** The PKCS#12 (pfx) Should contain the complete chain, where applicable.
+
+**SecReq-###**  If the Signing Certificate should be valid for at least 3 (more) month. The expiration is determined by the "notAfter" field (see [RFC 5280](https://tools.ietf.org/html/rfc5280#page-22)) of the certificate.
+
+**SecReq-###**  The FG upload endpoint MUST verify the signature of the Signing Certificate. If validation failed, the FG upload endpoint MUST abort Onboarding..
+
+**SecReq-###** In order to ensure maximum interoperability in a short timeline fields such as the Key Usage, Extended Key Usage will be operationally *ignored*.
+
+**SecReq-###** The X.509 certificate will be of version X.509 v3 (RFC5280).
+
+**SecReq-###** The key-lengths will meet or exceed the BSI Recommendations(2020) and the ECRYPT-CSA Recommendations(2018) for near term production: 3072 bits (RSA) or 256 bits (EC) and SHA256.
+
+### 3.3. Certificate Verification during subsequent use and Upload
+
+**SecReq-###**  The Federation Gateway (FG) upload endpoint MUST validate the Signing Certificate.
+
+**SecReq-###**  If the Signing Certificate has expired, the FG upload endpoint MUST reject the upload request. The expiration is determined by the "notAfter" field (see [RFC 5280](https://tools.ietf.org/html/rfc5280#page-22)) of the certificate.
+
+**SecReq-###**  The FG upload endpoint MUST verify the signature of the Signing Certificate. If validation failed, the FG upload endpoint MUST reject the upload request.
 
 **SecReq-026**  To verify whether a Signing Certificate is whitelisted, the FG upload endpoint MUST execute the next steps:
 
@@ -439,8 +463,6 @@ The Federation Gateway provides a notification service (callback), which informs
 The above requirements were defined based on the [BSI recommendations](https://www.bsi.bund.de/SharedDocs/Downloads/DE/BSI/Publikationen/TechnischeRichtlinien/TR02102/BSI-TR-02102.pdf?__blob=publicationFile&v=10) for cryptographic algorithms and key lengths.
 
 
-
-
 # Deployment View
 The system contains different stages which reflect the different perspectives 
 to the deployed software.
@@ -526,4 +548,40 @@ Proposal
 # Other Constraints and Conditions
 Timezone all times and dates are interpreted as timestamps in UTC (https://en.wikipedia.org/wiki/Coordinated_Universal_Time)
 
+# Appendix A
+
+Example self signed certificate that complies with above specification
+
+     openssl req -x509 -new \
+     		-days 365 \
+     		-newkey ec:<(openssl ecparam -name prime256v1) \
+     		-extensions v3_req \
+     		-subj "/CN=FGS Netherlands/OU=Corona-Team/O=Ministry of Public Health/emailAddress=operations@coronateam.nl/L=the Hauge/C=NL" \
+     		-outkey privkey.pem -nodes \
+     		-out pub.pem
+     		
+Obtain the fingerprint
+
+	openssl x509 -in pub.pem -noout -hash -sha256 -fingerprint
+     		
+Creation of the PKCS#12 file to submit
+
+    openssl pkcs12 -export -in pub.pem -nokeys -password pass:Secret1234 -out pub.p12
+    
+The file `pub.p12` is submitted by the countries designated technical contact to the federated gateway technical contact, but *without* the password.
+
+The federated gateway technical contact will then call the countries designated technical contact using the phone number provided by the European Commissions onboarding process - and obtain the password.
+
+The federated gateway technical contact will then verify
+
+* validity at least 3 months
+* X.509 v3
+* Key length (EC>=256, RSA>=3079) and Hash (SHA256 or better)
+* C field is the right country
+* CN, O and optionally the OU field are meaningful.
+* Obtain the fingerprint.
+
+and then confirm the fingerprint of the certificate with the countries designated technical contact.
+
+It is then added to the relevant whitelist.
 
