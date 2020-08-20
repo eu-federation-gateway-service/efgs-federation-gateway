@@ -24,6 +24,11 @@ Preconditions
 - Tomcat 9 installed
 - Java 11 installed
 - (if desired) mySQL DB server with a admin user
+- - privilidges needed:
+- - CONNECTION_ADMIN (https://dev.mysql.com/doc/refman/8.0/en/privileges-provided.html#priv_connection-admin )
+- - CREATE 
+
+
 - (if needed) proxy for outward communication
 - certificates for TLS
 - registered domain (aka DNS entry)
