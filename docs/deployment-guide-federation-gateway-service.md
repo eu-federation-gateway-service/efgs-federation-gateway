@@ -57,3 +57,7 @@ Preconditions
 
 # Test data provisioning
 
+# Open Issues
+- add proxy authentification
+- provide specific list of mysql roles the db user has to part
+- do we second db user
