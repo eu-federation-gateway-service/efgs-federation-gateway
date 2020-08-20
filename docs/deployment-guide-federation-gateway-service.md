@@ -23,9 +23,11 @@ Preconditions
 - EFGS Software artefact, aka "WAR File"
 - Tomcat 9 installed
 - Java 11 installed
-- (if desired) mySQL DB server with a admin user
-- - privilidges needed:
- 
+- (if desired) mySQL DB server with
+  - a admin user, privilidges needed:
+    - tbd.
+  - an empty schema created
+  - a JDBC connection string for the schema
 
 - (if needed) proxy for outward communication
 - certificates for TLS
