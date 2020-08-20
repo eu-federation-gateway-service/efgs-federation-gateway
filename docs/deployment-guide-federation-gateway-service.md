@@ -63,3 +63,4 @@ Preconditions
 - do we second db user
 - test national country
 -- signing certificates
+- how to handle env specific configuration
