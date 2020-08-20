@@ -21,8 +21,11 @@
 package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
+import eu.interop.federationgateway.entity.CallbackTaskEntity;
 import eu.interop.federationgateway.entity.CertificateEntity;
+import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
+import eu.interop.federationgateway.repository.CallbackTaskRepository;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,28 +35,66 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class CallbackSubscriptionService {
+@RequiredArgsConstructor
+public class CallbackService {
 
   private final CallbackSubscriptionRepository callbackSubscriptionRepository;
 
+  private final CallbackTaskRepository callbackTaskRepository;
+
   private final CertificateService certificateService;
 
+  public int removeTaskLocksOlderThan(ZonedDateTime timestamp) {
+    return callbackTaskRepository.removeTaskLocksOlderThan(timestamp);
+  }
+
+  public CallbackTaskEntity saveCallbackTaskEntity(CallbackTaskEntity entity) {
+    return callbackTaskRepository.save(entity);
+  }
+
+  private CallbackTaskEntity getNotBeforeCallbackTask(CallbackSubscriptionEntity subscriptionEntity) {
+    return callbackTaskRepository
+      .findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(subscriptionEntity, null);
+  }
+
+  public void deleteAllTasksForSubscription(CallbackSubscriptionEntity subscription) {
+    log.info("Deleting all CallbackTaskEntities for subscription.\", callbackId={}, country=\"{}",
+      subscription.getCallbackId(), subscription.getCountry());
+    callbackTaskRepository.deleteAllByCallbackSubscriptionIs(subscription);
+  }
+
   /**
-   * Creates a new instance of CallbackService. Instantiates a new ThreadPoolExecutor and WebClient
+   * Creates new CallbackTasks for each callback subscription for given batch.
    *
-   * @param callbackSubscriptionRepository Dependency: {@link CallbackSubscriptionRepository}
+   * @param batch The batch that has to be announced.
    */
-  public CallbackSubscriptionService(
-    CallbackSubscriptionRepository callbackSubscriptionRepository,
-    CertificateService certificateService) {
-    this.callbackSubscriptionRepository = callbackSubscriptionRepository;
-    this.certificateService = certificateService;
+  public void notifyAllCountriesForNewBatchTag(DiagnosisKeyBatchEntity batch) {
+    List<CallbackSubscriptionEntity> callbacks = getAllCallbackSubscriptions();
+
+    callbacks.forEach(callbackSubscription -> {
+      log.info("Saving Callback Task to DB\", country={}, batchTag=\"{}",
+        callbackSubscription.getCountry(), batch.getBatchName());
+
+      CallbackTaskEntity callbackTask = new CallbackTaskEntity(
+        null,
+        ZonedDateTime.now(ZoneOffset.UTC),
+        null,
+        null,
+        0,
+        getNotBeforeCallbackTask(callbackSubscription),
+        batch,
+        callbackSubscription
+      );
+
+      saveCallbackTaskEntity(callbackTask);
+    });
   }
 
   /**
@@ -63,6 +104,7 @@ public class CallbackSubscriptionService {
    */
   public void deleteCallbackSubscription(CallbackSubscriptionEntity callbackSubscriptionEntity) {
     log.info("Start deleting callback subscription.");
+    deleteAllTasksForSubscription(callbackSubscriptionEntity);
     callbackSubscriptionRepository.delete(callbackSubscriptionEntity);
   }
 

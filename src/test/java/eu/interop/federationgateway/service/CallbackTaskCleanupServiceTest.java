@@ -41,13 +41,13 @@ public class CallbackTaskCleanupServiceTest {
 
   EfgsProperties efgsProperties;
 
-  CallbackTaskService callbackTaskServiceMock;
+  CallbackService callbackServiceMock;
 
   @Before
   public void setup() {
-    callbackTaskServiceMock = Mockito.mock(CallbackTaskService.class);
+    callbackServiceMock = Mockito.mock(CallbackService.class);
     efgsProperties = Mockito.mock(EfgsProperties.class);
-    callbackTaskCleanupService = new CallbackTaskCleanupService(callbackTaskServiceMock, efgsProperties);
+    callbackTaskCleanupService = new CallbackTaskCleanupService(callbackServiceMock, efgsProperties);
   }
 
   @Test
@@ -66,7 +66,7 @@ public class CallbackTaskCleanupServiceTest {
 
     callbackTaskCleanupService.deleteAbandonedLocks();
 
-    Mockito.verify(callbackTaskServiceMock).removeTaskLocksOlderThan(captor.capture());
+    Mockito.verify(callbackServiceMock).removeTaskLocksOlderThan(captor.capture());
     Assert.assertEquals(expectedTimestamp.withNano(0), captor.getValue().withNano(0));
 
   }

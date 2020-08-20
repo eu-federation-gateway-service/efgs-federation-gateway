@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CallbackTaskCleanupService {
 
-  private final CallbackTaskService callbackTaskService;
+  private final CallbackService callbackService;
 
   private final EfgsProperties efgsProperties;
 
@@ -46,7 +46,7 @@ public class CallbackTaskCleanupService {
 
     ZonedDateTime timestamp = ZonedDateTime.now().minusSeconds(efgsProperties.getCallback().getTaskLockTimeout());
 
-    int updateCount = callbackTaskService.removeTaskLocksOlderThan(timestamp);
+    int updateCount = callbackService.removeTaskLocksOlderThan(timestamp);
 
     log.info("Removing of task locks of abandoned tasks finished.\", taskCount=\"{}", updateCount);
 

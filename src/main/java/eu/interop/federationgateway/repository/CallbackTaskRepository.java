@@ -39,4 +39,8 @@ public interface CallbackTaskRepository extends JpaRepository<CallbackTaskEntity
   CallbackTaskEntity findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(
     CallbackSubscriptionEntity subscription, CallbackTaskEntity notBefore);
 
+  @Modifying
+  @Transactional(Transactional.TxType.REQUIRED)
+  void deleteAllByCallbackSubscriptionIs(CallbackSubscriptionEntity subscriptionEntity);
+
 }

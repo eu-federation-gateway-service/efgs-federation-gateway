@@ -25,7 +25,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.mapper.CallbackMapper;
 import eu.interop.federationgateway.model.Callback;
-import eu.interop.federationgateway.service.CallbackSubscriptionService;
+import eu.interop.federationgateway.service.CallbackService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -60,7 +60,7 @@ public class CallbackAdminController {
   private static final String CALLBACK_GET_ROUTE = "/callback";
   private static final String CALLBACK_CHANGE_ROUTE = "/callback/{id}";
 
-  private final CallbackSubscriptionService callbackSubscriptionService;
+  private final CallbackService callbackService;
 
   private final CallbackMapper callbackMapper;
 
@@ -85,7 +85,7 @@ public class CallbackAdminController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
     List<CallbackSubscriptionEntity> allCallbackEntities =
-      callbackSubscriptionService.getAllCallbackSubscriptionsForCountry(country);
+      callbackService.getAllCallbackSubscriptionsForCountry(country);
 
     List<Callback> callbacks = callbackMapper.entityToCallback(allCallbackEntities);
     return ResponseEntity
@@ -129,13 +129,13 @@ public class CallbackAdminController {
     @RequestHeader(name = "url") String url,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
-    if (!callbackSubscriptionService.checkUrl(url, country)) {
+    if (!callbackService.checkUrl(url, country)) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Callback URL is invalid");
     }
 
     CallbackSubscriptionEntity callbackSubscriptionEntity = callbackMapper.callbackToEntity(callbackId, url, country);
 
-    callbackSubscriptionService.saveCallbackSubscription(callbackSubscriptionEntity);
+    callbackService.saveCallbackSubscription(callbackSubscriptionEntity);
     return ResponseEntity
       .ok()
       .build();
@@ -172,14 +172,14 @@ public class CallbackAdminController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
     Optional<CallbackSubscriptionEntity> callbackSubscription =
-      callbackSubscriptionService.getCallbackSubscription(callbackId, country);
+      callbackService.getCallbackSubscription(callbackId, country);
 
     if (callbackSubscription.isEmpty()) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND,
         "Could not find any callback subscription for the given callbackId.");
     }
 
-    callbackSubscriptionService.deleteCallbackSubscription(callbackSubscription.get());
+    callbackService.deleteCallbackSubscription(callbackSubscription.get());
 
     return ResponseEntity
       .ok()

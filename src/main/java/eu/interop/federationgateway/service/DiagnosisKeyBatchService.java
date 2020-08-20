@@ -53,7 +53,7 @@ public class DiagnosisKeyBatchService {
   private final EfgsProperties properties;
   private final DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
   private final DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
-  private final CallbackTaskService callbackTaskService;
+  private final CallbackService callbackService;
 
   /**
    * scheduled service - bundles uploaded documents into batches.
@@ -107,7 +107,7 @@ public class DiagnosisKeyBatchService {
         updateDiagnosisKeys(diagnosisKeyEntitys, newBatch);
       }
       log.info("Batch process finished\", batchCount=\"{}", diagnosisKeyCollector.size());
-      callbackTaskService.notifyAllCountriesForNewBatchTag(newBatch);
+      callbackService.notifyAllCountriesForNewBatchTag(newBatch);
     }
   }
 

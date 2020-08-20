@@ -66,15 +66,15 @@ public class DiagnosisKeyBatchServiceTest {
 
   private DiagnosisKeyBatchService batchService;
 
-  private CallbackTaskService callbackTaskServiceMock;
+  private CallbackService callbackServiceMock;
 
   @Before
   public void before() {
     batchRepository.deleteAll();
     keyRepository.deleteAll();
 
-    callbackTaskServiceMock = Mockito.mock(CallbackTaskService.class);
-    batchService = new DiagnosisKeyBatchService(efgsProperties, keyRepository, batchRepository, callbackTaskServiceMock);
+    callbackServiceMock = Mockito.mock(CallbackService.class);
+    batchService = new DiagnosisKeyBatchService(efgsProperties, keyRepository, batchRepository, callbackServiceMock);
   }
 
   /**
@@ -133,7 +133,7 @@ public class DiagnosisKeyBatchServiceTest {
     Assert.assertEquals(TestData.TEST_BATCH_TAG_2015616, keyRepository.findAll().get(3).getBatchTag());
 
     ArgumentCaptor<DiagnosisKeyBatchEntity> captor = ArgumentCaptor.forClass(DiagnosisKeyBatchEntity.class);
-    Mockito.verify(callbackTaskServiceMock).notifyAllCountriesForNewBatchTag(captor.capture());
+    Mockito.verify(callbackServiceMock).notifyAllCountriesForNewBatchTag(captor.capture());
     Assert.assertEquals(formattedDate + "-2", captor.getValue().getBatchName());
   }
 

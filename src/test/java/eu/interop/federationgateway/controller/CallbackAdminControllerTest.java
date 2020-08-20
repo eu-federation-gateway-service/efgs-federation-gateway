@@ -30,7 +30,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.Callback;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CertificateRepository;
-import eu.interop.federationgateway.service.CallbackSubscriptionService;
+import eu.interop.federationgateway.service.CallbackService;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -78,7 +78,7 @@ public class CallbackAdminControllerTest {
   private CertificateAuthentificationFilter certFilter;
 
   @Autowired
-  private CallbackSubscriptionService callbackSubscriptionService;
+  private CallbackService callbackService;
 
   @Autowired
   private CallbackSubscriptionRepository callbackSubscriptionRepository;
@@ -94,6 +94,15 @@ public class CallbackAdminControllerTest {
   @Before
   public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
     OperatorCreationException, MalformedURLException {
+
+    try {
+      InetAddress.getByName("example.org");
+      // check that url's hostname is resolved
+      dnsIsAvailable = true;
+    } catch (UnknownHostException ignored) {
+      dnsIsAvailable = false;
+    } // skipping positive test case if no name resolution is possible
+
 
     callbackSubscriptionRepository.deleteAll();
     TestData.insertCertificatesForAuthentication(certificateRepository);
@@ -121,14 +130,6 @@ public class CallbackAdminControllerTest {
     callbackSubscriptionRepository.deleteAll();
     certificateRepository.delete(callbackCert);
     certificateRepository.delete(callbackCert2);
-
-    try {
-      InetAddress.getByName("example.org");
-      // check that url's hostname is resolved
-      dnsIsAvailable = true;
-    } catch (UnknownHostException ignored) {
-      dnsIsAvailable = false;
-    } // skipping positive test case if no name resolution is possible
   }
 
   @Test
@@ -274,15 +275,15 @@ public class CallbackAdminControllerTest {
     String firstId = TestData.CALLBACK_ID_FIRST;
     String secondId = TestData.CALLBACK_ID_SECOND;
 
-    callbackSubscriptionService.saveCallbackSubscription(new CallbackSubscriptionEntity(
+    callbackService.saveCallbackSubscription(new CallbackSubscriptionEntity(
       1L, ZonedDateTime.now(ZoneOffset.UTC), firstId, TestData.CALLBACK_URL_EXAMPLE, TestData.AUTH_CERT_COUNTRY)
     );
 
-    callbackSubscriptionService.saveCallbackSubscription(new CallbackSubscriptionEntity(
+    callbackService.saveCallbackSubscription(new CallbackSubscriptionEntity(
       2L, ZonedDateTime.now(ZoneOffset.UTC), secondId, TestData.CALLBACK_URL_EXAMPLE, TestData.AUTH_CERT_COUNTRY)
     );
 
-    callbackSubscriptionService.saveCallbackSubscription(new CallbackSubscriptionEntity(
+    callbackService.saveCallbackSubscription(new CallbackSubscriptionEntity(
       3L, ZonedDateTime.now(ZoneOffset.UTC), firstId, TestData.CALLBACK_URL_EXAMPLE, TestData.COUNTRY_A)
     );
 
