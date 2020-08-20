@@ -20,6 +20,7 @@
 
 package eu.interop.federationgateway.repository;
 
+import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
 import java.time.ZonedDateTime;
 import javax.transaction.Transactional;
@@ -34,5 +35,8 @@ public interface CallbackTaskRepository extends JpaRepository<CallbackTaskEntity
   @Query("UPDATE CallbackTaskEntity c SET c.executionLock = null WHERE c.executionLock < :timestamp")
   @Transactional(Transactional.TxType.REQUIRED)
   int removeTaskLocksOlderThan(@Param("timestamp") ZonedDateTime timestamp);
+
+  CallbackTaskEntity findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(
+    CallbackSubscriptionEntity subscription, CallbackTaskEntity notBefore);
 
 }

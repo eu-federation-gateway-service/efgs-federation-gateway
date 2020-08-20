@@ -38,7 +38,7 @@ public class CallbackTaskService {
 
   private final CallbackTaskRepository callbackTaskRepository;
 
-  private final CallbackService callbackService;
+  private final CallbackSubscriptionService callbackSubscriptionService;
 
   public int removeTaskLocksOlderThan(ZonedDateTime timestamp) {
     return callbackTaskRepository.removeTaskLocksOlderThan(timestamp);
@@ -47,26 +47,33 @@ public class CallbackTaskService {
   public CallbackTaskEntity saveCallbackTaskEntity(CallbackTaskEntity entity) {
     return callbackTaskRepository.save(entity);
   }
+
+  private CallbackTaskEntity getNotBeforeCallbackTask(CallbackSubscriptionEntity subscriptionEntity) {
+    return callbackTaskRepository
+      .findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(subscriptionEntity, null);
+  }
+
+  /**
+   * Creates new CallbackTasks for each callback subscription for given batch.
+   *
+   * @param batch The batch that has to be announced.
+   */
   public void notifyAllCountriesForNewBatchTag(DiagnosisKeyBatchEntity batch) {
-    List<CallbackSubscriptionEntity> callbacks = callbackService.getAllCallbackSubscriptions();
+    List<CallbackSubscriptionEntity> callbacks = callbackSubscriptionService.getAllCallbackSubscriptions();
 
-    callbacks.forEach(callback -> {
-      if (callback.getCertificateEntity().getRevoked()) {
-        log.error("Callback certificate is revoked.\", country={}, certThumbprint=\"{}",
-          callback.getCountry(), callback.getCertificateEntity().getThumbprint());
-        return;
-      }
-
+    callbacks.forEach(callbackSubscription -> {
       log.info("Saving Callback Task to DB\", country={}, batchTag=\"{}",
-        callback.getCountry(), batch.getBatchName());
+        callbackSubscription.getCountry(), batch.getBatchName());
 
       CallbackTaskEntity callbackTask = new CallbackTaskEntity(
         null,
         ZonedDateTime.now(ZoneOffset.UTC),
         null,
+        null,
         0,
+        getNotBeforeCallbackTask(callbackSubscription),
         batch,
-        callback
+        callbackSubscription
       );
 
       saveCallbackTaskEntity(callbackTask);

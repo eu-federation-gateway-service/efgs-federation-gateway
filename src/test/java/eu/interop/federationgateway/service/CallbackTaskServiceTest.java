@@ -22,7 +22,6 @@ package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
-import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CallbackTaskRepository;
@@ -38,7 +37,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,7 +67,7 @@ public class CallbackTaskServiceTest {
   DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
 
   @Autowired
-  CallbackService callbackService;
+  CallbackSubscriptionService callbackSubscriptionService;
 
   @Before
   public void setup() {
@@ -78,13 +76,13 @@ public class CallbackTaskServiceTest {
     diagnosisKeyBatchRepository.deleteAll();
     certificateRepository.deleteAll();
 
-
-    callbackTaskRepositoryMock = Mockito.mock(CallbackTaskRepository.class);
-    callbackTaskService = new CallbackTaskService(callbackTaskRepositoryMock, callbackService);
+    callbackTaskService = new CallbackTaskService(callbackTaskRepository, callbackSubscriptionService);
   }
 
   @Test
   public void callbackTaskCleanUpShouldCallRepoMethod() {
+    callbackTaskRepositoryMock = Mockito.mock(CallbackTaskRepository.class);
+    callbackTaskService = new CallbackTaskService(callbackTaskRepositoryMock, callbackSubscriptionService);
 
     ZonedDateTime timestamp = ZonedDateTime.now();
 
@@ -98,10 +96,38 @@ public class CallbackTaskServiceTest {
   }
 
   @Test
+  public void notBeforePropertyShouldBeSetToPreviousCallbackTask() {
+    CallbackSubscriptionEntity callbackSubscription1 = createCallbackSubscriptionEntity("r1");
+    CallbackSubscriptionEntity callbackSubscription2 = createCallbackSubscriptionEntity("r2");
+
+    DiagnosisKeyBatchEntity batch = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag", "batchTag2");
+    batch = diagnosisKeyBatchRepository.save(batch);
+
+    DiagnosisKeyBatchEntity batch2 = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag2", null);
+    batch2 = diagnosisKeyBatchRepository.save(batch2);
+
+    callbackTaskService.notifyAllCountriesForNewBatchTag(batch);
+    callbackTaskService.notifyAllCountriesForNewBatchTag(batch2);
+
+    List<CallbackTaskEntity> callbackTasks = callbackTaskRepository.findAll();
+
+    Assert.assertEquals(4, callbackTasks.size());
+    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
+    Assert.assertEquals(callbackSubscription2.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
+    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
+    Assert.assertEquals(callbackSubscription2.getId(), callbackTasks.get(3).getCallbackSubscription().getId());
+
+    Assert.assertNull(callbackTasks.get(0).getNotBefore());
+    Assert.assertNull(callbackTasks.get(1).getNotBefore());
+    Assert.assertEquals(callbackTasks.get(0), callbackTasks.get(2).getNotBefore());
+    Assert.assertEquals(callbackTasks.get(1), callbackTasks.get(3).getNotBefore());
+  }
+
+  @Test
   public void notifiyAllCallbackSubscribersMethodShouldCreateACallbackTaskForEachSubscriber() {
-    CallbackSubscriptionEntity callbackSubscription1 = createCallbackSubscriptionEntity(ZonedDateTime.now(), "r1");
-    CallbackSubscriptionEntity callbackSubscription2 = createCallbackSubscriptionEntity(ZonedDateTime.now(), "r2");
-    CallbackSubscriptionEntity callbackSubscription3 = createCallbackSubscriptionEntity(ZonedDateTime.now(), "r3");
+    CallbackSubscriptionEntity callbackSubscription1 = createCallbackSubscriptionEntity("r1");
+    CallbackSubscriptionEntity callbackSubscription2 = createCallbackSubscriptionEntity("r2");
+    CallbackSubscriptionEntity callbackSubscription3 = createCallbackSubscriptionEntity("r3");
 
     DiagnosisKeyBatchEntity batch = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag", null);
     batch = diagnosisKeyBatchRepository.save(batch);
@@ -110,23 +136,17 @@ public class CallbackTaskServiceTest {
 
     List<CallbackTaskEntity> callbackTasks = callbackTaskRepository.findAll();
 
-    ArgumentCaptor<CallbackTaskEntity> captor = ArgumentCaptor.forClass(CallbackTaskEntity.class);
-    verify(callbackTaskRepositoryMock, times(3)).save(captor.capture());
-
-    Assert.assertEquals(3, captor.getAllValues().size());
-    Assert.assertEquals(callbackSubscription1.getId(), captor.getAllValues().get(0).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription2.getId(), captor.getAllValues().get(1).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription3.getId(), captor.getAllValues().get(2).getCallbackSubscription().getId());
+    Assert.assertEquals(3, callbackTasks.size());
+    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
+    Assert.assertNull(callbackTasks.get(0).getNotBefore());
+    Assert.assertEquals(callbackSubscription2.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
+    Assert.assertNull(callbackTasks.get(1).getNotBefore());
+    Assert.assertEquals(callbackSubscription3.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
+    Assert.assertNull(callbackTasks.get(2).getNotBefore());
   }
 
-  private CallbackSubscriptionEntity createCallbackSubscriptionEntity(ZonedDateTime timestamp, String random) {
-    DiagnosisKeyBatchEntity diagnosisKeyBatchEntity = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batch", "link");
-    diagnosisKeyBatchEntity = diagnosisKeyBatchRepository.save(diagnosisKeyBatchEntity);
-
-    CertificateEntity certificateEntity = new CertificateEntity(null, ZonedDateTime.now(), random, "DE", CertificateEntity.CertificateType.CALLBACK, false);
-    certificateEntity = certificateRepository.save(certificateEntity);
-
-    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity(null, random, ZonedDateTime.now(), "url", "DE", certificateEntity);
+  private CallbackSubscriptionEntity createCallbackSubscriptionEntity(String random) {
+    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity(null, ZonedDateTime.now(), random, "url", "DE");
     return callbackSubscriptionRepository.save(callbackSubscriptionEntity);
   }
 
