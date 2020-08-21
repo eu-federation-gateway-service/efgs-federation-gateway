@@ -23,6 +23,7 @@ springdoc:
   swagger-ui:
     path: /swagger
 efgs:
+  resource-name: java:comp/env/jdbc/efgs
   content-negotiation:
     protobuf-version: 1.0
     json-version: 1.0
