@@ -13,21 +13,28 @@ This document is in draft status, expect major aspects to be changed.
 ## Common Aspects
 
 ### DB Setup
-The DB setup is done automatically at the first start of the application using liquibase. Due to the configration needed to be executed a high priviledged (admin) user is needed.
+The DB tables will be created  automatically at the first start of the application using liquibase. All structure changes
+and migrations will be done by Liquibase.
 
+Due to the configuration needed for the MySQL 5.6 it is necessary to execute some Statements at a high privileged (SUPER) user level.
+Therefore, the DB-user used by the application needs Super rights.
+The empty schema used by the Application needs to be created before starting the application.
 ## Local Isolated Deployment
 
 ## Deployment Test Environment
-
 Preconditions
 - EFGS Software artefact, aka "WAR File"
 - Tomcat 9 installed
 - Java 11 installed
 - (if desired) mySQL DB server with
-  - a admin user, privilidges needed:
-    - tbd.
-  - an empty schema created
+  - a admin user, privileges needed:
+    - SUPER.
+  - an empty schema named 'efgs' created
   - a JDBC connection string for the schema
+  - set the following values in the property file
+        - spring.datasource.url
+        - spring.datasource.username     
+        - spring.datasource.password
 
 - (if needed) proxy for outward communication
 - certificates for TLS
@@ -40,13 +47,11 @@ Preconditions
 ### Initial Configuration
 
 1. Upload TLS server certificates to load balancer F5 
-1. Confifure load balancer to accept client certificates
-1. Configuration Reverse Proxy Farm (Blue Coat) to accept the request and pass them
+1. Configure load balancer to accept client certificates
+1. Configuration reverse Proxy Farm (Blue Coat) to accept the request and pass them
 
 
 ## Environment Specific Configuration
-
-
 | property  | OS property name |   Content                                          | Example Value                          |
 | --------- | --------- | ------------------------------------------------ | -------------------------------------- |
 | spring.datasource.url | SPRING_DATASOURCE_URL | The jdbc connection string for the mySQL DB | jdbc:mysql://localhost:3306/fg |
@@ -63,9 +68,11 @@ Preconditions
 # Test data provisioning 
 
 # Open Issues
-- add proxy authentification
-- provide specific list of mysql roles the db user has to part
-- do we second db user
+- add proxy authentication
+- do we second db user 
+    will be needed in future not for Test
 - test national country
 -- signing certificates
 - how to handle env specific configuration
+    -will be handled by DIGIT zip format 
+    -need script to create these
