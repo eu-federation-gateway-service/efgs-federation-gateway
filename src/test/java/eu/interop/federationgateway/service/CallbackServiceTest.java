@@ -204,7 +204,8 @@ public class CallbackServiceTest {
     try {
       InetAddress.getByName("example.org");
       // check that url's hostname is resolved
-      Assert.assertTrue(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
+      Boolean a = callbackService.checkUrl("https://example.org", TestData.COUNTRY_A);
+      Assert.assertTrue(a);
     } catch (UnknownHostException ignored) {
     } // skipping positive test case if no name resolution is possible
 
