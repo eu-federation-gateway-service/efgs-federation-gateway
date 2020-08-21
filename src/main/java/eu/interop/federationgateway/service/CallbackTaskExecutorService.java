@@ -21,94 +21,183 @@
 package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.config.EfgsProperties;
-import io.netty.channel.ChannelOption;
-import io.netty.handler.timeout.ReadTimeoutHandler;
+import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
+import eu.interop.federationgateway.entity.CallbackTaskEntity;
+import eu.interop.federationgateway.entity.CertificateEntity;
+import eu.interop.federationgateway.repository.CallbackTaskRepository;
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.ProxyProvider;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class CallbackTaskExecutorService {
 
   private final EfgsProperties efgsProperties;
 
   private final WebClient webClient;
 
-  private final CallbackTaskService callbackTaskService;
+  private final CallbackService callbackService;
 
-  public CallbackTaskExecutorService(EfgsProperties efgsProperties, CallbackTaskService callbackTaskService) {
-    this.efgsProperties = efgsProperties;
-    this.callbackTaskService = callbackTaskService;
+  private final CallbackTaskRepository callbackTaskRepository;
 
-    HttpClient httpClient = HttpClient.create()
-      .tcpConfiguration(tcpClient -> {
-          // configure timeout for connection
-          tcpClient = tcpClient.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
-            efgsProperties.getCallback().getTimeout());
+  private final CertificateService certificateService;
 
-          // configure timeout for answer
-          tcpClient = tcpClient.doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(
-            efgsProperties.getCallback().getTimeout(), TimeUnit.MILLISECONDS)));
+  @Scheduled(fixedDelayString = "${efgs.callback.execute-interval}")
+  void execute() {
+    log.info("Callback processing started.");
 
-          // configure proxy
-          tcpClient = tcpClient.proxy(proxy ->
-            proxy
-              .type(ProxyProvider.Proxy.HTTP)
-              .host(efgsProperties.getCallback().getProxyHost())
-              .port(efgsProperties.getCallback().getProxyPort())
-          );
-          return tcpClient;
+    CallbackTaskEntity currentTask = getNextCallbackTask();
+
+    while (currentTask != null) {
+      setExecutionLock(currentTask);
+      CallbackSubscriptionEntity subscription = currentTask.getCallbackSubscription();
+
+      if (!callbackService.checkUrl(subscription.getUrl(), subscription.getCountry())) {
+        log.error("Security check for callback url has failed. Deleting callback subscription.\","
+            + " callbackId={}, country={}, url=\"{}",
+          subscription.getCallbackId(), subscription.getCountry(), subscription.getUrl());
+
+        callbackService.deleteCallbackSubscription(subscription);
+        currentTask = getNextCallbackTask();
+        continue;
+      }
+
+      Optional<CertificateEntity> callbackCertificateOptional = certificateService.getCallbackCertificateForUrl(
+        subscription.getUrl(), subscription.getCountry());
+
+      if (callbackCertificateOptional.isEmpty()) {
+        log.error("Could not find callback certificate.\", callbackId={}, country=\"{}",
+          subscription.getCallbackId(), subscription.getCountry());
+
+        callbackService.deleteCallbackSubscription(subscription);
+        currentTask = getNextCallbackTask();
+        continue;
+      }
+
+      boolean callbackResult = sendCallback(currentTask, callbackCertificateOptional.get());
+
+      if (callbackResult) {
+        log.info("Successfully executed callback. Deleting callback task from database\", "
+            + "retry={}, callbackId={}, country=\"{}", currentTask.getRetries(),
+          subscription.getCallbackId(), subscription.getCountry());
+
+        removeNotBeforeForNextTask(currentTask);
+        deleteTask(currentTask);
+      } else {
+        if (currentTask.getRetries() >= efgsProperties.getCallback().getMaxRetries()) {
+          log.error("Callback reached max amount of retries. Deleting callback subscription.\""
+            + ", callbackId={}, country=\"{}", subscription.getCallbackId(), subscription.getCountry());
+
+          callbackService.deleteCallbackSubscription(subscription);
+        } else {
+          currentTask.setRetries(currentTask.getRetries() + 1);
+          currentTask.setLastTry(ZonedDateTime.now(ZoneOffset.UTC));
+
+          removeExecutionLock(currentTask);
         }
-      );
+      }
 
-    this.webClient = WebClient.builder()
-      .clientConnector(new ReactorClientHttpConnector(httpClient))
-      .build();
+      currentTask = getNextCallbackTask();
+    }
+
+    log.info("Callback processing finished.");
   }
 
- /* @RequiredArgsConstructor
-  private class CallbackTask implements Runnable {
+  private void removeNotBeforeForNextTask(CallbackTaskEntity currentTask) {
+    callbackTaskRepository.findFirstByNotBeforeIs(currentTask).ifPresent(task -> {
+      log.info("Removing notBefore restriction from CallbackTask.\", callbackId={}, country=\"{}",
+        currentTask.getCallbackSubscription().getCallbackId(),
+        currentTask.getCallbackSubscription().getCountry());
 
-    private final String url;
-    private final String country;
-    private final String certHash;
-    private int retries = 0;
+      task.setNotBefore(null);
+      callbackTaskRepository.save(task);
+    });
+  }
 
-    @Override
-    public void run() {
-      //log.info("Starting callback.\", country={}, batchTag=\"{}", country, callbackEvent.getBatchTag());
+  boolean sendCallback(CallbackTaskEntity callbackTask, CertificateEntity certificate) {
+    CallbackSubscriptionEntity callbackSubscription = callbackTask.getCallbackSubscription();
 
-      webClient.get()
-        .uri(URI.create(url))
-        .header(efgsProperties.getCertAuth().getHeaderFields().getThumbprint(), certHash)
-        //.attribute("batchTag", callbackEvent.getBatchTag())
-        //.attribute("date", callbackEvent.getDate())
-        .exchange()
-        .subscribe(
-          response -> {
-            log.info("Got Response for callback\", country={}, status=\"{}", country, response.rawStatusCode());
-          },
-          exception -> {
-            log.error("Failure on Callback\", error= \"{}\", country={}", exception.getMessage(), country);
+    URI requestUri = UriComponentsBuilder.fromHttpUrl(callbackSubscription.getUrl())
+      .queryParam("batchTag", callbackTask.getBatch().getBatchName())
+      .queryParam("date", callbackTask.getBatch().getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE))
+      .build().toUri();
 
-            if (retries <= efgsProperties.getCallback().getMaxRetries()) {
-              retries++;
+    ClientResponse callbackResponse = webClient.get()
+      .uri(requestUri)
+      .header(efgsProperties.getCertAuth().getHeaderFields().getThumbprint(), certificate.getThumbprint())
+      .exchange()
+      .block();
 
-              log.info("Scheduling retry of callback\", error= \"{}\", country={}, retry=\"{}",
-                exception.getMessage(), country, retries);
+    if (callbackResponse != null && callbackResponse.statusCode().is2xxSuccessful()) {
+      log.info("Got 2xx response for callback.\", callbackId={}, country=\"{}",
+        callbackSubscription.getCallbackId(), callbackSubscription.getCountry());
 
-              //executor.schedule(this, efgsProperties.getCallback().getRetryWait(), TimeUnit.MILLISECONDS);
-            } else {
-              log.error("Reached limit for callback retries.\", country={}, retry=\"{}", country, retries);
-            }
-          });
+      return true;
+    } else {
+      if (callbackResponse != null) {
+        log.error("Got a non 2xx response for callback.\", statusCode={}, callbackId={}, country=\"{}",
+          callbackResponse.rawStatusCode(), callbackSubscription.getCallbackId(), callbackSubscription.getCountry());
+      } else {
+        log.error("Got no response for callback.\", callbackId={}, country=\"{}",
+          callbackSubscription.getCallbackId(), callbackSubscription.getCountry());
+      }
+
+      return false;
     }
-  }*/
+  }
+
+  /**
+   * Deletes a CallbackTaskEntity from database.
+   *
+   * @param task the task that has to be deleted.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  void deleteTask(CallbackTaskEntity task) {
+    log.info("Deleting CallbackTask from db.\", taskId=\"{}", task.getId());
+    callbackTaskRepository.delete(task);
+  }
+
+  /**
+   * Sets execution lock for given task so that no other instance will work on this task.
+   *
+   * @param task The task to be locked.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  void setExecutionLock(CallbackTaskEntity task) {
+    log.info("Setting execution lock for CallbackTask.\", taskId=\"{}", task.getId());
+    task.setExecutionLock(ZonedDateTime.now(ZoneOffset.UTC));
+    callbackTaskRepository.save(task);
+  }
+
+  /**
+   * Removes execution lock from task.
+   *
+   * @param task the task.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  void removeExecutionLock(CallbackTaskEntity task) {
+    log.info("Removing execution lock for CallbackTask.\", taskId=\"{}", task.getId());
+    task.setExecutionLock(null);
+    callbackTaskRepository.save(task);
+  }
+
+  private CallbackTaskEntity getNextCallbackTask() {
+    ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(
+      efgsProperties.getCallback().getRetryWait()
+    );
+
+    return callbackTaskRepository.findNextPendingCallbackTask(timestamp);
+  }
 }

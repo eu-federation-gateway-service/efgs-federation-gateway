@@ -64,6 +64,11 @@ public class CallbackService {
       .findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(subscriptionEntity, null);
   }
 
+  /**
+   * Deletes tasks in database that are assigned to given subscription.
+   *
+   * @param subscription CallbackSubscriptionEntity
+   */
   public void deleteAllTasksForSubscription(CallbackSubscriptionEntity subscription) {
     log.info("Deleting all CallbackTaskEntities for subscription.\", callbackId={}, country=\"{}",
       subscription.getCallbackId(), subscription.getCountry());
