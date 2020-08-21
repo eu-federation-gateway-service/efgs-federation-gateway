@@ -3,7 +3,7 @@ version: '3'
 services:
 
   mysql:
-    image: mysql/mysql-server:5.7
+    image: mysql/mysql-server:5.6
     container_name: efgs-federation-gateway-mysql
     ports:
       - 3306:3306
