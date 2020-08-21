@@ -84,7 +84,7 @@ public class TestData {
   public static final String CALLBACK_ID_FIRST = "firstCallback";
   public static final String CALLBACK_ID_SECOND = "secondCallback";
   public static final String CALLBACK_URL_EFGS = "https://federation-example.com";
-  public static final String CALLBACK_URL_EXAMPLE = "https://test-example.com";
+  public static final String CALLBACK_URL_EXAMPLE = "https://example.org";
   public static final int DAYS_SINCE_ONSET_OF_SYMPTOMS = 42;
   public static final String DIGEST_ALGORITHM = "SHA1withRSA";
   private static final String TEST_BATCH_TAG_DE = "uploaderBatchTag_DE";
