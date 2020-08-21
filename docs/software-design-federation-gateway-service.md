@@ -415,7 +415,7 @@ The Federation Gateway provides a notification service (callback), which informs
 
 **SecReq-035**  The Distinguished Name (DN) MUST have the Country (C) attribute, containing the [country code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements) (e.g., NL) of the National Backend. 
 
-**SecReq-036**  The Signing Certificates, which are used to verify the batch signature, MUST be self-signed.
+**SecReq-036**  The Signing Certificates, which are used to verify the batch signature, CAN be self-signed. (this subject is likely to change)
 
 **SecReq-037**  The Signing Certificates SHOULD set the Key Usage extension to "digitalSignature" (see [RFC 5280](https://tools.ietf.org/html/rfc5280#section-4.2.1.3)).
 
