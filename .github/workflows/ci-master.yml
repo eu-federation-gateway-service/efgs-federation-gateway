@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    - feat/tomcat
 
 jobs:
   build:
