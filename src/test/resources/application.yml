@@ -1,6 +1,8 @@
 server:
   port: 8090
 spring:
+  profiles:
+    active: test
   application:
     name: eu-interop-federation-gateway
   datasource:
@@ -24,16 +26,14 @@ springdoc:
     path: /swagger
 efgs:
   callback:
-    execute-interval: 300000
+    execute-interval: 1
     task-lock-timeout: 300
-    proxy-host: localhost
-    proxy-port: 1234
+    proxy-host:
+    proxy-port: 0
     timeout: 10000
     core-thread-pool-size: 0
     max-retries: 5
     retry-wait: 300000
-  jdni-properties:
-    resource-name: java:comp/env/jdbc/efgs
   content-negotiation:
     protobuf-version: 1.0
     json-version: 1.0

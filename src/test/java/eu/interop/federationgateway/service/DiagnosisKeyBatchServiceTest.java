@@ -21,6 +21,7 @@
 package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.TestData;
+import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
@@ -34,6 +35,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -59,19 +62,20 @@ public class DiagnosisKeyBatchServiceTest {
   @Autowired
   private DiagnosisKeyEntityRepository keyRepository;
   @Autowired
+  private EfgsProperties efgsProperties;
+
   private DiagnosisKeyBatchService batchService;
+
+  private CallbackService callbackServiceMock;
 
   @Before
   public void before() {
     batchRepository.deleteAll();
     keyRepository.deleteAll();
-  }
 
-//  @After
-//  public void finalize() {
-//    log.info("keyRepository: " + keyRepository.findAll());
-//    log.info("batchRepository: " + batchRepository.findAll());
-//  } 
+    callbackServiceMock = Mockito.mock(CallbackService.class);
+    batchService = new DiagnosisKeyBatchService(efgsProperties, keyRepository, batchRepository, callbackServiceMock);
+  }
 
   /**
    * Test the service scheduling and the batchDocuments method, of class DiagnosisKeyBatchService.
@@ -127,6 +131,10 @@ public class DiagnosisKeyBatchServiceTest {
     Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(1).getBatchTag());
     Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(2).getBatchTag());
     Assert.assertEquals(TestData.TEST_BATCH_TAG_2015616, keyRepository.findAll().get(3).getBatchTag());
+
+    ArgumentCaptor<DiagnosisKeyBatchEntity> captor = ArgumentCaptor.forClass(DiagnosisKeyBatchEntity.class);
+    Mockito.verify(callbackServiceMock).notifyAllCountriesForNewBatchTag(captor.capture());
+    Assert.assertEquals(formattedDate + "-2", captor.getValue().getBatchName());
   }
 
   /**

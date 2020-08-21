@@ -20,31 +20,26 @@
 
 package eu.interop.federationgateway.entity;
 
-import java.io.Serializable;
 import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * This class represents the Certificate - entity to store certificate information.
- */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "certificate")
-public class CertificateEntity implements Serializable {
-
-  private static final long serialVersionUID = 1L;
+@Table(name = "callback_task")
+public class CallbackTaskEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,27 +49,24 @@ public class CertificateEntity implements Serializable {
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
 
-  @Column(name = "thumbprint", unique = true)
-  private String thumbprint;
+  @Column(name = "execution_lock")
+  private ZonedDateTime executionLock;
 
-  @Column(name = "country")
-  private String country;
+  @Column(name = "last_try")
+  private ZonedDateTime lastTry;
 
-  @Column(name = "type")
-  @Enumerated(EnumType.STRING)
-  private CertificateType type;
+  @Column(name = "retries")
+  private int retries;
 
-  @Column(name = "revoked")
-  private Boolean revoked;
+  @OneToOne
+  @JoinColumn(name = "not_before_id")
+  private CallbackTaskEntity notBefore;
 
-  @Column(name = "host")
-  private String host;
+  @ManyToOne
+  @JoinColumn(name = "batch_id")
+  private DiagnosisKeyBatchEntity batch;
 
-  public enum CertificateType {
-    AUTHENTICATION,
-    SIGNING,
-    CALLBACK
-  }
+  @ManyToOne
+  @JoinColumn(name = "subscription_id")
+  private CallbackSubscriptionEntity callbackSubscription;
 }
-
-

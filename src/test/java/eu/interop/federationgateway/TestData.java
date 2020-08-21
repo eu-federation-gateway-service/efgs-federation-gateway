@@ -21,6 +21,7 @@
 package eu.interop.federationgateway;
 
 import com.google.protobuf.ByteString;
+import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyPayload;
@@ -80,6 +81,10 @@ public class TestData {
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
   public static final String AUTH_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
+  public static final String CALLBACK_ID_FIRST = "firstCallback";
+  public static final String CALLBACK_ID_SECOND = "secondCallback";
+  public static final String CALLBACK_URL_EFGS = "https://federation-example.com";
+  public static final String CALLBACK_URL_EXAMPLE = "https://test-example.com";
   public static final int DAYS_SINCE_ONSET_OF_SYMPTOMS = 42;
   public static final String DIGEST_ALGORITHM = "SHA1withRSA";
   private static final String TEST_BATCH_TAG_DE = "uploaderBatchTag_DE";
@@ -106,7 +111,8 @@ public class TestData {
       certHash,
       certCountry,
       CertificateEntity.CertificateType.SIGNING,
-      false
+      false,
+      null
     );
 
     Optional<CertificateEntity> certInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
@@ -134,7 +140,8 @@ public class TestData {
       AUTH_CERT_HASH,
       AUTH_CERT_COUNTRY,
       CertificateEntity.CertificateType.AUTHENTICATION,
-      false
+      false,
+      null
     );
 
     Optional<CertificateEntity> authCertInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
@@ -397,5 +404,14 @@ public class TestData {
     }
 
     return testKeys;
+  }
+
+  public static CallbackSubscriptionEntity createTestCallback(String id, String url, String country) {
+    CallbackSubscriptionEntity callbackSubscriptionEntity = new CallbackSubscriptionEntity();
+    callbackSubscriptionEntity.setCallbackId(id);
+    callbackSubscriptionEntity.setUrl(url);
+    callbackSubscriptionEntity.setCountry(country);
+    callbackSubscriptionEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+    return callbackSubscriptionEntity;
   }
 }

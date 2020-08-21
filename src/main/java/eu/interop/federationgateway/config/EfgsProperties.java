@@ -35,7 +35,20 @@ public class EfgsProperties {
   private final DownloadSettings downloadSettings = new DownloadSettings();
   private final CertAuth certAuth = new CertAuth();
   private final Batching batching = new Batching();
+  private final Callback callback = new Callback();
   private final JndiResource jndiResource = new JndiResource();
+
+  @Getter
+  @Setter
+  public static class Callback {
+    private String proxyHost;
+    private int timeout = 10000;
+    private int maxRetries = 5;
+    private int retryWait = 300000;
+    private int proxyPort;
+    private int coreThreadPoolSize = 1;
+    private int taskLockTimeout = 300;
+  }
 
   @Getter
   @Setter

@@ -22,6 +22,8 @@ package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CertificateRepository;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +36,44 @@ public class CertificateService {
 
   private final CertificateRepository certificateRepository;
 
+  /**
+   * Method to query the db for a certificate.
+   *
+   * @param thumbprint RSA-256 thumbprint of certificate.
+   * @param country    country of certificate.
+   * @param type       type of certificate.
+   * @return Optional holding the certificate if found.
+   */
   public Optional<CertificateEntity> getCertificate(
     String thumbprint, String country, CertificateEntity.CertificateType type) {
     return certificateRepository.getFirstByThumbprintAndCountryAndType(thumbprint, country, type);
+  }
+
+  /**
+   * Queries the database for a callback certificate for host of given url.
+   *
+   * @param url     The url to search a certificate for.
+   * @param country the country of the certificate.
+   * @return Optional holding the certificate if found.
+   */
+  public Optional<CertificateEntity> getCallbackCertificateForUrl(String url, String country) {
+    try {
+      return getCallbackCertificateForHost(new URL(url).getHost(), country);
+    } catch (MalformedURLException ignored) {
+      log.error("Could not parse url.\", url=\"{}", url);
+      return Optional.empty();
+    }
+  }
+
+  /**
+   * Queries the database for a callback certificate for given host.
+   *
+   * @param host    The host to search a certificate for.
+   * @param country the country of the certificate.
+   * @return Optional holding the certificate if found.
+   */
+  public Optional<CertificateEntity> getCallbackCertificateForHost(String host, String country) {
+    return certificateRepository.getFirstByHostIsAndCountryIsAndTypeIs(
+      host, country, CertificateEntity.CertificateType.CALLBACK);
   }
 }

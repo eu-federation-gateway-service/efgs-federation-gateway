@@ -24,25 +24,25 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This class represents the Certificate - entity to store certificate information.
+ * This class represents the Callback Subscription entity to store callback information.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "certificate")
-public class CertificateEntity implements Serializable {
+@Table(name = "callback_subscription")
+public class CallbackSubscriptionEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -54,27 +54,15 @@ public class CertificateEntity implements Serializable {
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
 
-  @Column(name = "thumbprint", unique = true)
-  private String thumbprint;
+  @Column(name = "callback_id")
+  private String callbackId;
+
+  @Column(name = "url")
+  private String url;
 
   @Column(name = "country")
   private String country;
 
-  @Column(name = "type")
-  @Enumerated(EnumType.STRING)
-  private CertificateType type;
-
-  @Column(name = "revoked")
-  private Boolean revoked;
-
-  @Column(name = "host")
-  private String host;
-
-  public enum CertificateType {
-    AUTHENTICATION,
-    SIGNING,
-    CALLBACK
-  }
 }
 
 

@@ -1,0 +1,67 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-callback-entity-table
+      author: f11h
+      changes:
+        - createTable:
+            tableName: callback_task
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    unique: true
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: created_at
+                  type: datetime(2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: execution_lock
+                  type: datetime(2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: last_try
+                  type: datetime(2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: retries
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: not_before_id
+                  type: bigint
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk_callbacktask_notbefore
+                    references: callback_task(id)
+              - column:
+                  name: batch_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_callbacktask_batch
+                    references: diagnosiskeybatch(id)
+              - column:
+                  name: subscription_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_callbacktask_callbacksubscription
+                    references: callback_subscription(id)
+  - changeSet:
+      id: create-callback-task-entity-table-increment
+      author: f11h
+      changes:
+        - addAutoIncrement:
+            tableName: callback_task
+            columnName: id
+            columnDataType: bigint
+            startWith: 1
+            incrementBy: 1
