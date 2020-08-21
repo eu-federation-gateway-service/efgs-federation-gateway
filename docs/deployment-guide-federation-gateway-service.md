@@ -12,6 +12,8 @@ This document is in draft status, expect major aspects to be changed.
 
 ## Common Aspects
 
+environment specific configuration is stored in a property file
+
 ### DB Setup
 The DB tables will be created  automatically at the first start of the application using liquibase. All structure changes
 and migrations will be done by Liquibase.
@@ -24,18 +26,16 @@ The empty schema used by the Application needs to be created before starting the
 ## Deployment Test Environment
 Preconditions
 - EFGS Software artefact, aka "WAR File"
+
 - Tomcat 9 installed
+  - DB connection is managed by tomcat and accessed via JNDI
+    - name of the connection resource is "jdbc/efgs"
+
 - Java 11 installed
 - (if desired) mySQL DB server with
   - a admin user, privileges needed:
     - SUPER.
   - an empty schema named 'efgs' created
-  - a JDBC connection string for the schema
-  - set the following values in the property file
-        - spring.datasource.url
-        - spring.datasource.username     
-        - spring.datasource.password
-
 - (if needed) proxy for outward communication
 - certificates for TLS
 - registered domain (aka DNS entry)
