@@ -68,6 +68,7 @@ public class CallbackServiceTest {
     callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepository, certificateServiceMock);
   }
 
+  @Before
   @After
   public void teardown() {
     callbackTaskRepository.deleteAll();

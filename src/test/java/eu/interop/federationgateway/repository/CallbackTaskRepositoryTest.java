@@ -27,6 +27,7 @@ import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +53,7 @@ public class CallbackTaskRepositoryTest {
   CertificateRepository certificateRepository;
 
   @Before
+  @After
   public void setup() {
 
     repository.deleteAll();

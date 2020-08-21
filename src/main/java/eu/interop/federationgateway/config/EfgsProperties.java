@@ -36,7 +36,6 @@ public class EfgsProperties {
   private final CertAuth certAuth = new CertAuth();
   private final Batching batching = new Batching();
   private final Callback callback = new Callback();
-  private final JndiResource jndiResource = new JndiResource();
 
   @Getter
   @Setter
@@ -74,13 +73,6 @@ public class EfgsProperties {
   public static class DownloadSettings {
     private int maxAgeInDays;
   }
-
-  @Getter
-  @Setter
-  public static class JndiResource {
-    private String resourceName;
-  }
-
 
   @Getter
   @Setter
