@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    include:
+      - h2
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
