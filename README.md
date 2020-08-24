@@ -42,6 +42,18 @@ Please check, whether following prerequisites are installed on your machine:
 - [Open JDK 11](https://openjdk.java.net) or a similar JDK 11 compatible VM  
 - [Maven](https://maven.apache.org)
 
+#### Build Docker Image
+This project also supports building a Docker image for local testing (Docker image should not be used for productive environments).
+
+To build the Docker image just enable the maven profile ```docker``` and run ```mvn clean install```.
+A directory ```docker``` will be created in ```target``` directory.
+Now open a shell with working directory within the created directory and execute
+```shell script
+docker-compose up --build
+```
+
+The EFGS Docker image will be built. Also a MySQL database will be created. After that both start up and EFGS service is available on localhost port 8080.
+
 #### API documentation  
 Along with the application there comes a [swagger2](https://swagger.io) API documentation, which you can access in your web browser when the efgs-gateway-service applications runs:
 

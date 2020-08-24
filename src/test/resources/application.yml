@@ -1,21 +1,13 @@
 server:
-  port: 8090
+  port: ${SERVER_PORT:8090}
 spring:
   profiles:
-    active: test
+    active:
+      - test
+    include:
+      - dev
   application:
     name: eu-interop-federation-gateway
-  datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:federation;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;
-    username: sa
-    password: ''
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: validate
-      connection:
-        isolation: 8
   liquibase:
     enabled: true
     change-log: classpath:db/changelog.yml

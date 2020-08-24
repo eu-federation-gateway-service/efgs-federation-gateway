@@ -1,0 +1,6 @@
+GRANT SUPER ON *.* TO 'fg_adm'@'%';
+
+CREATE USER 'fg_user'@'%' IDENTIFIED BY 'pass';
+GRANT INSERT, DELETE, SELECT, UPDATE ON fg.* TO 'fg_user'@'%';
+
+FLUSH PRIVILEGES;

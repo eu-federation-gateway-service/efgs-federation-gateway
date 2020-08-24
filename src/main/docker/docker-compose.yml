@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql/mysql-server:5.6
+    container_name: efgs-federation-gateway-mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=fg
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_USER=fg_adm
+      - MYSQL_PASSWORD=admin
+    volumes:
+      - ./db/:/docker-entrypoint-initdb.d/
+    networks:
+      persistence:
+        aliases:
+          - mysql
+
+  backend:
+    build: .
+    image: efgs-federation-gateway/backend
+    container_name: efgs-federation-gateway-backend
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=mysql
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/fg
+      - SPRING_DATASOURCE_USERNAME=fg_user
+      - SPRING_DATASOURCE_PASSWORD=pass
+      - SPRING_LIQUIBASE_USER=fg_adm
+      - SPRING_LIQUIBASE_PASSWORD=admin
+    depends_on:
+      - mysql
+    networks:
+      backend:
+      persistence:
+
+networks:
+  persistence:
+  backend:
