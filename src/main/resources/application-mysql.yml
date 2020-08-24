@@ -4,11 +4,6 @@ spring:
     username: sa
     password: sa
     driver-class-name: com.mysql.cj.jdbc.Driver
+    jndi-name: false
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-efgs:
-  upload-settings:
-    maximum-upload-batch-size: 3
-  batching:
-    timeinterval: 300000
-    doclimit: 5
