@@ -74,7 +74,6 @@ public class EfgsProperties {
     private int maxAgeInDays;
   }
 
-
   @Getter
   @Setter
   public static class CertAuth {
