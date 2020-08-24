@@ -117,7 +117,29 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Batch Process failed, found different format versions in upload batch | ERROR | Stop batching process, while try to batch {} keys, but the keys have different format versions | format | 
 | Batch Process finished | INFO | Batch process finished | batchCount | 
 | **Callback Interface**
-| tbd
+| Deleting all created CallbackTasks for a subscription. This will be done if a CallbackSubscription gets invalid. | INFO | Deleting all CallbackTaskEntities for subscription. | callbackId, country |
+| All CallbackSubscriptions are requested | INFO | Requested all callback subscriptions. | n/a |
+| Saving a new CallbackSubscription to database. | INFO | Start saving callback subscription. | n/a |
+| Callback URL verification: URL not parsable | ERROR | Could not parse URL | url |
+| Callback URL verification: URL doesn't use https | ERROR | Callback URL must use https | url |
+| Callback URL verification: URL contains query parameters | ERROR | URL must not contain any parameters | url |
+| Callback URL verification: No CallbackCertificate for URL's host | ERROR | Could not find a Callback Certificate for host | host |
+| Callback URL verification: CallbackCertificate for URL's host is revoked | ERROR | Found Callback Certificate, but it is revoked | thumbprint |
+| Callback URL verification: Address of callback host cannot resolved via system DNS | ERROR | Could not resolve host for callback | url, hostname |
+| Callback URL verification: Address of callback host is within a private address range | ERROR | IP Address of callback host is from private IP range. | url, hostname |
+| CallbackTask Cleanup: Start deleting abandoned TaskLocks | INFO | Deleting task locks of abandoned tasks | n/a |
+| CallbackTask Cleanup: Finished deleting abandoned TaskLocks | INFO | Removing of task locks of abandoned tasks finished. | taskCount |
+| Callback Processing: Starting executor | INFO | Callback processing started. | n/a |
+| Callback Processing: Preflight security check of URL has failed. CallbackSubscription will be deleted. | ERROR | Security check for callback url has failed. Deleting callback subscription. | callbackId, country, url |
+| Callback Processing: Could not find a certificate for callback url | ERROR | Could not find callback certificate. | callbackId, country |
+| Callback Processing: Callback request was successful | INFO | Successfully executed callback. Deleting callback task from database | retry, callbackId, country |
+| Callback Processing: CallbackTask reached max amount of retries. CallbackSubscription will be deleted. | ERROR | Callback reached max amount of retries. Deleting callback subscription. | callbackId, country |
+| Callback Processing: Got a response from callback url with positive status code (2xx) | INFO | Got 2xx response for callback. | callbackId, country |
+| Callback Processing: Got a response from callback url with negative status code | ERROR | Got a non 2xx response for callback. | callbackId, country, statusCode |
+| Callback Processing: Got no response from callback url | ERROR | Got no response for callback. | callbackId, country |
+| Callback Processing: Setting execution lock for CallbackTask | INFO | Setting execution lock for CallbackTask. | taskId |
+| Callback Processing: Removing execution lock for CallbackTask | INFO | Removing execution lock for CallbackTask. | taskId |
+| Callback Processing: Executor loop has finished. | INFO | Callback processing finished. | n/a |
 | **Content Negotiation**
 | Content Serialization failed, Accept header is null | ERROR | Accept must be set | n/a |
 | Content Serialization failed, unknown MIME Type in Accept Header | ERROR | Accepted Content-Type is not compatible | requestedMediaType |
@@ -128,8 +150,6 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Content Deserialization failed, version parameter in Content-Type Header is missing | ERROR | Version parameter of Accepted Content-Type is required | requestedMediaType |
 | Content Deserialization failed, incompatible version parameter | ERROR | Serialization: Protocol version is not compatible | requestedVersion | 
  
-
-
 # Integration into Data Center Infrastructure
 
 ## Load Balancer Integration
