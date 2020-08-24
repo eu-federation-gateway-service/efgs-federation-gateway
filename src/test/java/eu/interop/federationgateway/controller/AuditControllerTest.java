@@ -40,6 +40,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -105,7 +106,7 @@ public class AuditControllerTest {
 
   @Test
   public void testGetAuditInformation() throws Exception {
-    LocalDateTime currentDateTime = LocalDateTime.now(ZoneOffset.UTC);
+    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC);
     String formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     String batchTag = formattedDate + "-1";
 

@@ -18,27 +18,16 @@
  * ---license-end
  */
 
-package eu.interop.federationgateway.model;
+package eu.interop.federationgateway.repository;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
-@Schema(
-  description = "Entity representation of a callback."
-)
-public class Callback {
+public interface CallbackSubscriptionRepository extends JpaRepository<CallbackSubscriptionEntity, Long> {
 
-  @Schema(example = "12345")
-  private String callbackId;
+  Optional<CallbackSubscriptionEntity> findByCallbackIdAndCountryIs(String callbackId, String country);
 
-  @Schema(example = "https://example42.com")
-  private String url;
-
+  List<CallbackSubscriptionEntity> findAllByCountryIs(String country);
 }

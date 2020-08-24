@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-certificate-entity-table
-      author: f11h
+      id: create-callback-subscription-entity-table
+      author: mlaue-tech
       changes:
         - createTable:
-            tableName: certificate
+            tableName: callback_subscription
             columns:
               - column:
                   name: id
@@ -20,35 +20,26 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: thumbprint
-                  type: varchar(64)
+                  name: callback_id
+                  type: varchar(32)
                   constraints:
-                    unique: true
+                    nullable: false
+              - column:
+                  name: url
+                  type: varchar(256)
+                  constraints:
                     nullable: false
               - column:
                   name: country
                   type: varchar(2)
                   constraints:
                     nullable: false
-              - column:
-                  name: type
-                  type: varchar(14)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: revoked
-                  type: boolean
-              - column:
-                  name: host
-                  type: varchar(256)
-                  constraints:
-                    nullable: true
   - changeSet:
-      id: create-certificate-entity-table-increment
+      id: create-callback-subscription-entity-table-increment
       author: f11h
       changes:
         - addAutoIncrement:
-            tableName: certificate
+            tableName: callback_subscription
             columnName: id
             columnDataType: bigint
             startWith: 1

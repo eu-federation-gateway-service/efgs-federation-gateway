@@ -53,6 +53,7 @@ public class DiagnosisKeyBatchService {
   private final EfgsProperties properties;
   private final DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
   private final DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
+  private final CallbackService callbackService;
 
   /**
    * scheduled service - bundles uploaded documents into batches.
@@ -75,7 +76,7 @@ public class DiagnosisKeyBatchService {
       // find the last batch entry
       Optional<DiagnosisKeyBatchEntity> lastEntry = diagnosisKeyBatchRepository.findTopByOrderByCreatedAtDesc();
       // save batches
-      String newBatchName = saveBatches(lastEntry);
+      DiagnosisKeyBatchEntity newBatch = saveBatches(lastEntry);
 
       List<DiagnosisKeyEntity> diagnosisKeyCollector = new ArrayList<>();
       while (true) {
@@ -103,11 +104,11 @@ public class DiagnosisKeyBatchService {
         }
 
         // update keys
-        updateDiagnosisKeys(diagnosisKeyEntitys, newBatchName);
+        updateDiagnosisKeys(diagnosisKeyEntitys, newBatch);
       }
       log.info("Batch process finished\", batchCount=\"{}", diagnosisKeyCollector.size());
+      callbackService.notifyAllCountriesForNewBatchTag(newBatch);
     }
-    //TODO integrate into call back use case
   }
 
   @Recover
@@ -149,9 +150,7 @@ public class DiagnosisKeyBatchService {
 
     if (diagnosisKeyEntitys.stream()
       .map(DiagnosisKeyEntity::getFormat)
-      .filter(Predicate.not(diagnosisKey.get().getFormat()::equals))
-      .findAny()
-      .isPresent()) {
+      .anyMatch(Predicate.not(diagnosisKey.get().getFormat()::equals))) {
       log.error("Stop batching process, while try to batch {} keys, but the keys have different format versions\""
         + ", format=\"{}", diagnosisKeyEntitys.size(), diagnosisKey.get().getFormat());
       return true;
@@ -159,14 +158,14 @@ public class DiagnosisKeyBatchService {
     return false;
   }
 
-  private void updateDiagnosisKeys(List<DiagnosisKeyEntity> diagnosisKeyEntitys, String newBatchName) {
-    diagnosisKeyEntitys.forEach(key -> key.setBatchTag(newBatchName));
+  private void updateDiagnosisKeys(List<DiagnosisKeyEntity> diagnosisKeyEntitys, DiagnosisKeyBatchEntity newBatch) {
+    diagnosisKeyEntitys.forEach(key -> key.setBatchTag(newBatch.getBatchName()));
     diagnosisKeyEntityRepository.saveAll(diagnosisKeyEntitys);
     log.info("Batch created\", batchTag=\"{}\", diagnosisKeysCount=\"{}",
-      newBatchName, diagnosisKeyEntitys.size());
+      newBatch.getBatchName(), diagnosisKeyEntitys.size());
   }
 
-  private String saveBatches(Optional<DiagnosisKeyBatchEntity> lastEntry) {
+  private DiagnosisKeyBatchEntity saveBatches(Optional<DiagnosisKeyBatchEntity> lastEntry) {
     ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC);
     String formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     var batchEntity = new DiagnosisKeyBatchEntity();
@@ -184,7 +183,7 @@ public class DiagnosisKeyBatchService {
     batchEntity.setCreatedAt(currentDateTime);
     diagnosisKeyBatchRepository.save(batchEntity);
     log.info("successfully save the new diagnosis key batch entity");
-    return batchEntity.getBatchName();
+    return batchEntity;
   }
 
   private int getSequenceFromPreviousBatchAndCountOn(Optional<DiagnosisKeyBatchEntity> lastEntry)

@@ -31,7 +31,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * The Application class.
  */
 @SpringBootApplication
-@EnableScheduling
 @EnableRetry
 @EnableConfigurationProperties(EfgsProperties.class)
 public class FederationGatewayApplication {
