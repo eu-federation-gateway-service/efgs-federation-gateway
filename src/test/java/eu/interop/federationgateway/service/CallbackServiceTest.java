@@ -194,19 +194,19 @@ public class CallbackServiceTest {
     // check that url is not a local target
     Assert.assertFalse(callbackService.checkUrl("https://fd9e:35ga:352e:1212::1", TestData.COUNTRY_A));
 
-    Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
-      Optional.empty()
-    );
-
-    // check that a certificate is present
-    Assert.assertFalse(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
-
     try {
       InetAddress.getByName("example.org");
       // check that url's hostname is resolved
       Assert.assertTrue(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
     } catch (UnknownHostException ignored) {
     } // skipping positive test case if no name resolution is possible
+
+    Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
+      Optional.empty()
+    );
+
+    // check that a certificate is present
+    Assert.assertFalse(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
 
     Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
       Optional.of(new CertificateEntity(42L, ZonedDateTime.now(), "thumb",
