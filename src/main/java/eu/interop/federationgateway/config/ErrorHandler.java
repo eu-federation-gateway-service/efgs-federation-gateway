@@ -38,6 +38,12 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RequiredArgsConstructor
 public class ErrorHandler extends ResponseEntityExceptionHandler {
 
+  /**
+   * Error Handler for DiagnosisKeyInsertException.
+   *
+   * @param e the thrown exception
+   * @return A ResponseEntity with formatted information which keys were uploaded successfully
+   */
   @ExceptionHandler(DiagnosisKeyEntityService.DiagnosisKeyInsertException.class)
   public ResponseEntity<Object> handleException(
     DiagnosisKeyEntityService.DiagnosisKeyInsertException e
