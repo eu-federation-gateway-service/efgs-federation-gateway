@@ -45,7 +45,7 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
   List<DiagnosisKeyEntity> findByBatchTagIsNullAndUploader_BatchTag(String batchTag);
 
   @Query("SELECT new eu.interop.federationgateway.model.AuditEntry("
-    + "uploader.country, createdAt, uploader.thumbprint, COUNT(*), uploader.batchSignature) "
+    + "min(uploader.country), min(createdAt), min(uploader.thumbprint), COUNT(*), min(uploader.batchSignature))"
     + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag GROUP BY uploader.batchTag")
   List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag);
 
