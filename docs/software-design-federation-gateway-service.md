@@ -490,7 +490,7 @@ Tomcat hosting service – tomcat instances that are controlled together. Deploy
 - Meta Space Size (MB): dynamic/default (currently we are not able to specify this)
 - Direct Memory Size (MB): default (currently we are not able to specify this)
 
-MySQL – Supported version: 5.6
+MySQL – Supported version: 5.7
 - Required information to create the instance
 - Character Set : utf8|latin1|utf16|utf32|other>: utf8
 - Estimated DB Size: 10 GB
