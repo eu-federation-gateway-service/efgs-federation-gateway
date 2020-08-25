@@ -310,6 +310,8 @@ sorted by KeyData (see method **sortBatchByKeyData** in [BatchSignatureUtils.jav
 
 ### 3.3. Certificate Verification during OnBoarding
 
+Note that the onboarding process is *not* part of the EFGS Gateway (software). It is included here to inform the future operators of the EFGS and the operators of the member-states of key technical steps. The entire onboarding process will be defined separately as part of the overall e-Health network process.
+
 **SecReq-023**  The Federation Gateway (FG) upload endpoint MUST validate the Signing Certificate, which is sent in the PKCS#7 object (see SecReq-017), based on the requirements specified below. The file format is PKCS#12 (pfx) with a password. The password is communicated by to the FG by the Designated Country Technical Contact (DCTC) during a verification call where the FG contacts the DCTC to verify the authenticity of the upload and get the password.
 
 **SecReq-###** The Relative Distinguished Name(RDN) 'C' in the Distinguished Name (DN) must match the country of the the Country.
