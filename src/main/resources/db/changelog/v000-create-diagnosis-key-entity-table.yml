@@ -67,7 +67,7 @@ databaseChangeLog:
                   type: varchar(64)
               - column:
                   name: uploader_information_batch_signature
-                  type: varchar(2080)
+                  type: varchar(4000)
               - column:
                   name: uploader_information_thumbprint
                   type: varchar(64)
