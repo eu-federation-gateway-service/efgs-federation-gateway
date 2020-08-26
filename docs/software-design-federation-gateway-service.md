@@ -63,8 +63,8 @@ All of these log messages are consisting of mandatory and additional fields. The
 | level      | Log Level                                        | INFO                                   |
 | hostname   | The hostname of the current node                 | srv01                                  |
 | pid        | Process ID                                       | 44929                                  |
-| trace      | Correlation ID for tracing                       | d058309145b9f7a3                       |
-| span       | Span ID for tracing                              | d058309145b9f7a3                       |
+| traceId    | Correlation ID for tracing                       | d058309145b9f7a3                       |
+| spanId     | Span ID for tracing                              | d058309145b9f7a3                       |
 | thread     | ID of the thread                                 | main                                   |
 | class      | The class from which the message is comming from | e.i.f.service.DiagnosisKeyBatchService |
 | message    | Information about what has happened              | started document batching process      |
@@ -72,7 +72,7 @@ All of these log messages are consisting of mandatory and additional fields. The
 
 Example:
 ```
-timestamp="2020-08-04 17:19:46.038", level=INFO, pid=44929, trace=e7d394f3b0431c68, span=e7d394f3b0431c68, thread=scheduling-1, class=e.i.f.service.DiagnosisKeyBatchService, message="started document batching process", exception=""
+timestamp="2020-08-04 17:19:46.038", level=INFO, pid=44929, traceId=e7d394f3b0431c68, spanId=e7d394f3b0431c68, thread=scheduling-1, class=e.i.f.service.DiagnosisKeyBatchService, message="started document batching process", exception=""
 ```
 
 *exception field will only be written to log file. In console stack traces will be printed directly.
