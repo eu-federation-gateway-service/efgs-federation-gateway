@@ -1,0 +1,41 @@
+<assembly
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+  <id>zip</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/resources/db/changelog</directory>
+      <outputDirectory>classpathFILE</outputDirectory>
+      <excludes>
+        <exclude>*.*</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/db/changelog</directory>
+      <outputDirectory>classpathPOST</outputDirectory>
+      <excludes>
+        <exclude>*.*</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <directory>src/main/resources/db/changelog</directory>
+      <outputDirectory>classpathPRE</outputDirectory>
+      <excludes>
+        <exclude>*.*</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>${project.basedir}/target/${artifactId}-${version}.${packaging}</source>
+      <outputDirectory>webapps</outputDirectory>
+      <destName>efgs.war</destName>
+    </file>
+  </files>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+</assembly>
