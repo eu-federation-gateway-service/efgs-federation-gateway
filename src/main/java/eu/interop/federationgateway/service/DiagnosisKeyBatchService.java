@@ -222,4 +222,14 @@ public class DiagnosisKeyBatchService {
     return queryResult.map(DiagnosisKeyBatchEntity::getBatchName).orElse(null);
   }
 
+  /**
+   * Deletes all DiagnosisKeyBatches which are older then timestamp.
+   *
+   * @param timestamp timestamp to check
+   * @return the number of deleted rows.
+   */
+  public int deleteAllBefore(ZonedDateTime timestamp) {
+    return diagnosisKeyBatchRepository.deleteByCreatedAtBefore(timestamp);
+  }
+
 }

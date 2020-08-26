@@ -24,13 +24,15 @@ import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface DiagnosisKeyBatchRepository extends JpaRepository<DiagnosisKeyBatchEntity, Long> {
 
-  void deleteByCreatedAtBefore(ZonedDateTime before);
+  @Modifying
+  int deleteByCreatedAtBefore(ZonedDateTime before);
 
   Optional<DiagnosisKeyBatchEntity> findByBatchName(String name);
 

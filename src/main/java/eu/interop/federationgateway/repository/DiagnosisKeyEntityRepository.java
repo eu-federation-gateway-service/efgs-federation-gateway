@@ -26,6 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Isolation;
@@ -34,7 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(isolation = Isolation.SERIALIZABLE)
 public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKeyEntity, Long> {
 
-  void deleteByCreatedAtBefore(ZonedDateTime before);
+  @Modifying
+  int deleteByCreatedAtBefore(ZonedDateTime before);
 
   List<DiagnosisKeyEntity> findByPayloadVisitedCountriesIsContaining(String country);
 
