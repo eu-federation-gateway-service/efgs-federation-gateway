@@ -31,6 +31,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,11 +95,12 @@ public class AuditController {
     List<AuditEntry> auditResponse
       = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTag(batchTag);
 
+    MDC.put("batchTag", batchTag);
     if (auditResponse.isEmpty()) {
-      log.error("BatchTag Could not found\", batchTag=\"{}", batchTag);
+      log.error("BatchTag Could not found");
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Batchtag not found");
     }
-    log.info("Requested Audit Information\", batchTag=\"{}", batchTag);
+    log.info("Requested Audit Information");
     return new ResponseEntity<>(auditResponse, HttpStatus.OK);
   }
 

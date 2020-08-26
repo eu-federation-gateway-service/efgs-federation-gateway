@@ -40,6 +40,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -142,24 +143,28 @@ public class UploadController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT) String uploaderCertThumbprint
   ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
     int maximumUploadBatchSize = properties.getUploadSettings().getMaximumUploadBatchSize();
+
+    MDC.put("batchTag", batchTag);
+    MDC.put("numKeys", String.valueOf(body.getKeysCount()));
+    MDC.put("maxKeys", String.valueOf(maximumUploadBatchSize));
+
     if (body.getKeysCount() > maximumUploadBatchSize) {
-      log.error("too many diagnosis keys\", batchtag=\"{}\", numKeys=\"{}\", maxKeys=\"{}",
-        batchTag, body.getKeysCount(), maximumUploadBatchSize);
+      log.error("too many diagnosis keys");
       throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE, "Too many diagnosis keys");
     }
 
     if (diagnosisKeyEntityService.uploadBatchTagExists(batchTag)) {
-      log.error("batchTag already exists\", batchtag=\"{}\", numKeys=\"{}", batchTag, body.getKeysCount());
+      log.error("batchTag already exists");
       throw new ResponseStatusException(HttpStatus.CONFLICT, "BatchTag already exists.");
     }
 
     if (!signatureVerifier.verify(body, batchSignature)) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid signature");
     }
-    log.info("verified batch signature\", batchtag=\"{}\", numKeys=\"{}", batchTag, body.getKeysCount());
+    log.info("verified batch signature");
 
     if (body.getKeysList().stream().anyMatch(diagnosisKey -> !diagnosisKey.getOrigin().equals(uploaderCountry))) {
-      log.error("invalid uploader country\", batchtag=\"{}\", numKeys=\"{}", batchTag, body.getKeysCount());
+      log.error("invalid uploader country");
       throw new ResponseStatusException(
         HttpStatus.BAD_REQUEST, "One or more keys are not originated from uploader country");
     }
@@ -174,7 +179,7 @@ public class UploadController {
     );
 
     diagnosisKeyEntityService.saveDiagnosisKeyEntities(entities);
-    log.info("successfull batch upload\", batchtag=\"{}\", numKeys=\"{}", batchTag, body.getKeysCount());
+    log.info("successfull batch upload");
 
     return ResponseEntity
       .status(HttpStatus.CREATED)
