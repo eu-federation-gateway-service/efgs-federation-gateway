@@ -10,19 +10,23 @@
     </filter>
     <encoder>
       <pattern>
-        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, trace=%X{traceId:-}, span=%X{spanId:-}, thread=%thread, class=%logger{40}, message="%m"%n
+        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, trace=%X{traceId:-}, span=%X{spanId:-}, thread=%thread, class=%logger{40}, message="%m"\n
       </pattern>
       <charset>utf8</charset>
     </encoder>
   </appender>
 
-  <appender name="file" class="ch.qos.logback.core.FileAppender">
-    <file>efgs.log</file>
+  <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${catalina.base:-.}/logs/efgs.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${catalina.base:-.}/logs/efgs-%d{yyyy-MM-dd}.log</fileNamePattern>
+      <maxHistory>90</maxHistory>
+    </rollingPolicy>
     <append>true</append>
     <immediateFlush>true</immediateFlush>
     <encoder>
       <pattern>
-        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, trace=%X{traceId:-}, span=%X{spanId:-}, thread=%thread, class=%logger{40}, message="%m"%n
+        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, trace=%X{traceId:-}, span=%X{spanId:-}, thread=%thread, class=%logger{40}, message="%replace(%m){'[\r\n]+', ', '}", exception="%replace(%ex){'[\r\n]+', ', '}"\n%nopex
       </pattern>
       <charset>utf8</charset>
     </encoder>
