@@ -57,22 +57,25 @@ All of these log messages are consisting of mandatory and additional fields. The
  Multiple log messages are seperated by a new line.
  The following mandatory fields will be sent with each log message:
 
-| Field     | Content                                          | Example Value                          |
-| --------- | ------------------------------------------------ | -------------------------------------- |
-| timestamp | ISO-8601 formatted timestamp (always UTC)        | 2020-08-04T16:44:45.999Z                |
-| level     | Log Level                                        | INFO                                   |
-| hostname  | The hostname of the current node                 | srv01                                  |
-| pid       | Process ID                                       | 44929                                  |
-| trace     | Correlation ID for tracing                       | d058309145b9f7a3                       |
-| span      | Span ID for tracing                              | d058309145b9f7a3                       |
-| thread    | ID of the thread                                 | main                                   |
-| class     | The class from which the message is comming from | e.i.f.service.DiagnosisKeyBatchService |
-| message   | Information about what has happened              | started document batching process      |
+| Field      | Content                                          | Example Value                          |
+| ---------- | ------------------------------------------------ | -------------------------------------- |
+| timestamp  | ISO-8601 formatted timestamp (always UTC)        | 2020-08-04T16:44:45.999Z                |
+| level      | Log Level                                        | INFO                                   |
+| hostname   | The hostname of the current node                 | srv01                                  |
+| pid        | Process ID                                       | 44929                                  |
+| trace      | Correlation ID for tracing                       | d058309145b9f7a3                       |
+| span       | Span ID for tracing                              | d058309145b9f7a3                       |
+| thread     | ID of the thread                                 | main                                   |
+| class      | The class from which the message is comming from | e.i.f.service.DiagnosisKeyBatchService |
+| message    | Information about what has happened              | started document batching process      |
+| exception* | Stack Trace, if available                        | org.springframew...                    |
 
 Example:
 ```
-timestamp="2020-08-04 17:19:46.038", level=INFO, pid=44929, trace=e7d394f3b0431c68, span=e7d394f3b0431c68, thread=scheduling-1, class=e.i.f.service.DiagnosisKeyBatchService, message="started document batching process"
+timestamp="2020-08-04 17:19:46.038", level=INFO, pid=44929, trace=e7d394f3b0431c68, span=e7d394f3b0431c68, thread=scheduling-1, class=e.i.f.service.DiagnosisKeyBatchService, message="started document batching process", exception=""
 ```
+
+*exception field will only be written to log file. In console stack traces will be printed directly.
 
 These key-value-pairs can be followed by additional attributes. The additional attributes are individual for each log message.
 
