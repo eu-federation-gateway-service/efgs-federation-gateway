@@ -45,9 +45,15 @@ Please check, whether following prerequisites are installed on your machine:
 #### Build Docker Image
 This project also supports building a Docker image for local testing (Docker image should not be used for productive environments).
 
-To build the Docker image just enable the maven profile ```docker``` and run ```mvn clean install```.
+To build the Docker image enable the maven profile ```docker``` and build the project:
+
+```shell script
+mvn clean install -P docker
+```
+
 A directory ```docker``` will be created in ```target``` directory.
 Now open a shell with working directory within the created directory and execute
+
 ```shell script
 docker-compose up --build
 ```
