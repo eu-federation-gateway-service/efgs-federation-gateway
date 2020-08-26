@@ -45,8 +45,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -119,14 +119,11 @@ public class CallbackAdminController {
         required = true,
         example = "https://example.org")
     })
-  @PutMapping(
-    value = CALLBACK_CHANGE_ROUTE,
-    consumes = MediaType.TEXT_PLAIN_VALUE
-  )
+  @PutMapping(value = CALLBACK_CHANGE_ROUTE)
   @CertificateAuthentificationRequired
   public ResponseEntity<?> putOrUpdateCallbackSubscription(
     @PathVariable("id") String callbackId,
-    @RequestHeader(name = "url") String url,
+    @RequestParam("url") String url,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {
     if (!callbackService.checkUrl(url, country)) {
@@ -163,9 +160,7 @@ public class CallbackAdminController {
       required = true,
       description = "callbackId of the entry")
   )
-  @DeleteMapping(value = CALLBACK_CHANGE_ROUTE,
-    consumes = MediaType.TEXT_PLAIN_VALUE
-  )
+  @DeleteMapping(value = CALLBACK_CHANGE_ROUTE)
   @CertificateAuthentificationRequired
   public ResponseEntity<?> deleteCallbackSubscription(
     @PathVariable("id") String callbackId,

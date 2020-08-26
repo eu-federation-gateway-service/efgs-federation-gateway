@@ -139,8 +139,7 @@ public class CallbackAdminControllerTest {
     String firstId = TestData.CALLBACK_ID_FIRST;
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", TestData.CALLBACK_URL_EXAMPLE)
+      .param("url", TestData.CALLBACK_URL_EXAMPLE)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isOk());
@@ -159,8 +158,7 @@ public class CallbackAdminControllerTest {
     String firstId = TestData.CALLBACK_ID_FIRST;
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", "http://google.com")
+      .param("url", "http://google.com")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());
@@ -168,8 +166,7 @@ public class CallbackAdminControllerTest {
     Assert.assertEquals(0, callbackSubscriptionRepository.count());
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", "https://localhost")
+      .param("url", "https://localhost")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());
@@ -177,8 +174,7 @@ public class CallbackAdminControllerTest {
     Assert.assertEquals(0, callbackSubscriptionRepository.count());
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", "https://192.168.178.58")
+      .param("url", "https://192.168.178.58")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());
@@ -186,8 +182,7 @@ public class CallbackAdminControllerTest {
     Assert.assertEquals(0, callbackSubscriptionRepository.count());
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", "https://notify.me/?you=evil_sql_injection")
+      .param("url", "https://notify.me/?you=evil_sql_injection")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());
@@ -197,8 +192,7 @@ public class CallbackAdminControllerTest {
     certificateRepository.delete(callbackCert);
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", TestData.CALLBACK_URL_EFGS)
+      .param("url", TestData.CALLBACK_URL_EFGS)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());
@@ -213,8 +207,7 @@ public class CallbackAdminControllerTest {
     String firstId = TestData.CALLBACK_ID_FIRST;
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", TestData.CALLBACK_URL_EXAMPLE)
+      .param("url", TestData.CALLBACK_URL_EXAMPLE)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isOk());
@@ -223,8 +216,7 @@ public class CallbackAdminControllerTest {
     Assert.assertEquals(TestData.CALLBACK_URL_EXAMPLE, callbackSubscription.getUrl());
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .contentType("text/plain; version=1.0")
-      .header("url", TestData.CALLBACK_URL_EFGS)
+      .param("url", TestData.CALLBACK_URL_EFGS)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isOk());
@@ -243,15 +235,13 @@ public class CallbackAdminControllerTest {
     String secondId = TestData.CALLBACK_ID_SECOND;
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + secondId)
-      .contentType("text/plain; version=1.0")
-      .header("url", TestData.CALLBACK_URL_EXAMPLE)
+      .param("url", TestData.CALLBACK_URL_EXAMPLE)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isOk());
     Assert.assertEquals(1, callbackSubscriptionRepository.count());
 
     mockMvc.perform(delete("/diagnosiskeys/callback/" + secondId)
-      .contentType("text/plain; version=1.0")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isOk());
@@ -264,7 +254,6 @@ public class CallbackAdminControllerTest {
     String unknownId = "unknownId";
 
     mockMvc.perform(delete("/diagnosiskeys/callback/" + unknownId)
-      .contentType("text/plain; version=1.0")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isNotFound());
