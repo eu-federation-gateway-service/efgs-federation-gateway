@@ -31,7 +31,7 @@
   </fileSets>
   <files>
     <file>
-      <source>/target/${artifactId}-${version}.${packaging}</source>
+      <source>${project.basedir}/target/${artifactId}-${version}.${packaging}</source>
       <outputDirectory>webapps</outputDirectory>
       <destName>efgs.war</destName>
     </file>
