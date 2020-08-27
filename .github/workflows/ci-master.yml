@@ -44,8 +44,8 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/upload-artifact@v2
-        with:
-          name: target
-          path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/
+      with:
+        name: target
+        path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
