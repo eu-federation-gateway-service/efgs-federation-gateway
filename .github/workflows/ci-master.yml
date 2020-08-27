@@ -46,4 +46,4 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: target
-        path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/
+        path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_*
