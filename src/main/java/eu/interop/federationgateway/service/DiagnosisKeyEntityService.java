@@ -151,10 +151,11 @@ public class DiagnosisKeyEntityService {
    * Deletes all {@link DiagnosisKeyEntity} instances that are older than the time parameter.
    *
    * @param time the wich to remove the entities up to
+   * @return the number of deleted rows.
    */
-  public void deleteAllBefore(ZonedDateTime time) {
+  public int deleteAllBefore(ZonedDateTime time) {
     log.info("Start delete all Before {}.", time);
-    diagnosisKeyEntityRepository.deleteByCreatedAtBefore(time);
+    return diagnosisKeyEntityRepository.deleteByCreatedAtBefore(time);
   }
 
   public List<DiagnosisKeyEntity> getDiagnosisKeysBatchForCountry(String batchTag, String country) {
