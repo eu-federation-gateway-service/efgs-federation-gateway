@@ -3,8 +3,7 @@ on:
   push:
     branches:
     - master
-    - feat/tomcat
-
+    - feat-github-actions
 jobs:
   build:
     runs-on: ubuntu-latest
