@@ -50,6 +50,7 @@ import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.util.Store;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 /**
@@ -91,9 +92,11 @@ public class BatchSignatureVerifier {
           return false;
         }
 
+        MDC.put("certNotBefore", signerCert.getNotBefore().toString());
+        MDC.put("certNotAfter", signerCert.getNotAfter().toString());
+
         if (!isCertNotExpired(signerCert)) {
-          log.error("signing certificate expired\", certNotBefore=\"{}\", certNotAfter=\"{}",
-            signerCert.getNotBefore(), signerCert.getNotAfter());
+          log.error("signing certificate expired");
           return false;
         }
 
@@ -103,8 +106,7 @@ public class BatchSignatureVerifier {
         }
 
         if (!allOriginsMatchingCertCountry(batch, signerCert)) {
-          log.error("different origins\", certNotBefore=\"{}\", certNotAfter=\"{}",
-            signerCert.getNotBefore(), signerCert.getNotAfter());
+          log.error("different origins");
           return false;
         }
 
@@ -148,13 +150,15 @@ public class BatchSignatureVerifier {
         getCountryOfCertificate(certificate),
         CertificateEntity.CertificateType.SIGNING);
 
+      MDC.put("certThumbprint", certHash);
+
       if (certificateEntity.isEmpty()) {
-        log.error("unknown signing certificate\", certThumbprint=\"{}", certHash);
+        log.error("unknown signing certificate");
         return false;
       }
 
       if (certificateEntity.get().getRevoked()) {
-        log.error("certificate is revoked\", certThumbprint=\"{}", certHash);
+        log.error("certificate is revoked");
         return false;
       }
       return true;
@@ -177,7 +181,8 @@ public class BatchSignatureVerifier {
       signature.update(x509Certificate.getTBSCertificate());
       return signature.verify(x509Certificate.getSignature());
     } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException e) {
-      log.error("Could not verify signature of signing certificate: " + e.getMessage());
+      MDC.put("errorMessage", e.getMessage());
+      log.error("Could not verify signature of signing certificate");
       return false;
     }
   }

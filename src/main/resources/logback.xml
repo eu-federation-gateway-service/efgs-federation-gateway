@@ -10,7 +10,7 @@
     </filter>
     <encoder>
       <pattern>
-        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, trace=%X{traceId:-}, span=%X{spanId:-}, thread=%thread, class=%logger{40}, message="%m"\n
+        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, thread=%thread, class=%logger{40}, message="%replace(%replace(%m){'[\r\n]+', ', '}){'"', '\''}", %X%n
       </pattern>
       <charset>utf8</charset>
     </encoder>
@@ -26,7 +26,7 @@
     <immediateFlush>true</immediateFlush>
     <encoder>
       <pattern>
-        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, trace=%X{traceId:-}, span=%X{spanId:-}, thread=%thread, class=%logger{40}, message="%replace(%m){'[\r\n]+', ', '}", exception="%replace(%ex){'[\r\n]+', ', '}"\n%nopex
+        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, thread=%thread, class=%logger{40}, message="%replace(%replace(%m){'[\r\n]+', ', '}){'"', '\''}", %X, exception="%replace(%ex){'[\r\n]+', ', '}"%n%nopex
       </pattern>
       <charset>utf8</charset>
     </encoder>

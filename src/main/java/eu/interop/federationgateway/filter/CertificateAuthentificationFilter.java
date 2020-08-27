@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -97,11 +98,13 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
       return;
     }
 
+    MDC.put("dnString", headerDistinguishedName);
+    MDC.put("thumbprint", headerCertThumbprint);
+
     Map<String, String> distinguishNameMap = parseDistinguishNameString(headerDistinguishedName);
 
     if (!distinguishNameMap.containsKey("C")) {
-      log.error("Country property is missing\", dnString=\"{}\", thumbprint=\"{}",
-        headerDistinguishedName, headerCertThumbprint);
+      log.error("Country property is missing");
       handlerExceptionResolver.resolveException(
         httpServletRequest, httpServletResponse, null,
         new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client Certificate must contain country property"));
@@ -115,8 +118,7 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     );
 
     if (certFromDb.isEmpty()) {
-      log.error("Unknown client certificate\", dnString=\"{}\", thumbprint=\"{}",
-        headerDistinguishedName, headerCertThumbprint);
+      log.error("Unknown client certificate");
       handlerExceptionResolver.resolveException(
         httpServletRequest, httpServletResponse, null,
         new ResponseStatusException(HttpStatus.FORBIDDEN, "Client is not authorized to access the service"));
@@ -124,16 +126,14 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     }
 
     if (certFromDb.get().getRevoked()) {
-      log.error("Certificate is revoked\", dnString=\"{}\", thumbprint=\"{}",
-        headerDistinguishedName, headerCertThumbprint);
+      log.error("Certificate is revoked");
       handlerExceptionResolver.resolveException(
         httpServletRequest, httpServletResponse, null,
         new ResponseStatusException(HttpStatus.FORBIDDEN, "Client certificate is revoked"));
       return;
     }
 
-    log.info("Successful Authentication\", dnString=\"{}\", thumbprint=\"{}",
-      headerDistinguishedName, headerCertThumbprint);
+    log.info("Successful Authentication");
     httpServletRequest.setAttribute(REQUEST_PROP_COUNTRY, distinguishNameMap.get("C"));
     httpServletRequest.setAttribute(REQUEST_PROP_THUMBPRINT, headerCertThumbprint);
 

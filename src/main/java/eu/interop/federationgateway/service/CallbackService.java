@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 import org.springframework.stereotype.Component;
 
@@ -70,8 +71,10 @@ public class CallbackService {
    * @param subscription CallbackSubscriptionEntity
    */
   public void deleteAllTasksForSubscription(CallbackSubscriptionEntity subscription) {
-    log.info("Deleting all CallbackTaskEntities for subscription.\", callbackId={}, country=\"{}",
-      subscription.getCallbackId(), subscription.getCountry());
+    MDC.put("callbackId", subscription.getCallbackId());
+    MDC.put("country", subscription.getCountry());
+
+    log.info("Deleting all CallbackTaskEntities for subscription.");
     callbackTaskRepository.deleteAllByCallbackSubscriptionIs(subscription);
   }
 
@@ -84,8 +87,9 @@ public class CallbackService {
     List<CallbackSubscriptionEntity> callbacks = getAllCallbackSubscriptions();
 
     callbacks.forEach(callbackSubscription -> {
-      log.info("Saving Callback Task to DB\", country={}, batchTag=\"{}",
-        callbackSubscription.getCountry(), batch.getBatchName());
+      MDC.put("country", callbackSubscription.getCountry());
+      MDC.put("batchTag", batch.getBatchName());
+      log.info("Saving Callback Task to DB");
 
       CallbackTaskEntity callbackTask = new CallbackTaskEntity(
         null,
@@ -176,21 +180,24 @@ public class CallbackService {
     URL url;
     InetAddress hostAddress;
 
+    MDC.put("url", urlToCheck);
+
     try {
       url = new URL(urlToCheck);
     } catch (MalformedURLException e) {
-      log.error("Could not parse URL\", url=\"{}", urlToCheck);
+      log.error("Could not parse URL");
       return false;
     }
 
+    MDC.put("hostname", url.getHost());
 
     if (!url.getProtocol().equals("https")) {
-      log.error("Callback URL must use https\", url=\"{}", urlToCheck);
+      log.error("Callback URL must use https");
       return false;
     }
 
     if (url.getQuery() != null) {
-      log.error("URL must not contain any parameters\", url=\"{}", urlToCheck);
+      log.error("URL must not contain any parameters");
       return false;
     }
 
@@ -198,22 +205,25 @@ public class CallbackService {
       certificateService.getCallbackCertificateForHost(url.getHost(), country);
 
     if (callbackCertificate.isEmpty()) {
-      log.error("Could not find a Callback Certificate for host\", host=\"{}", url.getHost());
+      log.error("Could not find a Callback Certificate for host");
       return false;
     }
 
+    MDC.put("thumbprint", callbackCertificate.get().getThumbprint());
+
     if (callbackCertificate.get().getRevoked()) {
-      log.error("Found Callback Certificate, but it is revoked\", thumbprint=\"{}",
-        callbackCertificate.get().getThumbprint());
+      log.error("Found Callback Certificate, but it is revoked");
       return false;
     }
 
     try {
       hostAddress = InetAddress.getByName(url.getHost());
     } catch (UnknownHostException e) {
-      log.error("Could not resolve host for callback\", url=\"{}\", hostname=\"{}", urlToCheck, url.getHost());
+      log.error("Could not resolve host for callback");
       return false;
     }
+
+    MDC.put("host", hostAddress.getHostAddress());
 
     IpAddressMatcher[] localSubnetMatchers = {
       new IpAddressMatcher("10.0.0.0/8"),
@@ -228,8 +238,7 @@ public class CallbackService {
 
     if (Arrays.stream(localSubnetMatchers)
       .anyMatch(matcher -> matcher.matches(hostAddress.getHostAddress()))) {
-      log.error("IP Address of callback host is from private IP range.\", url=\"{}\", hostname=\"{}", urlToCheck,
-        hostAddress.getHostAddress());
+      log.error("IP Address of callback host is from private IP range.");
       return false;
     }
 

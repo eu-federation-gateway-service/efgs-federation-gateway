@@ -33,6 +33,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -64,10 +65,12 @@ public class CallbackTaskExecutorService {
       setExecutionLock(currentTask);
       CallbackSubscriptionEntity subscription = currentTask.getCallbackSubscription();
 
+      MDC.put("callbackId", subscription.getCallbackId());
+      MDC.put("country", subscription.getCountry());
+      MDC.put("url", subscription.getUrl());
+
       if (!callbackService.checkUrl(subscription.getUrl(), subscription.getCountry())) {
-        log.error("Security check for callback url has failed. Deleting callback subscription.\","
-            + " callbackId={}, country={}, url=\"{}",
-          subscription.getCallbackId(), subscription.getCountry(), subscription.getUrl());
+        log.error("Security check for callback url has failed. Deleting callback subscription.");
 
         callbackService.deleteCallbackSubscription(subscription);
         currentTask = getNextCallbackTask();
@@ -78,8 +81,7 @@ public class CallbackTaskExecutorService {
         subscription.getUrl(), subscription.getCountry());
 
       if (callbackCertificateOptional.isEmpty()) {
-        log.error("Could not find callback certificate.\", callbackId={}, country=\"{}",
-          subscription.getCallbackId(), subscription.getCountry());
+        log.error("Could not find callback certificate.");
 
         callbackService.deleteCallbackSubscription(subscription);
         currentTask = getNextCallbackTask();
@@ -87,18 +89,15 @@ public class CallbackTaskExecutorService {
       }
 
       boolean callbackResult = sendCallback(currentTask, callbackCertificateOptional.get());
+      MDC.put("retry", String.valueOf(currentTask.getRetries()));
 
       if (callbackResult) {
-        log.info("Successfully executed callback. Deleting callback task from database\", "
-            + "retry={}, callbackId={}, country=\"{}", currentTask.getRetries(),
-          subscription.getCallbackId(), subscription.getCountry());
-
+        log.info("Successfully executed callback. Deleting callback task from database");
         removeNotBeforeForNextTask(currentTask);
         deleteTask(currentTask);
       } else {
         if (currentTask.getRetries() >= efgsProperties.getCallback().getMaxRetries()) {
-          log.error("Callback reached max amount of retries. Deleting callback subscription.\""
-            + ", callbackId={}, country=\"{}", subscription.getCallbackId(), subscription.getCountry());
+          log.error("Callback reached max amount of retries. Deleting callback subscription.");
 
           callbackService.deleteCallbackSubscription(subscription);
         } else {
@@ -108,18 +107,18 @@ public class CallbackTaskExecutorService {
           removeExecutionLock(currentTask);
         }
       }
-
+      MDC.clear();
       currentTask = getNextCallbackTask();
     }
-
     log.info("Callback processing finished.");
   }
 
   private void removeNotBeforeForNextTask(CallbackTaskEntity currentTask) {
     callbackTaskRepository.findFirstByNotBeforeIs(currentTask).ifPresent(task -> {
-      log.info("Removing notBefore restriction from CallbackTask.\", callbackId={}, country=\"{}",
-        currentTask.getCallbackSubscription().getCallbackId(),
-        currentTask.getCallbackSubscription().getCountry());
+      MDC.put("callbackId", currentTask.getCallbackSubscription().getCallbackId());
+      MDC.put("country", currentTask.getCallbackSubscription().getCountry());
+
+      log.info("Removing notBefore restriction from CallbackTask.");
 
       task.setNotBefore(null);
       callbackTaskRepository.save(task);
@@ -128,6 +127,9 @@ public class CallbackTaskExecutorService {
 
   boolean sendCallback(CallbackTaskEntity callbackTask, CertificateEntity certificate) {
     CallbackSubscriptionEntity callbackSubscription = callbackTask.getCallbackSubscription();
+
+    MDC.put("callbackId", callbackSubscription.getCallbackId());
+    MDC.put("country", callbackSubscription.getCountry());
 
     URI requestUri = UriComponentsBuilder.fromHttpUrl(callbackSubscription.getUrl())
       .queryParam("batchTag", callbackTask.getBatch().getBatchName())
@@ -141,17 +143,15 @@ public class CallbackTaskExecutorService {
       .block();
 
     if (callbackResponse != null && callbackResponse.statusCode().is2xxSuccessful()) {
-      log.info("Got 2xx response for callback.\", callbackId={}, country=\"{}",
-        callbackSubscription.getCallbackId(), callbackSubscription.getCountry());
+      log.info("Got 2xx response for callback.");
 
       return true;
     } else {
       if (callbackResponse != null) {
-        log.error("Got a non 2xx response for callback.\", statusCode={}, callbackId={}, country=\"{}",
-          callbackResponse.rawStatusCode(), callbackSubscription.getCallbackId(), callbackSubscription.getCountry());
+        MDC.put("statusCode", String.valueOf(callbackResponse.rawStatusCode()));
+        log.error("Got a non 2xx response for callback.");
       } else {
-        log.error("Got no response for callback.\", callbackId={}, country=\"{}",
-          callbackSubscription.getCallbackId(), callbackSubscription.getCountry());
+        log.error("Got no response for callback.");
       }
 
       return false;
@@ -165,7 +165,8 @@ public class CallbackTaskExecutorService {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   void deleteTask(CallbackTaskEntity task) {
-    log.info("Deleting CallbackTask from db.\", taskId=\"{}", task.getId());
+    MDC.put("taskId", String.valueOf(task.getId()));
+    log.info("Deleting CallbackTask from db");
     callbackTaskRepository.delete(task);
   }
 
@@ -176,7 +177,8 @@ public class CallbackTaskExecutorService {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   void setExecutionLock(CallbackTaskEntity task) {
-    log.info("Setting execution lock for CallbackTask.\", taskId=\"{}", task.getId());
+    MDC.put("taskId", String.valueOf(task.getId()));
+    log.info("Setting execution lock for CallbackTask");
     task.setExecutionLock(ZonedDateTime.now(ZoneOffset.UTC));
     callbackTaskRepository.save(task);
   }
@@ -188,7 +190,8 @@ public class CallbackTaskExecutorService {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   void removeExecutionLock(CallbackTaskEntity task) {
-    log.info("Removing execution lock for CallbackTask.\", taskId=\"{}", task.getId());
+    MDC.put("taskId", String.valueOf(task.getId()));
+    log.info("Removing execution lock for CallbackTask.");
     task.setExecutionLock(null);
     callbackTaskRepository.save(task);
   }
