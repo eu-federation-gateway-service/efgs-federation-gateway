@@ -3,7 +3,6 @@ on:
   push:
     branches:
     - master
-    - feat-github-actions
 jobs:
   build:
     runs-on: ubuntu-latest
