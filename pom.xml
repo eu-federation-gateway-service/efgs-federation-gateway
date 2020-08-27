@@ -425,36 +425,6 @@
         <version>2.6</version>
         <executions>
           <execution>
-            <id>make-zip-ACC</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE-${project.version}</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>src/assembly/assembly.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-            </configuration>
-          </execution>
-          <execution>
-            <id>make-zip-PRD</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>CORONA_TRACING_BACKEND001_PRD-PROD-${project.version}</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>src/assembly/assembly.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-            </configuration>
-          </execution>
-          <execution>
             <id>make-zip-test</id>
             <phase>package</phase>
             <goals>
