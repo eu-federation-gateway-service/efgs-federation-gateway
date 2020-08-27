@@ -3,8 +3,6 @@ on:
   push:
     branches:
     - master
-    - feat/tomcat
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -25,13 +23,10 @@ jobs:
     - name: environment
       run: |
         sudo apt-get install --yes --no-install-recommends libxml-xpath-perl
-        export ARTIFACT_ID=$(xpath -q -e "/project/artifactId/text()" pom.xml)
-        echo "::set-env name=ARTIFACT_ID::${ARTIFACT_ID}"
-        export VERSION=$(xpath -q -e "/project/version/text()" pom.xml)
         export VERSION=${VERSION//-SNAPSHOT}-$(git rev-parse --short ${GITHUB_SHA})
         echo "::set-env name=VERSION::${VERSION}"
     - name: mvn version
-      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}    
+      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}
     - name: mvn deploy
       run: mvn --batch-mode deploy
       env:
@@ -47,7 +42,16 @@ jobs:
         SONAR_URL: https://sonarcloud.io
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
-        name: target
-        path: target
+        name: CORONA_TRACING_BACKEND001_TST-TEST
+        path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_TST*
+    - uses: actions/upload-artifact@v2
+      with:
+          name: CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE
+          path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_ACC*
+    - uses: actions/upload-artifact@v2
+      with:
+          name: CORONA_TRACING_BACKEND001_PRD-PROD
+          path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_PRD*
+

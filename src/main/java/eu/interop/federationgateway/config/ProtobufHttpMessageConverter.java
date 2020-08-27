@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
@@ -102,13 +103,15 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       targetContentTypeVersion = properties.getContentNegotiation().getJsonVersion();
     }
 
+    MDC.put("requestedMediaType", contentType.toString());
+
     if (targetContentType == null) {
-      log.error("Accepted Content-Type is not compatible\", requestedMediaType=\"{}", contentType);
+      log.error("Accepted Content-Type is not compatible");
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown Content-Type!");
     }
 
     if (contentType.getParameter("version") == null) {
-      log.error("Version parameter of Accepted Content-Type is required\", requestedMediaType=\"{}", contentType);
+      log.error("Version parameter of Accepted Content-Type is required");
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Version parameter of Content-Type is required!");
     }
 
@@ -117,7 +120,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
         targetContentTypeVersion,
         contentType.getParameter("version")
       )) {
-        log.error("Serialization: Protocol version is not compatible\", requestedMediaType=\"{}", contentType);
+        log.error("Serialization: Protocol version is not compatible");
         throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Protocol version is not compatible!");
       }
     } catch (SemVerUtils.SemVerParsingException e) {
@@ -156,6 +159,8 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Accept must be set!");
     }
 
+    MDC.put("requestedMediaType", contentType.toString());
+
     MediaType targetContentType = null;
     String targetContentTypeVersion = null;
 
@@ -168,12 +173,12 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
     }
 
     if (targetContentType == null) {
-      log.error("Accepted Content-Type is not compatible\", requestedMediaType=\"{}", contentType);
+      log.error("Accepted Content-Type is not compatible");
       throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Content-Type is not compatible");
     }
 
     if (contentType.getParameter("version") == null) {
-      log.error("Version parameter of Accepted Content-Type is required\", requestedMediaType=\"{}", contentType);
+      log.error("Version parameter of Accepted Content-Type is required");
       throw new ResponseStatusException(
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
         "Version parameter of Content-Type is required!");
@@ -184,7 +189,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
         targetContentTypeVersion,
         contentType.getParameter("version")
       )) {
-        log.error("Serialization: Protocol version is not compatible\", requestedMediaType=\"{}", contentType);
+        log.error("Serialization: Protocol version is not compatible");
         throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Protocol version is not compatible!");
       }
     } catch (SemVerUtils.SemVerParsingException e) {
