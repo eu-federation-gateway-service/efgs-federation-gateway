@@ -425,13 +425,13 @@
         <version>2.6</version>
         <executions>
           <execution>
-            <id>make-zip-ACC</id>
+            <id>make-zip-package</id>
             <phase>install</phase>
             <goals>
               <goal>single</goal>
             </goals>
             <configuration>
-              <finalName>CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE-${project.version}</finalName>
+                <finalName>CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE-${project.version}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/assembly.xml</descriptor>
