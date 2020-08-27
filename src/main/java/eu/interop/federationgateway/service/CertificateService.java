@@ -27,6 +27,7 @@ import java.net.URL;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -60,7 +61,8 @@ public class CertificateService {
     try {
       return getCallbackCertificateForHost(new URL(url).getHost(), country);
     } catch (MalformedURLException ignored) {
-      log.error("Could not parse url.\", url=\"{}", url);
+      MDC.put("url", url);
+      log.error("Could not parse url.");
       return Optional.empty();
     }
   }

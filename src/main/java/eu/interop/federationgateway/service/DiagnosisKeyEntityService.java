@@ -33,6 +33,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
@@ -93,8 +94,12 @@ public class DiagnosisKeyEntityService {
 
     if (resultMap.get(409).size() > 0 || resultMap.get(500).size() > 0) {
       resultMap.get(201).clear();
-      log.error("error inserting keys\", insertedKeyCount=\"{}\", conflictKeysCount=\"{}\" failedKeysCount=\"{}",
-        resultMap.get(201).size(), resultMap.get(409).size(), resultMap.get(500).size());
+
+      MDC.put("insertedKeyCount", String.valueOf(resultMap.get(201).size()));
+      MDC.put("conflictKeysCount", String.valueOf(resultMap.get(409).size()));
+      MDC.put("failedKeysCount", String.valueOf(resultMap.get(500).size()));
+
+      log.error("error inserting keys");
       throw new DiagnosisKeyInsertException("Error during insertion of diagnosis keys!", resultMap);
     }
   }
@@ -146,10 +151,11 @@ public class DiagnosisKeyEntityService {
    * Deletes all {@link DiagnosisKeyEntity} instances that are older than the time parameter.
    *
    * @param time the wich to remove the entities up to
+   * @return the number of deleted rows.
    */
-  public void deleteAllBefore(ZonedDateTime time) {
+  public int deleteAllBefore(ZonedDateTime time) {
     log.info("Start delete all Before {}.", time);
-    diagnosisKeyEntityRepository.deleteByCreatedAtBefore(time);
+    return diagnosisKeyEntityRepository.deleteByCreatedAtBefore(time);
   }
 
   public List<DiagnosisKeyEntity> getDiagnosisKeysBatchForCountry(String batchTag, String country) {

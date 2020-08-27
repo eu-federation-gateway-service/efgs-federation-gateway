@@ -40,10 +40,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -134,11 +136,14 @@ public class DownloadController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String downloaderCountry
   ) {
 
+    MDC.put("requestedDate", date.format(DateTimeFormatter.ISO_DATE));
+    MDC.put("batchTag", batchTag);
+
     ZonedDateTime thresholdDate = ZonedDateTime.now(ZoneOffset.UTC)
       .minusDays(properties.getDownloadSettings().getMaxAgeInDays());
 
     if (date.isBefore(thresholdDate.toLocalDate())) {
-      log.info("Requested date is too old\", requestedDate=\"{}", date);
+      log.info("Requested date is too old");
       throw new ResponseStatusException(HttpStatus.GONE, "Requested date is too old!");
     }
 
@@ -146,7 +151,7 @@ public class DownloadController {
       batchTag = diagnosisKeyBatchService.getFirstBatchTagOfTheDay(date);
 
       if (batchTag == null) {
-        log.info("Could not find any batches for given date\", requestedDate=\"{}", date);
+        log.info("Could not find any batches for given date");
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find any batches for given date");
       }
     }
@@ -154,13 +159,12 @@ public class DownloadController {
     Optional<DiagnosisKeyBatchEntity> batchEntity = diagnosisKeyBatchService.getBatchEntity(batchTag);
 
     if (batchEntity.isEmpty()) {
-      log.info("Could not find batch with given batchTag\", batchTag=\"{}", batchTag);
+      log.info("Could not find batch with given batchTag");
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find batch with given BatchTag");
     }
 
     if (!date.isEqual(batchEntity.get().getCreatedAt().toLocalDate())) {
-      log.info("Given date does not match the requested batchTag\", batchTag=\"{}\", requestedDate=\"{}",
-        batchTag, date);
+      log.info("Given date does not match the requested batchTag");
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Given date does not match the requested batch");
     }
 
@@ -176,7 +180,7 @@ public class DownloadController {
       nextBatchTag = batchEntity.get().getBatchLink();
     }
 
-    log.info("Successfull Batch Download\", batchTag=\"{}", batchTag);
+    log.info("Successful Batch Download");
 
     return ResponseEntity
       .ok()

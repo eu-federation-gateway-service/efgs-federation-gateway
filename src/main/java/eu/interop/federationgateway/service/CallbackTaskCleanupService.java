@@ -24,6 +24,7 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,9 @@ public class CallbackTaskCleanupService {
 
     int updateCount = callbackService.removeTaskLocksOlderThan(timestamp);
 
-    log.info("Removing of task locks of abandoned tasks finished.\", taskCount=\"{}", updateCount);
+    MDC.put("taskCount", String.valueOf(updateCount));
+    log.info("Removing of task locks of abandoned tasks finished.");
+    MDC.clear();
 
   }
 

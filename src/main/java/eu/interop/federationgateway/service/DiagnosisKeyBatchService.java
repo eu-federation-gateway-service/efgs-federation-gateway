@@ -36,6 +36,7 @@ import java.util.function.Predicate;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
 import org.springframework.retry.annotation.Retryable;
@@ -106,7 +107,8 @@ public class DiagnosisKeyBatchService {
         // update keys
         updateDiagnosisKeys(diagnosisKeyEntitys, newBatch);
       }
-      log.info("Batch process finished\", batchCount=\"{}", diagnosisKeyCollector.size());
+      MDC.put("batchCount", String.valueOf(diagnosisKeyCollector.size()));
+      log.info("Batch process finished");
       callbackService.notifyAllCountriesForNewBatchTag(newBatch);
     }
   }
@@ -151,8 +153,11 @@ public class DiagnosisKeyBatchService {
     if (diagnosisKeyEntitys.stream()
       .map(DiagnosisKeyEntity::getFormat)
       .anyMatch(Predicate.not(diagnosisKey.get().getFormat()::equals))) {
-      log.error("Stop batching process, while try to batch {} keys, but the keys have different format versions\""
-        + ", format=\"{}", diagnosisKeyEntitys.size(), diagnosisKey.get().getFormat());
+
+      MDC.put("format", diagnosisKey.get().getFormat().toString());
+
+      log.error("Stop batching process, while try to batch {} keys, but the keys have different format versions",
+        diagnosisKeyEntitys.size());
       return true;
     }
     return false;
@@ -161,8 +166,11 @@ public class DiagnosisKeyBatchService {
   private void updateDiagnosisKeys(List<DiagnosisKeyEntity> diagnosisKeyEntitys, DiagnosisKeyBatchEntity newBatch) {
     diagnosisKeyEntitys.forEach(key -> key.setBatchTag(newBatch.getBatchName()));
     diagnosisKeyEntityRepository.saveAll(diagnosisKeyEntitys);
-    log.info("Batch created\", batchTag=\"{}\", diagnosisKeysCount=\"{}",
-      newBatch.getBatchName(), diagnosisKeyEntitys.size());
+
+    MDC.put("batchTag", newBatch.getBatchName());
+    MDC.put("diagnosisKeysCount", String.valueOf(diagnosisKeyEntitys.size()));
+
+    log.info("Batch created");
   }
 
   private DiagnosisKeyBatchEntity saveBatches(Optional<DiagnosisKeyBatchEntity> lastEntry) {
@@ -220,6 +228,16 @@ public class DiagnosisKeyBatchService {
     Optional<DiagnosisKeyBatchEntity> queryResult =
       diagnosisKeyBatchRepository.findFirstByCreatedAtIsBetweenOrderByCreatedAtAsc(begin, end);
     return queryResult.map(DiagnosisKeyBatchEntity::getBatchName).orElse(null);
+  }
+
+  /**
+   * Deletes all DiagnosisKeyBatches which are older then timestamp.
+   *
+   * @param timestamp timestamp to check
+   * @return the number of deleted rows.
+   */
+  public int deleteAllBefore(ZonedDateTime timestamp) {
+    return diagnosisKeyBatchRepository.deleteByCreatedAtBefore(timestamp);
   }
 
 }
