@@ -24,8 +24,10 @@ jobs:
     - name: environment
       run: |
         sudo apt-get install --yes --no-install-recommends libxml-xpath-perl
+        export VERSION=${VERSION//-SNAPSHOT}-$(git rev-parse --short ${GITHUB_SHA})
+        echo "::set-env name=VERSION::${VERSION}"
     - name: mvn version
-      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false
+      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}
     - name: mvn deploy
       run: mvn --batch-mode deploy
       env:
