@@ -48,11 +48,11 @@ jobs:
         name: CORONA_TRACING_BACKEND001_TST-TEST
         path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_TST*
     - uses: actions/upload-artifact@v2
-        with:
+      with:
           name: CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE
           path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_ACC*
     - uses: actions/upload-artifact@v2
-        with:
+      with:
           name: CORONA_TRACING_BACKEND001_PRD-PROD
           path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_PRD*
 
