@@ -47,5 +47,3 @@ jobs:
       with:
         name: target
         path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
