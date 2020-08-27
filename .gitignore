@@ -32,5 +32,5 @@ build/
 ### Others ###
 ~$*.docx
 *.b64
-testdata/
+/testdata/
 *.log
