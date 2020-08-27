@@ -48,5 +48,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/upload-artifact@v1
       with:
-        name: target
+        name: CORONA_TRACING_BACKEND001_*
         path: target
