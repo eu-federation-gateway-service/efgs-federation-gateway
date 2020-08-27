@@ -1,8 +1,5 @@
 databaseChangeLog:
   - include:
-      file: changelog/v000-set-transaction-isolation-level-serializable.yml
-      relativeToChangelogFile: true
-  - include:
       file: changelog/v000-create-diagnosis-key-entity-table.yml
       relativeToChangelogFile: true
   - include:
