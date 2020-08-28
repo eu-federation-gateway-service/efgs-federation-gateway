@@ -24,7 +24,7 @@ public class DiagnosisKeyCleanupService {
   /**
    * Cleanup task to delete all DiagnosisKeys and DiagnosisKeyBatches which are older then configured.
    */
-  @Scheduled(cron = "0 0 * * *")
+  @Scheduled(cron = "0 0 0 * * *")
   public void cleanupDiagnosisKeys() {
     ZonedDateTime deleteTimestamp = LocalDate.now()
       .atStartOfDay(ZoneOffset.UTC)
