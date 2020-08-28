@@ -20,7 +20,7 @@ This software implements a pan european solution a "European Federation Gateway 
 ##	Core Entities
 |Entity|	Definition|	
 | ------------- |:-------------:|
-| Diagnosis Key|	|
+| Diagnosis Key| An exposure key in the sense of the GAEN format (https://developers.google.com/android/exposure-notifications/exposure-key-file-format) |
 | Batch| An ordered set of diagnostic keys	|
 | Upload Tag| Unique Logical Name for uploads | 		
 | Batch Tag Name | Only relevant for downloads |
