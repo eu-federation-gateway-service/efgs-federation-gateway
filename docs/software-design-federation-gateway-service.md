@@ -253,7 +253,7 @@ As shown in the figure below, the Federation Gateway (FG) Load Balancer authenti
 
 | HTTP Header         | Description |
 |---------------------|-------------|
-| X-SSL-Client-SHA256 |	SHA-256 hash value of the DER encoded client's certificate. The so-called certificate fingerprint or thumbprint.                         |
+| X-SSL-Client-SHA256 |	SHA-256 hash value of the DER encoded client's certificate. The so-called certificate fingerprint or thumbprint. (hex, lowercase, without colon)                         |
 | X-SSL-Client-DN	  | The subject Distinguished Name (DN) of the client's certificate (see [RFC 5280](https://tools.ietf.org/html/rfc5280#page-23) and [RFC 1719](https://tools.ietf.org/html/rfc1779#page-6)). The DN MUST contain the Country (C) attribute.  |
 
 ### 2.2. Federation Gateway Service 
