@@ -24,6 +24,8 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.service.CertificateService;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -98,6 +100,12 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
       return;
     }
 
+    headerDistinguishedName = URLDecoder.decode(headerDistinguishedName, StandardCharsets.UTF_8);
+
+    headerCertThumbprint = URLDecoder.decode(headerCertThumbprint, StandardCharsets.UTF_8);
+    headerCertThumbprint = headerCertThumbprint.replace(":", "");
+    headerCertThumbprint = headerCertThumbprint.toLowerCase();
+
     MDC.put("dnString", headerDistinguishedName);
     MDC.put("thumbprint", headerCertThumbprint);
 
@@ -150,6 +158,6 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     return Arrays.stream(dnString.split(","))
       .map(part -> part.split("="))
       .filter(entry -> entry.length == 2)
-      .collect(Collectors.toMap(arr -> arr[0].toUpperCase(), arr -> arr[1]));
+      .collect(Collectors.toMap(arr -> arr[0].toUpperCase().trim(), arr -> arr[1].trim()));
   }
 }

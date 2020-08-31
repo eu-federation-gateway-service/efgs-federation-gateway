@@ -129,6 +129,41 @@ public class CertAuthFilterTest {
   }
 
   @Test
+  public void testFilterShouldDecodeDnString() throws Exception {
+    String encodedDnString = "ST%3dSome-State%2c%20C%3dDE%2c%20O%3dInternet%20Widgits%20Pty%20Ltd%2c%20CN%3dTest%20Cert";
+
+    mockMvc.perform(get("/diagnosiskeys/download/s")
+      .accept("application/protobuf; version=1.0")
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), encodedDnString)
+    ).andExpect(mvcResult -> {
+      Assert.assertEquals("DE", mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY));
+      Assert.assertEquals(
+        TestData.AUTH_CERT_HASH,
+        mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT)
+      );
+    });
+  }
+
+  @Test
+  public void testFilterShouldDecodeCertThumbprint() throws Exception {
+    String encodedThumbprint = "69%3AC6%3A97%3Ac0%3A45%3Ab4%3Acd%3Aaa%3A44%3A1a%3A28%3A"
+      + "AF%3A0e%3Ac1%3Acc%3A41%3A28%3A15%3A3B%3A9d%3Adc%3A79%3A6b%3A66%3Abf%3Aa0%3A4b%3A02%3AEa%3A3e%3A10%3A3e";
+
+    mockMvc.perform(get("/diagnosiskeys/download/s")
+      .accept("application/protobuf; version=1.0")
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), encodedThumbprint)
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), "O=Test Firma GmbH,C=DE,U=,TR,TT=43")
+    ).andExpect(mvcResult -> {
+      Assert.assertEquals("DE", mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY));
+      Assert.assertEquals(
+        TestData.AUTH_CERT_HASH,
+        mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT)
+      );
+    });
+  }
+
+  @Test
   public void testRequestShouldFailIfCountryIsNotPresentInDnString() throws Exception {
     mockMvc.perform(get("/diagnosiskeys/download/s")
       .accept("application/protobuf; version=1.0")
