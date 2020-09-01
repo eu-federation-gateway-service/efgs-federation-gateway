@@ -24,9 +24,11 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.service.CertificateService;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -81,6 +83,33 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     }
   }
 
+  private String normalizeCertificateHash(String inputString) {
+    if (inputString == null) {
+      return null;
+    }
+
+    boolean isHexString;
+    // check if it is a hex string
+    try {
+      new BigInteger(inputString, 16);
+      isHexString = true;
+    } catch (NumberFormatException ignored) {
+      isHexString = false;
+    }
+
+    // We can assume that the given string is hex encoded SHA-256 hash when length is 64 and string is hex encoded
+    if (inputString.length() == 64 && isHexString) {
+      return inputString;
+    } else {
+      try {
+        return new BigInteger(1, Base64.getDecoder().decode(inputString)).toString(16);
+      } catch (IllegalArgumentException ignored) {
+        log.error("Could not normalize certificate hash.");
+        return null;
+      }
+    }
+  }
+
   @Override
   protected void doFilterInternal(
     HttpServletRequest httpServletRequest,
@@ -92,8 +121,8 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     String headerDistinguishedName =
       httpServletRequest.getHeader(properties.getCertAuth().getHeaderFields().getDistinguishedName());
 
-    String headerCertThumbprint =
-      httpServletRequest.getHeader(properties.getCertAuth().getHeaderFields().getThumbprint());
+    String headerCertThumbprint = normalizeCertificateHash(
+      httpServletRequest.getHeader(properties.getCertAuth().getHeaderFields().getThumbprint()));
 
     if (headerDistinguishedName == null || headerCertThumbprint == null) {
       log.error("No thumbprint or distinguish name");
@@ -103,10 +132,6 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     }
 
     headerDistinguishedName = URLDecoder.decode(headerDistinguishedName, StandardCharsets.UTF_8);
-
-    headerCertThumbprint = URLDecoder.decode(headerCertThumbprint, StandardCharsets.UTF_8);
-    headerCertThumbprint = headerCertThumbprint.replace(":", "");
-    headerCertThumbprint = headerCertThumbprint.toLowerCase();
 
     MDC.put("dnString", "\"" + headerDistinguishedName + "\"");
     MDC.put("thumbprint", headerCertThumbprint);
