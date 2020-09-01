@@ -582,7 +582,7 @@ Example self signed certificate that complies with above specification
      		-newkey ec:<(openssl ecparam -name prime256v1) \
      		-extensions v3_req \
      		-subj "/CN=FGS Netherlands/OU=Corona-Team/O=Ministry of Public Health/emailAddress=operations@coronateam.nl/L=the Hauge/C=NL" \
-     		-outkey privkey.pem -nodes \
+     		-keyout privkey.pem -nodes \
      		-out pub.pem
      		
 Obtain the fingerprint
