@@ -35,7 +35,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -65,17 +64,20 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
   @Qualifier("handlerExceptionResolver")
   private final HandlerExceptionResolver handlerExceptionResolver;
 
-  @SneakyThrows
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    HandlerExecutionChain handlerExecutionChain = requestMap.getHandler(request);
+    try {
+      HandlerExecutionChain handlerExecutionChain = requestMap.getHandler(request);
 
-    if (handlerExecutionChain == null) {
+      if (handlerExecutionChain == null) {
+        return true;
+      } else {
+        return !((HandlerMethod) handlerExecutionChain.getHandler()).getMethod()
+          .isAnnotationPresent(CertificateAuthentificationRequired.class);
+      }
+    } catch (Exception e) {
+      handlerExceptionResolver.resolveException(request, null, null, e);
       return true;
-    } else {
-      return !((HandlerMethod) handlerExecutionChain.getHandler()).getMethod()
-        .isAnnotationPresent(CertificateAuthentificationRequired.class);
-
     }
   }
 
