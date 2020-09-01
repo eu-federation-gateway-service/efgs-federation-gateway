@@ -61,7 +61,7 @@ public class CertificateService {
     try {
       return getCallbackCertificateForHost(new URL(url).getHost(), country);
     } catch (MalformedURLException ignored) {
-      MDC.put("url", url);
+      MDC.put("url", "\"" + url + "\"");
       log.error("Could not parse url.");
       return Optional.empty();
     }

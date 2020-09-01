@@ -67,7 +67,7 @@ public class CallbackTaskExecutorService {
 
       MDC.put("callbackId", subscription.getCallbackId());
       MDC.put("country", subscription.getCountry());
-      MDC.put("url", subscription.getUrl());
+      MDC.put("url", "\"" + subscription.getUrl() + "\"");
 
       if (!callbackService.checkUrl(subscription.getUrl(), subscription.getCountry())) {
         log.error("Security check for callback url has failed. Deleting callback subscription.");
