@@ -108,7 +108,7 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     headerCertThumbprint = headerCertThumbprint.replace(":", "");
     headerCertThumbprint = headerCertThumbprint.toLowerCase();
 
-    MDC.put("dnString", headerDistinguishedName);
+    MDC.put("dnString", "\"" + headerDistinguishedName + "\"");
     MDC.put("thumbprint", headerCertThumbprint);
 
     Map<String, String> distinguishNameMap = parseDistinguishNameString(headerDistinguishedName);
