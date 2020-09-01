@@ -81,6 +81,11 @@ public class DownloadController {
 
   private final DiagnosisKeyMapper diagnosisKeyMapper;
 
+  @GetMapping("batch")
+  public void batch() {
+    diagnosisKeyBatchService.batchDocuments();
+  }
+
   /**
    * This endpoint enabled the download of diagnosis keys.
    *

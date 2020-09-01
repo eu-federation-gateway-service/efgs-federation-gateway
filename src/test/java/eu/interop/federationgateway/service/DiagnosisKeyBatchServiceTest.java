@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.mockito.internal.stubbing.answers.AnswersWithDelay;
+import org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -155,6 +157,7 @@ public class DiagnosisKeyBatchServiceTest {
     keyRepository.saveAll(TestData.createTestDiagKeysList(3, "uploaderBatchTag_BG_1", "BG1"));
 
     batchRepository.deleteAll();
+
     batchService.batchDocuments();
 
     // the batch repo count should be 4 (keys/batch 5,5,5,8) regarding doc limit is 9
@@ -169,5 +172,35 @@ public class DiagnosisKeyBatchServiceTest {
     Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
     Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(10).getBatchTag());
     Assert.assertEquals(formattedDate + "-4", keyRepository.findAll().get(17).getBatchTag());
+  }
+
+  @Test
+  public void documentBatchingShouldBeStoppedIfTimelimitIsReached() throws Exception {
+    // save test keys
+    keyRepository.saveAll(TestData.createTestDiagKeysList(5, "uploaderBatchTag_DE", "DE"));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(5, "uploaderBatchTag_PL", "PL"));
+
+    batchRepository.deleteAll();
+
+    Mockito
+      .doAnswer(new AnswersWithDelay(100, new ReturnsEmptyValues()))
+      .when(callbackServiceMock).notifyAllCountriesForNewBatchTag(Mockito.any(DiagnosisKeyBatchEntity.class));
+
+    int defaultTimeLimit = efgsProperties.getBatching().getTimelimit();
+    efgsProperties.getBatching().setTimelimit(50);
+
+    batchService.batchDocuments();
+
+    efgsProperties.getBatching().setTimelimit(defaultTimeLimit);
+
+    // the batch repo count should be 1 because batching has stopped after first batch
+    Assert.assertEquals(1, batchRepository.count());
+
+    // check repos
+    Assert.assertNull(batchRepository.findAll().get(0).getBatchLink());
+    Assert.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assert.assertNull(keyRepository.findAll().get(5).getBatchTag());
   }
 }

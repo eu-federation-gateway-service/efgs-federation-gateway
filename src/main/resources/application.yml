@@ -41,5 +41,7 @@ efgs:
       thumbprint: X-SSL-Client-SHA256
       distinguished-name: X-SSL-Client-DN
   batching:
+    locklimit: 1800000
+    timelimit: 1200000
     timeinterval: 300000
     doclimit: 5000
