@@ -165,7 +165,7 @@ To allow authentication of the http request the load balancer adds header
  attributes containing meta information about the client certificate used to 
  authenticate the request.
 
-See [2.1.2. Request Forwarding](#2.1.2. Request Forwarding)
+See [2.1.2. Request Forwarding](#212-request-forwarding)
 
 ## Reverse Proxy
 - do we really need a reverse proxy
