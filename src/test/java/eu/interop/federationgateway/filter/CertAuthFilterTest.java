@@ -20,13 +20,18 @@
 
 package eu.interop.federationgateway.filter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -38,8 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -146,9 +149,16 @@ public class CertAuthFilterTest {
   }
 
   @Test
-  public void testFilterShouldDecodeCertThumbprint() throws Exception {
-    String encodedThumbprint = "69%3AC6%3A97%3Ac0%3A45%3Ab4%3Acd%3Aaa%3A44%3A1a%3A28%3A"
-      + "AF%3A0e%3Ac1%3Acc%3A41%3A28%3A15%3A3B%3A9d%3Adc%3A79%3A6b%3A66%3Abf%3Aa0%3A4b%3A02%3AEa%3A3e%3A10%3A3e";
+  public void testFilterShouldDecodeBase64EncodedCertThumbprint() throws Exception {
+    byte[] certHashBytes = new BigInteger(TestData.AUTH_CERT_HASH, 16).toByteArray();
+
+    if (certHashBytes[0] == 0) {
+      byte[] truncatedCertHashBytes = new byte[certHashBytes.length - 1];
+      System.arraycopy(certHashBytes, 1, truncatedCertHashBytes, 0, truncatedCertHashBytes.length);
+      certHashBytes = truncatedCertHashBytes;
+    }
+
+    String encodedThumbprint = Base64.getEncoder().encodeToString(certHashBytes);
 
     mockMvc.perform(get("/diagnosiskeys/download/s")
       .accept("application/protobuf; version=1.0")
@@ -162,6 +172,7 @@ public class CertAuthFilterTest {
       );
     });
   }
+
 
   @Test
   public void testRequestShouldFailIfCountryIsNotPresentInDnString() throws Exception {
