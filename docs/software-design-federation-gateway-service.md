@@ -33,7 +33,22 @@ National Health Authorities acting the the certificate management process.
 
 # Software Design
 
-## Database Isolation Level
+## Database Design
+
+Entities
+| Entity     | Content                                          | Delete Strategy                        |
+| ---------- | ------------------------------------------------ | -------------------------------------- |
+| callback_subscription | stores details about the callback                | no automatic deletion                |
+| callback_task         | stores details about a specific callback task    | no automatic deletion |
+| certificate           | stores the certificate for the countries         | no automatic deletion |
+| diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
+| diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
+
+Details on deletion strategy:
+The automated deletion after 14 days is implemented as scheduled job in the web application, the relevant criteria is the "created_at" attribute of the entity.
+
+
+### Database Isolation Level
 
 [Hypothesis] Need to use the highest isolation level TRANSACTION_SERIALIZABLE to isolate upload, download 
 and batching operations.
