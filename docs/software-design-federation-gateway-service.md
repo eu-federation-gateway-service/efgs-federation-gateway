@@ -168,24 +168,16 @@ To allow authentication of the http request the load balancer adds header
 See [2.1.2. Request Forwarding](#212-request-forwarding)
 
 ## Reverse Proxy
-- do we really need a reverse proxy
+The reverse proxy distributes load over the tomcat instances. 
+The main purpose for EFGS is to provide fail over behavior in case a tomcat instance is not available anymore.
 
 ## Database
-mySQL
-- encryption during transport?
-- encryption at rest?
-- HA, how?
-- backup/restore, how?
+The database is implemented as mySQL 5.7
 
 ## Log Analytics/Monitoring Integration
+
 ## Secret Management
-where can we store secrets like user/pwd for DB connections
-
-## Data Center Access
-### Access for Deployment
-### Access for Operations
-### Access for Developer
-
+Environment specific secrets are managed as part of the tomcat configuration. JDBC connections are provided as tomcat resources.
 
 # Security
 
@@ -571,6 +563,9 @@ Proposal
 Proposal
 - Worker Nodes 3x [4 x Cores, 16 GB RAM, 10 GB free Storage] 
 - Database equivalent to 2x [4 Cores and 16 GB RAM] 
+
+# Data Deletion
+The data base stores 
 
 # Other Constraints and Conditions
 Timezone all times and dates are interpreted as timestamps in UTC (https://en.wikipedia.org/wiki/Coordinated_Universal_Time)
