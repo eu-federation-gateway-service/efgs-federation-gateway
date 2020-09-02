@@ -103,7 +103,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       targetContentTypeVersion = properties.getContentNegotiation().getJsonVersion();
     }
 
-    MDC.put("requestedMediaType", contentType.toString());
+    MDC.put("requestedMediaType", "\"" + contentType.toString() + "\"");
 
     if (targetContentType == null) {
       log.error("Accepted Content-Type is not compatible");
@@ -159,7 +159,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Accept must be set!");
     }
 
-    MDC.put("requestedMediaType", contentType.toString());
+    MDC.put("requestedMediaType", "\"" + contentType.toString() + "\"");
 
     MediaType targetContentType = null;
     String targetContentTypeVersion = null;

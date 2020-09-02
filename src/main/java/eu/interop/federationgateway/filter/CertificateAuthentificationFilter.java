@@ -24,9 +24,11 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.service.CertificateService;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -35,7 +37,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -65,17 +66,47 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
   @Qualifier("handlerExceptionResolver")
   private final HandlerExceptionResolver handlerExceptionResolver;
 
-  @SneakyThrows
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    HandlerExecutionChain handlerExecutionChain = requestMap.getHandler(request);
+    try {
+      HandlerExecutionChain handlerExecutionChain = requestMap.getHandler(request);
 
-    if (handlerExecutionChain == null) {
+      if (handlerExecutionChain == null) {
+        return true;
+      } else {
+        return !((HandlerMethod) handlerExecutionChain.getHandler()).getMethod()
+          .isAnnotationPresent(CertificateAuthentificationRequired.class);
+      }
+    } catch (Exception e) {
+      handlerExceptionResolver.resolveException(request, null, null, e);
       return true;
-    } else {
-      return !((HandlerMethod) handlerExecutionChain.getHandler()).getMethod()
-        .isAnnotationPresent(CertificateAuthentificationRequired.class);
+    }
+  }
 
+  private String normalizeCertificateHash(String inputString) {
+    if (inputString == null) {
+      return null;
+    }
+
+    boolean isHexString;
+    // check if it is a hex string
+    try {
+      new BigInteger(inputString, 16);
+      isHexString = true;
+    } catch (NumberFormatException ignored) {
+      isHexString = false;
+    }
+
+    // We can assume that the given string is hex encoded SHA-256 hash when length is 64 and string is hex encoded
+    if (inputString.length() == 64 && isHexString) {
+      return inputString;
+    } else {
+      try {
+        return new BigInteger(1, Base64.getDecoder().decode(inputString)).toString(16);
+      } catch (IllegalArgumentException ignored) {
+        log.error("Could not normalize certificate hash.");
+        return null;
+      }
     }
   }
 
@@ -90,8 +121,8 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     String headerDistinguishedName =
       httpServletRequest.getHeader(properties.getCertAuth().getHeaderFields().getDistinguishedName());
 
-    String headerCertThumbprint =
-      httpServletRequest.getHeader(properties.getCertAuth().getHeaderFields().getThumbprint());
+    String headerCertThumbprint = normalizeCertificateHash(
+      httpServletRequest.getHeader(properties.getCertAuth().getHeaderFields().getThumbprint()));
 
     if (headerDistinguishedName == null || headerCertThumbprint == null) {
       log.error("No thumbprint or distinguish name");
@@ -102,11 +133,7 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
 
     headerDistinguishedName = URLDecoder.decode(headerDistinguishedName, StandardCharsets.UTF_8);
 
-    headerCertThumbprint = URLDecoder.decode(headerCertThumbprint, StandardCharsets.UTF_8);
-    headerCertThumbprint = headerCertThumbprint.replace(":", "");
-    headerCertThumbprint = headerCertThumbprint.toLowerCase();
-
-    MDC.put("dnString", headerDistinguishedName);
+    MDC.put("dnString", "\"" + headerDistinguishedName + "\"");
     MDC.put("thumbprint", headerCertThumbprint);
 
     Map<String, String> distinguishNameMap = parseDistinguishNameString(headerDistinguishedName);

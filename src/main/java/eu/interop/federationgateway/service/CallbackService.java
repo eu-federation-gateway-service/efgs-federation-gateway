@@ -180,7 +180,7 @@ public class CallbackService {
     URL url;
     InetAddress hostAddress;
 
-    MDC.put("url", urlToCheck);
+    MDC.put("url", "\"" + urlToCheck + "\"");
 
     try {
       url = new URL(urlToCheck);

@@ -167,7 +167,7 @@ public class DiagnosisKeyBatchService {
       .map(DiagnosisKeyEntity::getFormat)
       .anyMatch(Predicate.not(diagnosisKey.get().getFormat()::equals))) {
 
-      MDC.put("format", diagnosisKey.get().getFormat().toString());
+      MDC.put("format", "\"" + diagnosisKey.get().getFormat().toString() + "\"");
 
       log.error("Stop batching process, while try to batch {} keys, but the keys have different format versions",
         diagnosisKeyEntitys.size());

@@ -33,7 +33,23 @@ National Health Authorities acting the the certificate management process.
 
 # Software Design
 
-## Database Isolation Level
+## Database Design
+
+Entities
+| Entity     | Content                                          | Delete Strategy                        |
+| ---------- | ------------------------------------------------ | -------------------------------------- |
+| callback_subscription | stores details about the callback                | no automatic deletion                |
+| callback_task         | stores details about a specific callback task    | no automatic deletion |
+| certificate           | stores the certificate for the countries         | no automatic deletion |
+| diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
+| diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
+
+### Data Deletion
+The semantic scope for automated deletion are all data that is related to human individuals. This data should only be available for 14 days.
+
+The automated deletion after 14 days is implemented as scheduled job in the web application, the relevant criteria is the "created_at" attribute of the entity.
+
+### Database Isolation Level
 
 [Hypothesis] Need to use the highest isolation level TRANSACTION_SERIALIZABLE to isolate upload, download 
 and batching operations.
@@ -165,25 +181,19 @@ To allow authentication of the http request the load balancer adds header
  attributes containing meta information about the client certificate used to 
  authenticate the request.
 
+See [2.1.2. Request Forwarding](#212-request-forwarding)
+
 ## Reverse Proxy
-- do we really need a reverse proxy
+The reverse proxy distributes load over the tomcat instances. 
+The main purpose for EFGS is to provide fail over behavior in case a tomcat instance is not available anymore.
 
 ## Database
-mySQL
-- encryption during transport?
-- encryption at rest?
-- HA, how?
-- backup/restore, how?
+The database is implemented as mySQL 5.7
 
 ## Log Analytics/Monitoring Integration
+
 ## Secret Management
-where can we store secrets like user/pwd for DB connections
-
-## Data Center Access
-### Access for Deployment
-### Access for Operations
-### Access for Developer
-
+Environment specific secrets are managed as part of the tomcat configuration. JDBC connections are provided as tomcat resources.
 
 # Security
 
@@ -253,8 +263,8 @@ As shown in the figure below, the Federation Gateway (FG) Load Balancer authenti
 
 | HTTP Header         | Description |
 |---------------------|-------------|
-| X-SSL-Client-SHA256 |	SHA-256 hash value of the DER encoded client's certificate. The so-called certificate fingerprint or thumbprint. (hex, lowercase, without colon)                         |
-| X-SSL-Client-DN	  | The subject Distinguished Name (DN) of the client's certificate (see [RFC 5280](https://tools.ietf.org/html/rfc5280#page-23) and [RFC 1719](https://tools.ietf.org/html/rfc1779#page-6)). The DN MUST contain the Country (C) attribute.  |
+| X-SSL-Client-SHA256 |	SHA-256 hash value of the DER encoded client's certificate. The so-called certificate fingerprint or thumbprint. (base64 encoded bytes, not base64 encoded hexadecimal string representation) |
+| X-SSL-Client-DN	  | The subject Distinguished Name (DN) of the client's certificate (see [RFC 5280](https://tools.ietf.org/html/rfc5280#page-23) and [RFC 1719](https://tools.ietf.org/html/rfc1779#page-6)). The DN MUST contain the Country (C) attribute. (it is possible to transmit DN string URL encoded) |
 
 ### 2.2. Federation Gateway Service 
 
@@ -494,10 +504,8 @@ to the deployed software.
 
 Stages:
 - DEV
-
 - TEST
-
-- PreProd
+- ACC
 - PROD
 
 ## Generic Deployment View
@@ -562,13 +570,16 @@ Proposal
 - Database equivalent to 2x [4 Cores and 16 GB RAM] 
 
 
-## Stage PREPROD
+## Stage ACC
 ## Stage PROD
 ### Sizing PROD
 
 Proposal
 - Worker Nodes 3x [4 x Cores, 16 GB RAM, 10 GB free Storage] 
 - Database equivalent to 2x [4 Cores and 16 GB RAM] 
+
+# Data Deletion
+The data base stores 
 
 # Other Constraints and Conditions
 Timezone all times and dates are interpreted as timestamps in UTC (https://en.wikipedia.org/wiki/Coordinated_Universal_Time)
