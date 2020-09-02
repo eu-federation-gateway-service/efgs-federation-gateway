@@ -44,9 +44,10 @@ Entities
 | diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
 | diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
 
-Details on deletion strategy:
-The automated deletion after 14 days is implemented as scheduled job in the web application, the relevant criteria is the "created_at" attribute of the entity.
+### Data Deletaion
+The semantic scope for automated deletion are all data that is related to human individuals. This data should only be available for 14 days.
 
+The automated deletion after 14 days is implemented as scheduled job in the web application, the relevant criteria is the "created_at" attribute of the entity.
 
 ### Database Isolation Level
 
