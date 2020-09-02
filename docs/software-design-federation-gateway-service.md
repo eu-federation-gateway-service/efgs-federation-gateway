@@ -504,10 +504,8 @@ to the deployed software.
 
 Stages:
 - DEV
-
 - TEST
-
-- PreProd
+- ACC
 - PROD
 
 ## Generic Deployment View
@@ -572,7 +570,7 @@ Proposal
 - Database equivalent to 2x [4 Cores and 16 GB RAM] 
 
 
-## Stage PREPROD
+## Stage ACC
 ## Stage PROD
 ### Sizing PROD
 
