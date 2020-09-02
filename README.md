@@ -63,10 +63,10 @@ The EFGS Docker image will be built. Also a MySQL database will be created. Afte
 #### API documentation  
 Along with the application there comes a [swagger2](https://swagger.io) API documentation, which you can access in your web browser when the efgs-gateway-service applications runs:
 
-    <base-url>/swagger-ui/index.html
+    <base-url>/swagger
 
 Which results in the following URL on your local machine:
-http://localhost:8090/swagger-ui/index.html
+http://localhost:8080/swagger
 
 ## Documentation  
 
