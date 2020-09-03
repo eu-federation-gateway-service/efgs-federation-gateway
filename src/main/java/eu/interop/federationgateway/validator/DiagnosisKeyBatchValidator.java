@@ -33,9 +33,6 @@ public class DiagnosisKeyBatchValidator implements
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid transmission risk level.");
         return false;
       }
-      //      else if ((diagnosisKey.getRollingPeriod() + diagnosisKey.getRollingStartIntervalNumber()) > 144) {
-      //        log.error(VALIDATION_FAILED_MESSAGE + "Invalid ");
-      //      }
     }
 
     log.info("Successfull validation of diagnosis keys");
