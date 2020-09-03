@@ -28,7 +28,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(isolation = Isolation.SERIALIZABLE)
+@Transactional(isolation = Isolation.REPEATABLE_READ)
 public interface DiagnosisKeyBatchRepository extends JpaRepository<DiagnosisKeyBatchEntity, Long> {
 
   @Modifying

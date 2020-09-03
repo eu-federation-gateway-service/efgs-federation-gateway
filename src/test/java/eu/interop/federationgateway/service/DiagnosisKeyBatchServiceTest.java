@@ -42,8 +42,6 @@ import org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This is the test class for the batch service.
@@ -146,7 +144,6 @@ public class DiagnosisKeyBatchServiceTest {
    * @throws Exception if the test cannot be performed.
    */
   @Test
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void testBatchDocumentsForLimitation() throws Exception {
     log.info("process testBatchDocumentsForLimitation()");
     // save test keys
