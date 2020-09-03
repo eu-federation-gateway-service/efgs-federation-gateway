@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DiagnosisKeyBatchValidator implements
   ConstraintValidator<DiagnosisKeyBatchConstraint, EfgsProto.DiagnosisKeyBatch> {
 
-  private static final String VALIDATION_FAILED_MESSAGE = "Validation of Diagnosis key failed: ";
+  private static final String VALIDATION_FAILED_MESSAGE = "Validation of diagnosis key failed: ";
 
   @Override
   public boolean isValid(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch, ConstraintValidatorContext context) {
@@ -18,7 +18,7 @@ public class DiagnosisKeyBatchValidator implements
     List<EfgsProto.DiagnosisKey> diagnosisKeys = diagnosisKeyBatch.getKeysList();
     for (EfgsProto.DiagnosisKey diagnosisKey : diagnosisKeys) {
       if (diagnosisKey.getReportType() == EfgsProto.ReportType.UNKNOWN) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid Report-Type.");
+        log.error(VALIDATION_FAILED_MESSAGE + "Invalid report-type.");
         return false;
       } else if (diagnosisKey.getRollingStartIntervalNumber() == 0) {
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid rolling start interval number.");
@@ -35,7 +35,7 @@ public class DiagnosisKeyBatchValidator implements
       }
     }
 
-    log.info("Successfull validation of diagnosis keys");
+    log.info("Successful validation of diagnosis keys");
     return true;
   }
 }

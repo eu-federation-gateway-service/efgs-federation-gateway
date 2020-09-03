@@ -15,21 +15,21 @@ public @interface DiagnosisKeyBatchConstraint {
   /**
    * The default key for creating error messages in case the constraint is violated.
    *
-   * @return
+   * @return the message of the validation failure
    */
   String message() default "One or more diagnosis keys are not valid";
 
   /**
    * Allows the specification of validation groups, to which this constraint belongs.
    *
-   * @return
+   * @return validation groups
    */
   Class<?>[] groups() default {};
 
   /**
    * Assigns custom payload objects to a constraint.
    *
-   * @return
+   * @return custom payload objects
    */
   Class<? extends Payload>[] payload() default {};
 }
