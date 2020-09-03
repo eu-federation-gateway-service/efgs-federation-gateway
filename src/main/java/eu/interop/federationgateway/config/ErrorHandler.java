@@ -21,6 +21,7 @@
 package eu.interop.federationgateway.config;
 
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import javax.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
@@ -52,6 +54,14 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.MULTI_STATUS)
       .contentType(MediaType.APPLICATION_JSON)
       .body(e.getResultMap());
+  }
+
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorMessageBody> handleException(ConstraintViolationException e) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(new ErrorMessageBody(e.getMessage()));
   }
 
   /**

@@ -28,6 +28,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import eu.interop.federationgateway.validator.DiagnosisKeyBatchConstraint;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -138,7 +139,8 @@ public class UploadController {
     @RequestHeader(value = "batchTag") String batchTag,
     @RequestHeader(value = "batchSignature") String batchSignature,
     @RequestHeader(name = "Content-Type") String contentType,
-    @org.springframework.web.bind.annotation.RequestBody @Parameter(hidden = true) EfgsProto.DiagnosisKeyBatch body,
+    @org.springframework.web.bind.annotation.RequestBody @Parameter(hidden = true)
+    @DiagnosisKeyBatchConstraint EfgsProto.DiagnosisKeyBatch body,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String uploaderCountry,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT) String uploaderCertThumbprint
   ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {

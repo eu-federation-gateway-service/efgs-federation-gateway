@@ -142,9 +142,9 @@ public class AuditControllerTest {
   }
 
   private String createDiagnosisKeysTestData() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(10).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(20).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(30).build();
+    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
+    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(4).build();
+    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(5).build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder().addAllKeys(Arrays.asList(key1,
       key2, key3)).build();
