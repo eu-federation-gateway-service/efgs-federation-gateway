@@ -244,7 +244,7 @@ public class UploadControllerTest {
     EfgsProto.DiagnosisKeyBatch.Builder batchBuilder = EfgsProto.DiagnosisKeyBatch.newBuilder();
 
     for (int i = 0; i < properties.getUploadSettings().getMaximumUploadBatchSize(); i++) {
-      batchBuilder.addKeys(TestData.getDiagnosisKeyProto().toBuilder());
+      batchBuilder.addKeys(TestData.getDiagnosisKeyProto().toBuilder().setDaysSinceOnsetOfSymptoms(i).build());
     }
 
     EfgsProto.DiagnosisKeyBatch batch = batchBuilder.build();
@@ -267,7 +267,7 @@ public class UploadControllerTest {
     EfgsProto.DiagnosisKeyBatch.Builder batchBuilder = EfgsProto.DiagnosisKeyBatch.newBuilder();
 
     for (int i = 0; i < properties.getUploadSettings().getMaximumUploadBatchSize() + 1; i++) {
-      batchBuilder.addKeys(TestData.getDiagnosisKeyProto().toBuilder());
+      batchBuilder.addKeys(TestData.getDiagnosisKeyProto().toBuilder().setDaysSinceOnsetOfSymptoms(i).build());
     }
 
     EfgsProto.DiagnosisKeyBatch batch = batchBuilder.build();
