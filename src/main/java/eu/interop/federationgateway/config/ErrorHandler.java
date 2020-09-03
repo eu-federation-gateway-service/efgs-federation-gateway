@@ -21,6 +21,7 @@
 package eu.interop.federationgateway.config;
 
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import javax.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,20 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
       .status(HttpStatus.MULTI_STATUS)
       .contentType(MediaType.APPLICATION_JSON)
       .body(e.getResultMap());
+  }
+
+  /**
+   * Handles {@link ConstraintViolationException} when a validation failed.
+   *
+   * @param e the thrown {@link ConstraintViolationException}
+   * @return A ResponseEntity with a ErrorMessage inside.
+   */
+  @ExceptionHandler(ConstraintViolationException.class)
+  public ResponseEntity<ErrorMessageBody> handleException(ConstraintViolationException e) {
+    return ResponseEntity
+      .status(HttpStatus.BAD_REQUEST)
+      .contentType(MediaType.APPLICATION_JSON)
+      .body(new ErrorMessageBody(e.getMessage()));
   }
 
   /**
