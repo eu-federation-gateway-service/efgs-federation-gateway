@@ -18,7 +18,7 @@ public class DiagnosisKeyBatchValidator implements
     List<EfgsProto.DiagnosisKey> diagnosisKeys = diagnosisKeyBatch.getKeysList();
     for (EfgsProto.DiagnosisKey diagnosisKey : diagnosisKeys) {
       if (diagnosisKey.getReportType() == EfgsProto.ReportType.UNKNOWN) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid reporttype");
+        log.error(VALIDATION_FAILED_MESSAGE + "Invalid Report-Type.");
         return false;
       } else if (diagnosisKey.getRollingStartIntervalNumber() == 0) {
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid rolling start interval number.");
@@ -30,7 +30,7 @@ public class DiagnosisKeyBatchValidator implements
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid rolling period.");
         return false;
       } else if (diagnosisKey.getTransmissionRiskLevel() == 0 || diagnosisKey.getTransmissionRiskLevel() > 8) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid transmission risk level");
+        log.error(VALIDATION_FAILED_MESSAGE + "Invalid transmission risk level.");
         return false;
       }
       //      else if ((diagnosisKey.getRollingPeriod() + diagnosisKey.getRollingStartIntervalNumber()) > 144) {
