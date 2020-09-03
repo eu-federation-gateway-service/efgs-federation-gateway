@@ -10,9 +10,8 @@ RUN sh -c 'touch /app.jar'
 
 VOLUME [ "/tmp" ]
 
-ENV JAVA_OPTS="$JAVA_OPTS -Xms256M -Xmx1G" \
-    SERVER_PORT=8080
+ENV JAVA_OPTS="$JAVA_OPTS -Xms256M -Xmx1G"
 
-EXPOSE ${SERVER_PORT}
+EXPOSE 8080
 
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=mysql -jar /app.jar" ]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]

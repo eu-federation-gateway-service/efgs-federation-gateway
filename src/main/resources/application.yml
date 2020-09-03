@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8090}
+  port: 8090
 spring:
   application:
     name: eu-interop-federation-gateway
