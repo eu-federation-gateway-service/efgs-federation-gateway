@@ -56,6 +56,12 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
       .body(e.getResultMap());
   }
 
+  /**
+   * Handles {@link ConstraintViolationException} when a validation failed.
+   *
+   * @param e the thrown {@link ConstraintViolationException}
+   * @return A ResponseEntity with a ErrorMessage inside.
+   */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ErrorMessageBody> handleException(ConstraintViolationException e) {
     return ResponseEntity
