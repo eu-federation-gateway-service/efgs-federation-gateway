@@ -14,4 +14,7 @@ databaseChangeLog:
   - include:
       file: changelog/v000-create-callback-task-entity-table.yml
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v000-create-shedlock-table.yml
+      relativeToChangelogFile: true
 
