@@ -46,7 +46,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.context.annotation.Profile;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -81,12 +80,6 @@ public class DownloadController {
   private final DiagnosisKeyEntityService diagnosisKeyService;
 
   private final DiagnosisKeyMapper diagnosisKeyMapper;
-
-  @GetMapping("batch")
-  @Profile("test") // this endpoint needs to be removed after #73 is fixed
-  public void batch() {
-    diagnosisKeyBatchService.batchDocuments();
-  }
 
   /**
    * This endpoint enabled the download of diagnosis keys.
