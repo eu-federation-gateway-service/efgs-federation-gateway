@@ -40,6 +40,7 @@
     <bcpkix.version>1.66</bcpkix.version>
     <reactor.version>1.0.1.RELEASE</reactor.version>
     <okhttp.version>4.0.1</okhttp.version>
+    <shedlock.version>4.14.0</shedlock.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.1.1</plugin.checkstyle.version>
     <plugin.sonar.version>3.6.1.1688</plugin.sonar.version>
@@ -287,6 +288,16 @@
       <artifactId>mockwebserver</artifactId>
       <version>${okhttp.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.javacrumbs.shedlock</groupId>
+      <artifactId>shedlock-provider-jdbc-template</artifactId>
+      <version>${shedlock.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.javacrumbs.shedlock</groupId>
+      <artifactId>shedlock-spring</artifactId>
+      <version>${shedlock.version}</version>
     </dependency>
   </dependencies>
 

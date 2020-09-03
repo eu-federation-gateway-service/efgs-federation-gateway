@@ -60,6 +60,8 @@ public class EfgsProperties {
   @Setter
   public static class Batching {
     private int doclimit = 5000;
+    private int timelimit = 1200000;
+    private int locklimit = 1800000;
   }
 
   @Getter

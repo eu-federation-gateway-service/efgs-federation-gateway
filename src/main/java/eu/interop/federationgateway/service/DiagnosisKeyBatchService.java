@@ -36,6 +36,7 @@ import java.util.function.Predicate;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -62,10 +63,15 @@ public class DiagnosisKeyBatchService {
   @Scheduled(
     fixedDelayString = "${efgs.batching.timeinterval}"
   )
+  @SchedulerLock(name = "DiagnosisKeyBatchService_batchDocuments", lockAtLeastFor = "PT0S",
+    lockAtMostFor = "${efgs.batching.locklimit}")
   @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 10000))
   @Transactional
   public void batchDocuments() {
+
     log.info("start the document batching process");
+
+    long startTime = System.currentTimeMillis();
 
     while (true) {
       // get the first key where the main batch tag is null
@@ -110,6 +116,13 @@ public class DiagnosisKeyBatchService {
       MDC.put("batchCount", String.valueOf(diagnosisKeyCollector.size()));
       log.info("Batch process finished");
       callbackService.notifyAllCountriesForNewBatchTag(newBatch);
+
+      long elapsedTime = System.currentTimeMillis() - startTime;
+      if (elapsedTime > properties.getBatching().getTimelimit()) {
+        MDC.put("batchTime", String.valueOf(elapsedTime));
+        log.info("Maximum time for one batching execution reached.");
+        break;
+      }
     }
   }
 
