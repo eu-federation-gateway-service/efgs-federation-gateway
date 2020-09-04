@@ -32,7 +32,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(isolation = Isolation.REPEATABLE_READ)
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKeyEntity, Long> {
 
   @Modifying
@@ -46,12 +46,15 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
 
   @Query("SELECT new eu.interop.federationgateway.model.AuditEntry("
     + "min(uploader.country), min(createdAt), min(uploader.thumbprint), COUNT(*), min(uploader.batchSignature))"
-    + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag GROUP BY uploader.batchTag")
-  List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag);
-
-  Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(List<String> uploaderBatchTags);
+    + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag AND createdAt BETWEEN :begin AND :end "
+    + "GROUP BY uploader.batchTag")
+  List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag,
+                                     @Param("begin") ZonedDateTime begin,
+                                     @Param("end") ZonedDateTime end);
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNull();
+
+  Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(List<String> uploaderBatchTags);
 
   List<DiagnosisKeyEntity> findByBatchTagIsAndUploader_CountryIsNot(String batchTag, String country);
 
