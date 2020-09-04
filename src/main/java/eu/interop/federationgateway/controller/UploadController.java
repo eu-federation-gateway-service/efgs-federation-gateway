@@ -28,6 +28,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import eu.interop.federationgateway.utils.EfgsMDC;
 import eu.interop.federationgateway.validator.DiagnosisKeyBatchConstraint;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -41,7 +42,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -146,9 +146,9 @@ public class UploadController {
   ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
     int maximumUploadBatchSize = properties.getUploadSettings().getMaximumUploadBatchSize();
 
-    MDC.put("batchTag", batchTag);
-    MDC.put("numKeys", String.valueOf(body.getKeysCount()));
-    MDC.put("maxKeys", String.valueOf(maximumUploadBatchSize));
+    EfgsMDC.put("batchTag", batchTag);
+    EfgsMDC.put("numKeys", body.getKeysCount());
+    EfgsMDC.put("maxKeys", maximumUploadBatchSize);
 
     if (body.getKeysCount() > maximumUploadBatchSize) {
       log.error("too many diagnosis keys");

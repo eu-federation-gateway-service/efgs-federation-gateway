@@ -22,12 +22,12 @@ package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CertificateRepository;
+import eu.interop.federationgateway.utils.EfgsMDC;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -61,7 +61,7 @@ public class CertificateService {
     try {
       return getCallbackCertificateForHost(new URL(url).getHost(), country);
     } catch (MalformedURLException ignored) {
-      MDC.put("url", "\"" + url + "\"");
+      EfgsMDC.put("url", url);
       log.error("Could not parse url.");
       return Optional.empty();
     }

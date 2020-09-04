@@ -23,6 +23,7 @@ package eu.interop.federationgateway.controller;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import eu.interop.federationgateway.utils.EfgsMDC;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -31,7 +32,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -95,7 +95,7 @@ public class AuditController {
     List<AuditEntry> auditResponse
       = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTag(batchTag);
 
-    MDC.put("batchTag", batchTag);
+    EfgsMDC.put("batchTag", batchTag);
     if (auditResponse.isEmpty()) {
       log.error("BatchTag Could not found");
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Batchtag not found");

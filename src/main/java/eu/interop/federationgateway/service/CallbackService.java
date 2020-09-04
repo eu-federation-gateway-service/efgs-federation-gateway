@@ -26,6 +26,7 @@ import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CallbackTaskRepository;
+import eu.interop.federationgateway.utils.EfgsMDC;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.security.web.util.matcher.IpAddressMatcher;
 import org.springframework.stereotype.Component;
 
@@ -71,8 +71,8 @@ public class CallbackService {
    * @param subscription CallbackSubscriptionEntity
    */
   public void deleteAllTasksForSubscription(CallbackSubscriptionEntity subscription) {
-    MDC.put("callbackId", subscription.getCallbackId());
-    MDC.put("country", subscription.getCountry());
+    EfgsMDC.put("callbackId", subscription.getCallbackId());
+    EfgsMDC.put("country", subscription.getCountry());
 
     log.info("Deleting all CallbackTaskEntities for subscription.");
     callbackTaskRepository.deleteAllByCallbackSubscriptionIs(subscription);
@@ -87,8 +87,8 @@ public class CallbackService {
     List<CallbackSubscriptionEntity> callbacks = getAllCallbackSubscriptions();
 
     callbacks.forEach(callbackSubscription -> {
-      MDC.put("country", callbackSubscription.getCountry());
-      MDC.put("batchTag", batch.getBatchName());
+      EfgsMDC.put("country", callbackSubscription.getCountry());
+      EfgsMDC.put("batchTag", batch.getBatchName());
       log.info("Saving Callback Task to DB");
 
       CallbackTaskEntity callbackTask = new CallbackTaskEntity(
@@ -180,7 +180,7 @@ public class CallbackService {
     URL url;
     InetAddress hostAddress;
 
-    MDC.put("url", "\"" + urlToCheck + "\"");
+    EfgsMDC.put("url", urlToCheck);
 
     try {
       url = new URL(urlToCheck);
@@ -189,7 +189,7 @@ public class CallbackService {
       return false;
     }
 
-    MDC.put("hostname", url.getHost());
+    EfgsMDC.put("hostname", url.getHost());
 
     if (!url.getProtocol().equals("https")) {
       log.error("Callback URL must use https");
@@ -209,7 +209,7 @@ public class CallbackService {
       return false;
     }
 
-    MDC.put("thumbprint", callbackCertificate.get().getThumbprint());
+    EfgsMDC.put("thumbprint", callbackCertificate.get().getThumbprint());
 
     if (callbackCertificate.get().getRevoked()) {
       log.error("Found Callback Certificate, but it is revoked");
@@ -223,7 +223,7 @@ public class CallbackService {
       return false;
     }
 
-    MDC.put("host", hostAddress.getHostAddress());
+    EfgsMDC.put("host", hostAddress.getHostAddress());
 
     IpAddressMatcher[] localSubnetMatchers = {
       new IpAddressMatcher("10.0.0.0/8"),

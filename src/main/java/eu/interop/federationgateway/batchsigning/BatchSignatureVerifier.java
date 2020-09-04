@@ -23,6 +23,7 @@ package eu.interop.federationgateway.batchsigning;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.service.CertificateService;
+import eu.interop.federationgateway.utils.EfgsMDC;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -50,7 +51,6 @@ import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.util.Store;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 /**
@@ -92,8 +92,8 @@ public class BatchSignatureVerifier {
           return false;
         }
 
-        MDC.put("certNotBefore", signerCert.getNotBefore().toString());
-        MDC.put("certNotAfter", signerCert.getNotAfter().toString());
+        EfgsMDC.put("certNotBefore", signerCert.getNotBefore().toString());
+        EfgsMDC.put("certNotAfter", signerCert.getNotAfter().toString());
 
         if (!isCertNotExpired(signerCert)) {
           log.error("signing certificate expired");
@@ -150,7 +150,7 @@ public class BatchSignatureVerifier {
         getCountryOfCertificate(certificate),
         CertificateEntity.CertificateType.SIGNING);
 
-      MDC.put("certThumbprint", certHash);
+      EfgsMDC.put("certThumbprint", certHash);
 
       if (certificateEntity.isEmpty()) {
         log.error("unknown signing certificate");
@@ -181,7 +181,7 @@ public class BatchSignatureVerifier {
       signature.update(x509Certificate.getTBSCertificate());
       return signature.verify(x509Certificate.getSignature());
     } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException e) {
-      MDC.put("errorMessage", e.getMessage());
+      EfgsMDC.put("errorMessage", e.getMessage());
       log.error("Could not verify signature of signing certificate");
       return false;
     }

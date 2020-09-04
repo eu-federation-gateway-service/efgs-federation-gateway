@@ -29,6 +29,7 @@ import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import eu.interop.federationgateway.utils.EfgsMDC;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -45,7 +46,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -136,8 +136,8 @@ public class DownloadController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String downloaderCountry
   ) {
 
-    MDC.put("requestedDate", date.format(DateTimeFormatter.ISO_DATE));
-    MDC.put("batchTag", batchTag);
+    EfgsMDC.put("requestedDate", date.format(DateTimeFormatter.ISO_DATE));
+    EfgsMDC.put("batchTag", batchTag);
 
     ZonedDateTime thresholdDate = ZonedDateTime.now(ZoneOffset.UTC)
       .minusDays(properties.getDownloadSettings().getMaxAgeInDays());
