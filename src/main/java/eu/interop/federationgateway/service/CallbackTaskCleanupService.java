@@ -21,7 +21,7 @@
 package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.config.EfgsProperties;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,9 +49,9 @@ public class CallbackTaskCleanupService {
 
     int updateCount = callbackService.removeTaskLocksOlderThan(timestamp);
 
-    EfgsMDC.put("taskCount", updateCount);
+    EfgsMdc.put("taskCount", updateCount);
     log.info("Removing of task locks of abandoned tasks finished.");
-    EfgsMDC.clear();
+    EfgsMdc.clear();
 
   }
 

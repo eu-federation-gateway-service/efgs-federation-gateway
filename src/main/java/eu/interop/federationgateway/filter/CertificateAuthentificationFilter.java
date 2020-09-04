@@ -23,7 +23,7 @@ package eu.interop.federationgateway.filter;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.service.CertificateService;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -133,8 +133,8 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
 
     headerDistinguishedName = URLDecoder.decode(headerDistinguishedName, StandardCharsets.UTF_8);
 
-    EfgsMDC.put("dnString", headerDistinguishedName);
-    EfgsMDC.put("thumbprint", headerCertThumbprint);
+    EfgsMdc.put("dnString", headerDistinguishedName);
+    EfgsMdc.put("thumbprint", headerCertThumbprint);
 
     Map<String, String> distinguishNameMap = parseDistinguishNameString(headerDistinguishedName);
 

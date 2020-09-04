@@ -26,7 +26,7 @@ import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -74,7 +74,7 @@ public class DiagnosisKeyBatchService {
 
       long elapsedTime = System.currentTimeMillis() - startTime;
       if (elapsedTime > properties.getBatching().getTimelimit()) {
-        EfgsMDC.put("batchTime", elapsedTime);
+        EfgsMdc.put("batchTime", elapsedTime);
         log.info("Maximum time for one batching execution reached.");
         break;
       }
@@ -82,12 +82,12 @@ public class DiagnosisKeyBatchService {
       batchCount += batchCreationResult ? 1 : 0;
     } while (batchCreationResult);
 
-    EfgsMDC.put("batchCount", batchCount);
+    EfgsMdc.put("batchCount", batchCount);
     log.info("Batch Process finished");
 
 
-    EfgsMDC.remove("batchCount");
-    EfgsMDC.remove("batchTime");
+    EfgsMdc.remove("batchCount");
+    EfgsMdc.remove("batchTime");
   }
 
   /**
@@ -113,11 +113,11 @@ public class DiagnosisKeyBatchService {
     callbackService.notifyAllCountriesForNewBatchTag(newBatchEntity);
 
 
-    EfgsMDC.put("batchTag", newBatchEntity.getBatchName());
-    EfgsMDC.put("diagnosisKeyCount", updatedRows);
+    EfgsMdc.put("batchTag", newBatchEntity.getBatchName());
+    EfgsMdc.put("diagnosisKeyCount", updatedRows);
     log.info("Batch created");
-    EfgsMDC.remove("diagnosisKeyCount");
-    EfgsMDC.remove("batchTag");
+    EfgsMdc.remove("diagnosisKeyCount");
+    EfgsMdc.remove("batchTag");
 
     return true;
   }

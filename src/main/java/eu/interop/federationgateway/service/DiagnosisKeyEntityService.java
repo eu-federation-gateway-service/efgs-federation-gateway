@@ -23,7 +23,7 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -96,9 +96,9 @@ public class DiagnosisKeyEntityService {
     if (resultMap.get(409).size() > 0 || resultMap.get(500).size() > 0) {
       resultMap.get(201).clear();
 
-      EfgsMDC.put("insertedKeyCount", resultMap.get(201).size());
-      EfgsMDC.put("conflictKeysCount", resultMap.get(409).size());
-      EfgsMDC.put("failedKeysCount", resultMap.get(500).size());
+      EfgsMdc.put("insertedKeyCount", resultMap.get(201).size());
+      EfgsMdc.put("conflictKeysCount", resultMap.get(409).size());
+      EfgsMdc.put("failedKeysCount", resultMap.get(500).size());
 
       log.error("error inserting keys");
       throw new DiagnosisKeyInsertException("Error during insertion of diagnosis keys!", resultMap);

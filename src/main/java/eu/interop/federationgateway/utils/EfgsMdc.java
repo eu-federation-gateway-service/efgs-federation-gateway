@@ -5,7 +5,7 @@ import org.slf4j.MDC;
 /**
  * Wrapper for MDC to escape values for better log files.
  */
-public class EfgsMDC {
+public class EfgsMdc {
 
   /**
    * Put a diagnostic context value (the <code>value</code> parameter) as identified with the
@@ -13,8 +13,7 @@ public class EfgsMDC {
    * <code>key</code> parameter cannot be null. The <code>value</code> parameter
    * can be null only if the underlying implementation supports it.
    *
-   * <p>
-   * This method delegates all work to the MDC of the underlying logging system.
+   * <p>This method delegates all work to the MDC of the underlying logging system.
    *
    * @param key   non-null key
    * @param value value to put in the map
@@ -33,8 +32,7 @@ public class EfgsMDC {
    * <code>key</code> parameter cannot be null. The <code>value</code> parameter
    * can be null only if the underlying implementation supports it.
    *
-   * <p>
-   * This method delegates all work to the MDC of the underlying logging system.
+   * <p>This method delegates all work to the MDC of the underlying logging system.
    *
    * @param key   non-null key
    * @param value value to put in the map

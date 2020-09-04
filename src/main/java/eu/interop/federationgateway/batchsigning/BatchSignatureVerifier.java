@@ -23,7 +23,7 @@ package eu.interop.federationgateway.batchsigning;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.service.CertificateService;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
@@ -92,8 +92,8 @@ public class BatchSignatureVerifier {
           return false;
         }
 
-        EfgsMDC.put("certNotBefore", signerCert.getNotBefore().toString());
-        EfgsMDC.put("certNotAfter", signerCert.getNotAfter().toString());
+        EfgsMdc.put("certNotBefore", signerCert.getNotBefore().toString());
+        EfgsMdc.put("certNotAfter", signerCert.getNotAfter().toString());
 
         if (!isCertNotExpired(signerCert)) {
           log.error("signing certificate expired");
@@ -150,7 +150,7 @@ public class BatchSignatureVerifier {
         getCountryOfCertificate(certificate),
         CertificateEntity.CertificateType.SIGNING);
 
-      EfgsMDC.put("certThumbprint", certHash);
+      EfgsMdc.put("certThumbprint", certHash);
 
       if (certificateEntity.isEmpty()) {
         log.error("unknown signing certificate");
@@ -181,7 +181,7 @@ public class BatchSignatureVerifier {
       signature.update(x509Certificate.getTBSCertificate());
       return signature.verify(x509Certificate.getSignature());
     } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException e) {
-      EfgsMDC.put("errorMessage", e.getMessage());
+      EfgsMdc.put("errorMessage", e.getMessage());
       log.error("Could not verify signature of signing certificate");
       return false;
     }

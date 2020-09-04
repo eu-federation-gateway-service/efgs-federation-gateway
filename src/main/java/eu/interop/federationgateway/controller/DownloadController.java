@@ -29,7 +29,7 @@ import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -136,8 +136,8 @@ public class DownloadController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String downloaderCountry
   ) {
 
-    EfgsMDC.put("requestedDate", date.format(DateTimeFormatter.ISO_DATE));
-    EfgsMDC.put("batchTag", batchTag);
+    EfgsMdc.put("requestedDate", date.format(DateTimeFormatter.ISO_DATE));
+    EfgsMdc.put("batchTag", batchTag);
 
     ZonedDateTime thresholdDate = ZonedDateTime.now(ZoneOffset.UTC)
       .minusDays(properties.getDownloadSettings().getMaxAgeInDays());

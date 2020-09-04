@@ -1,7 +1,7 @@
 package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.config.EfgsProperties;
-import eu.interop.federationgateway.utils.EfgsMDC;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -35,8 +35,8 @@ public class DiagnosisKeyCleanupService {
     final int deletedDiagnosisKeys = diagnosisKeyEntityService.deleteAllBefore(deleteTimestamp);
     final int deletedDiagnosisKeyBatches = diagnosisKeyBatchService.deleteAllBefore(deleteTimestamp);
 
-    EfgsMDC.put("deletedDiagnosisKeys", deletedDiagnosisKeys);
-    EfgsMDC.put("deletedDiagnosisKeyBatches", deletedDiagnosisKeyBatches);
+    EfgsMdc.put("deletedDiagnosisKeys", deletedDiagnosisKeys);
+    EfgsMdc.put("deletedDiagnosisKeyBatches", deletedDiagnosisKeyBatches);
     log.info("DiagnosisKey and DiagnosisKeyBatch cleanup finished.");
   }
 
