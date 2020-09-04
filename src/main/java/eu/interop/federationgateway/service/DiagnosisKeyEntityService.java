@@ -149,7 +149,7 @@ public class DiagnosisKeyEntityService {
     ZonedDateTime begin = date.atStartOfDay(ZoneOffset.UTC);
     ZonedDateTime end = begin.plusDays(1).minusNanos(1);
 
-    return diagnosisKeyEntityRepository.findAllByBatchTagAndCreatedAtIsBetween(batchTag, begin, end);
+    return diagnosisKeyEntityRepository.findAllByBatchTag(batchTag, begin, end);
   }
 
   /**
