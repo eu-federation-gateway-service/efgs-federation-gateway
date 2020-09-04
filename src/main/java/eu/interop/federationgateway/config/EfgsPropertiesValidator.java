@@ -33,6 +33,9 @@ public class EfgsPropertiesValidator {
 
   private final EfgsProperties efgsProperties;
 
+  /**
+   * A set of checks whether the provided configuration is valid.
+   */
   @PostConstruct
   public void validateSettings() {
     if (efgsProperties.getUploadSettings().getMaximumUploadBatchSize() > efgsProperties.getBatching().getDoclimit()) {
