@@ -201,8 +201,7 @@ public class DiagnosisKeyBatchService {
     return lastEntry.getCreatedAt().toLocalDate().isEqual(LocalDate.now());
   }
 
-  private int getSequenceNumberFromBatchTag(String batchTag)
-    throws NumberFormatException {
+  private int getSequenceNumberFromBatchTag(String batchTag) {
     String lastBatchSequence = batchTag.substring(batchTag.indexOf("-") + 1);
     return Integer.parseInt(lastBatchSequence);
   }
