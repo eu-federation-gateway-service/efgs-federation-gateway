@@ -26,14 +26,21 @@
     <immediateFlush>true</immediateFlush>
     <encoder>
       <pattern>
-        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, thread=%thread, class=%logger{40}, message="%replace(%replace(%m){'[\r\n]+', ', '}){'"', '\''}", %X, exception="%replace(%ex){'[\r\n]+', ', '}"%n%nopex
-      </pattern>
+        timestamp=%d{"yyyy-MM-dd'T'HH:mm:ss.SSSXXX", UTC}, level=%level, hostname=${HOSTNAME}, pid=${PID:-}, thread=%thread, class=%logger{40}, message="%replace(%replace(%m){'[\r\n]+', ', '}){'"', '\''}", %X, exception="%replace(%ex){'[\r\n]+', ', '}"%n%nopex     </pattern>
       <charset>utf8</charset>
     </encoder>
   </appender>
 
-  <root level="INFO">
-    <appender-ref ref="console"/>
-    <appender-ref ref="file"/>
-  </root>
+  <springProfile name="dev">
+    <root level="INFO">
+      <appender-ref ref="console"/>
+      <appender-ref ref="file"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="!dev">
+    <root level="INFO">
+      <appender-ref ref="file"/>
+    </root>
+  </springProfile>
 </configuration>
