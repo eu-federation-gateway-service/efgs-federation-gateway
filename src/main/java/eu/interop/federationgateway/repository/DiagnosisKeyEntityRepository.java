@@ -32,7 +32,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(isolation = Isolation.REPEATABLE_READ)
+@Transactional(isolation = Isolation.SERIALIZABLE)
 public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKeyEntity, Long> {
 
   @Modifying
@@ -51,8 +51,6 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
   List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag,
                                      @Param("begin") ZonedDateTime begin,
                                      @Param("end") ZonedDateTime end);
-
-  Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(List<String> uploaderBatchTags);
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNull();
 
