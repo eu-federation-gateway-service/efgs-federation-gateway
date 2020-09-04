@@ -37,16 +37,13 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
