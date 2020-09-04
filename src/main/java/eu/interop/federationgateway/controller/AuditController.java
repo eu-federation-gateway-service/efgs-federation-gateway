@@ -29,12 +29,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -69,14 +67,14 @@ public class AuditController {
    * @return List of {@link AuditEntry} with country codes and corresponding audit information.
    */
   @Operation(
-    summary = "Gets audit information about the selected batchtag.",
+    summary = "Gets audit information about the selected batchtag on a specific date.",
     tags = {"Diagnosis Keys Exchange Interface", "Audit"},
     parameters = {
       @Parameter(
         name = "date",
         in = ParameterIn.PATH,
         required = true,
-        description = "date when the batchtag was created",
+        description = "date with which the database is searched.",
         example = "2020-09-04"
       ),
       @Parameter(
