@@ -23,6 +23,7 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -137,14 +138,18 @@ public class DiagnosisKeyEntityService {
   }
 
   /**
-   * Gets all DiagnosisKeyEntitites with a specific batchtag.
+   * Gets all DiagnosisKeyEntitites with a specific batchtag on a specific date..
    *
    * @param batchTag the batchtag for the request
+   * @param date the date when the entity was created
    * @return all DiagnosisKeyEntitites that have the given batchTag
    */
-  public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTag(String batchTag) {
-    log.info("Requested all DiagnosisKeyEntities by a batchTag.");
-    return diagnosisKeyEntityRepository.findAllByBatchTag(batchTag);
+  public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTagAndDate(String batchTag, LocalDate date) {
+    log.info("Requested all DiagnosisKeyEntities by a batchTag and date.");
+    ZonedDateTime begin = date.atStartOfDay(ZoneOffset.UTC);
+    ZonedDateTime end = begin.plusDays(1).minusNanos(1);
+
+    return diagnosisKeyEntityRepository.findAllByBatchTag(batchTag, begin, end);
   }
 
   /**
