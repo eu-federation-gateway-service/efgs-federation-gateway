@@ -50,7 +50,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
   properties = {
-    "efgs.batching.doclimit=9"
+    "efgs.batching.doclimit=9",
+    "efgs.upload-settings.maximum-upload-batch-size=9"
   }
 )
 public class DiagnosisKeyBatchServiceTest {
