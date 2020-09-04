@@ -2,7 +2,7 @@
 by Alexander Stiefel (alexander.stiefel@t-systems.com)
 
 ##	Introduction
-This documents describes detailed aspects of the implementation of the European Federation Gateway Service. It is closely related to the document [European Proximity Tracing An Interoperability Architecture](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf), 
+This documents describes detailed aspects of the implementation of the European Federation Gateway Service. It is closely related to the document [European Proximity Tracing An Interoperability Architecture](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_architecture_en.pdf), 
 to which it adds details. Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
 
 This document is not finished and major aspects are missing.
@@ -202,7 +202,7 @@ In this section, we define the security concept and security requirements for th
 
 ## 1. Definitions 
 
-**Client**: It refers to a National Backend (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf)) that uploads or downloads diagnosis keys to/from the Federation Gateway. In the section "Client Authentication", Client and National Backend are used interchangeably. 
+**Client**: It refers to a National Backend (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_architecture_en.pdf)) that uploads or downloads diagnosis keys to/from the Federation Gateway. In the section "Client Authentication", Client and National Backend are used interchangeably. 
 
 **Federation Gateway Components**
 
@@ -376,7 +376,7 @@ Note that the onboarding process is *not* part of the EFGS Gateway (software). I
 
 **SecReq-026**  To verify whether a Signing Certificate is whitelisted, the FG upload endpoint MUST execute the next steps:
 
-1. Extract the *Origin* value from the DiagnosisKeyBatch (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interoperabilitydetailedelements_en.pdf)).
+1. Extract the *Origin* value from the DiagnosisKeyBatch (see [Federation Gateway Architecture Specification](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_architecture_en.pdf)).
 
 2. Extract the *Country (C)* attribute from the X-SSL-Client-DN request header (see SecReq-011).
 
