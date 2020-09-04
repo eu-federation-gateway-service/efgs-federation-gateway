@@ -36,6 +36,7 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
@@ -44,6 +45,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -91,7 +93,8 @@ public class AuditControllerTest {
   }
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException, OperatorCreationException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
+    OperatorCreationException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
@@ -111,7 +114,8 @@ public class AuditControllerTest {
     String batchTag = formattedDate + "-1";
 
     String batchSignature = createDiagnosisKeysTestData();
-    MvcResult mvcResult = mockMvc.perform(get("/diagnosiskeys/audit/download/" + batchTag)
+    MvcResult mvcResult =
+      mockMvc.perform(get("/diagnosiskeys/audit/download/" + getDateString(currentDateTime) + "/" + batchTag)
       .accept(MediaType.APPLICATION_JSON_VALUE)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
@@ -168,5 +172,9 @@ public class AuditControllerTest {
 
     diagnosisKeyBatchService.batchDocuments();
     return signature;
+  }
+
+  private static String getDateString(ZonedDateTime timestamp) {
+    return timestamp.format(DateTimeFormatter.ISO_DATE);
   }
 }

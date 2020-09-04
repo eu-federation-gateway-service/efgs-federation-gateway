@@ -23,12 +23,6 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import javax.transaction.Transactional;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +30,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -140,11 +142,15 @@ public class DiagnosisKeyEntityService {
    * Gets all DiagnosisKeyEntitites with a specific batchtag.
    *
    * @param batchTag the batchtag for the request
+   * @param date the date when the entity was created
    * @return all DiagnosisKeyEntitites that have the given batchTag
    */
-  public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTag(String batchTag) {
-    log.info("Requested all DiagnosisKeyEntities by a batchTag.");
-    return diagnosisKeyEntityRepository.findAllByBatchTag(batchTag);
+  public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTagAndDate(String batchTag, LocalDate date) {
+    log.info("Requested all DiagnosisKeyEntities by a batchTag and date.");
+    ZonedDateTime begin = date.atStartOfDay(ZoneOffset.UTC);
+    ZonedDateTime end = begin.plusDays(1).minusNanos(1);
+
+    return diagnosisKeyEntityRepository.findAllByBatchTagAndCreatedAtIsBetween(batchTag, begin, end);
   }
 
   /**

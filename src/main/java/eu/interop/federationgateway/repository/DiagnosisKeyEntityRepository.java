@@ -49,7 +49,8 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
   @Query("SELECT new eu.interop.federationgateway.model.AuditEntry("
     + "min(uploader.country), min(createdAt), min(uploader.thumbprint), COUNT(*), min(uploader.batchSignature))"
     + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag GROUP BY uploader.batchTag")
-  List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag);
+  List<AuditEntry> findAllByBatchTagAndCreatedAtIsBetween(@Param("batchTag") String batchTag, ZonedDateTime begin,
+                                                          ZonedDateTime end);
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNull();
 
