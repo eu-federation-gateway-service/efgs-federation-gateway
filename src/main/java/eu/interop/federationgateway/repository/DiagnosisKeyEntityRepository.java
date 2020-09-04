@@ -50,9 +50,9 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
     + "min(uploader.country), min(createdAt), min(uploader.thumbprint), COUNT(*), min(uploader.batchSignature))"
     + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag AND createdAt BETWEEN :begin AND :end "
     + "GROUP BY uploader.batchTag")
-  List<AuditEntry> findAllByBatchTagAndCreatedAtIsBetween(@Param("batchTag") String batchTag,
-                                                          @Param("begin") ZonedDateTime begin,
-                                                          @Param("end") ZonedDateTime end);
+  List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag,
+                                     @Param("begin") ZonedDateTime begin,
+                                     @Param("end") ZonedDateTime end);
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNull();
 
