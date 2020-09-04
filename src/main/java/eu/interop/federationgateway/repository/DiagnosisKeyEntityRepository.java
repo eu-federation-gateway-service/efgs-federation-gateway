@@ -54,6 +54,8 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNull();
 
+  Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(List<String> uploaderBatchTags);
+
   List<DiagnosisKeyEntity> findByBatchTagIsAndUploader_CountryIsNot(String batchTag, String country);
 
   @Modifying
