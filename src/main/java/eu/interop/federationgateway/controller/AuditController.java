@@ -20,6 +20,7 @@
 
 package eu.interop.federationgateway.controller;
 
+import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
@@ -28,10 +29,16 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +56,9 @@ import org.springframework.web.server.ResponseStatusException;
 @Validated
 public class AuditController {
 
-  private static final String AUDIT_DOWNLOAD_ROUTE = "/audit/download/{batchTag}";
+  private static final String AUDIT_DOWNLOAD_ROUTE = "/audit/download/{date}/{batchTag}";
+
+  private final EfgsProperties properties;
 
   private final DiagnosisKeyEntityService diagnosisKeyEntityService;
 
@@ -63,6 +72,13 @@ public class AuditController {
     summary = "Gets audit information about the selected batchtag.",
     tags = {"Diagnosis Keys Exchange Interface", "Audit"},
     parameters = {
+      @Parameter(
+        name = "date",
+        in = ParameterIn.PATH,
+        required = true,
+        description = "date when the batchtag was created",
+        example = "2020-09-04"
+      ),
       @Parameter(
         name = "batchTag",
         in = ParameterIn.PATH,
@@ -83,17 +99,28 @@ public class AuditController {
       @ApiResponse(responseCode = "403",
         description = "Forbidden call in cause of missing or invalid client certificate.", content = @Content),
       @ApiResponse(responseCode = "404", description = "BatchTag not found or no data exists.", content = @Content),
-      @ApiResponse(responseCode = "406", description = "Data format or content is not valid.", content = @Content)}
+      @ApiResponse(responseCode = "406", description = "Data format or content is not valid.", content = @Content),
+      @ApiResponse(responseCode = "410", description = "Date for download expired. Date does not more exists.",
+        content = @Content)}
   )
   @GetMapping(value = AUDIT_DOWNLOAD_ROUTE,
     produces = MediaType.APPLICATION_JSON_VALUE)
   @CertificateAuthentificationRequired
   public ResponseEntity<List<AuditEntry>> getAuditInformation(
+    @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
     @PathVariable("batchTag") String batchTag
   ) {
 
+    ZonedDateTime thresholdDate = ZonedDateTime.now(ZoneOffset.UTC)
+      .minusDays(properties.getDownloadSettings().getMaxAgeInDays());
+
+    if (date.isBefore(thresholdDate.toLocalDate())) {
+      log.info("Requested date is too old");
+      throw new ResponseStatusException(HttpStatus.GONE, "Requested date is too old!");
+    }
+
     List<AuditEntry> auditResponse
-      = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTag(batchTag);
+      = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTagAndDate(batchTag, date);
 
     MDC.put("batchTag", batchTag);
     if (auditResponse.isEmpty()) {
