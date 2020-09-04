@@ -17,4 +17,7 @@ databaseChangeLog:
   - include:
       file: changelog/v000-create-shedlock-table.yml
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v001-update-dayssinceonsetofsymptoms-datatype.yml
+      relativeToChangelogFile: true
 
