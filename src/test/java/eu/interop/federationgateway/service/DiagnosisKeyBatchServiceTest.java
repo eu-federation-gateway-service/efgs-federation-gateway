@@ -42,8 +42,6 @@ import org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * This is the test class for the batch service.
@@ -52,7 +50,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringRunner.class)
 @SpringBootTest(
   properties = {
-    "efgs.batching.doclimit=9"
+    "efgs.batching.doclimit=9",
+    "efgs.upload-settings.maximum-upload-batch-size=9"
   }
 )
 public class DiagnosisKeyBatchServiceTest {
@@ -146,7 +145,6 @@ public class DiagnosisKeyBatchServiceTest {
    * @throws Exception if the test cannot be performed.
    */
   @Test
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void testBatchDocumentsForLimitation() throws Exception {
     log.info("process testBatchDocumentsForLimitation()");
     // save test keys
@@ -173,6 +171,39 @@ public class DiagnosisKeyBatchServiceTest {
     Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(10).getBatchTag());
     Assert.assertEquals(formattedDate + "-4", keyRepository.findAll().get(17).getBatchTag());
   }
+
+  @Test
+  public void diagnosisKeysFormatVersionShouldNotBeMixed() throws Exception {
+    // save test keys
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_DE", "DE", 1, 0));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_PL", "PL", 1, 0));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_ES", "ES", 1, 1));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_BG", "BG", 1, 0));
+
+    batchRepository.deleteAll();
+
+    batchService.batchDocuments();
+
+    // Expect 3 batches: 1: DE,PL 2: ES 3: BG
+    Assert.assertEquals(3, batchRepository.count());
+
+    Assert.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
+    Assert.assertEquals(formattedDate + "-3", batchRepository.findAll().get(2).getBatchName());
+
+
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(3).getBatchTag());
+
+    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(4).getBatchTag());
+    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
+
+    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(6).getBatchTag());
+    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(7).getBatchTag());
+  }
+
 
   @Test
   public void documentBatchingShouldBeStoppedIfTimelimitIsReached() throws Exception {

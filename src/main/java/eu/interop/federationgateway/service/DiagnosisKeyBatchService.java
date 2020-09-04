@@ -23,6 +23,7 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
+import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.time.LocalDate;
@@ -32,20 +33,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Recover;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * A service to be split documents into batches to minimize download issues.
+ * A service to put uploaded diagnosiskeys into batches to minimize download issues.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -65,57 +62,15 @@ public class DiagnosisKeyBatchService {
   )
   @SchedulerLock(name = "DiagnosisKeyBatchService_batchDocuments", lockAtLeastFor = "PT0S",
     lockAtMostFor = "${efgs.batching.locklimit}")
-  @Retryable(maxAttempts = 2, backoff = @Backoff(delay = 10000))
-  @Transactional
   public void batchDocuments() {
-
-    log.info("start the document batching process");
+    log.info("Batch Process started");
 
     long startTime = System.currentTimeMillis();
+    int batchCount = 0;
 
-    while (true) {
-      // get the first key where the main batch tag is null
-      Optional<DiagnosisKeyEntity> diagnosisKey = diagnosisKeyEntityRepository.findFirstByBatchTagIsNull();
-      if (diagnosisKey.isEmpty()) {
-        log.info("successfully finish the document batching process - no more unprocessed diagnosis keys left");
-        break;
-      }
-      // find the last batch entry
-      Optional<DiagnosisKeyBatchEntity> lastEntry = diagnosisKeyBatchRepository.findTopByOrderByCreatedAtDesc();
-      // save batches
-      DiagnosisKeyBatchEntity newBatch = saveBatches(lastEntry);
-
-      List<DiagnosisKeyEntity> diagnosisKeyCollector = new ArrayList<>();
-      while (true) {
-        // find one
-        diagnosisKey = diagnosisKeyEntityRepository.findFirstByBatchTagIsNull();
-        if (diagnosisKey.isEmpty()) {
-          break;
-        }
-
-        List<DiagnosisKeyEntity> diagnosisKeyEntitys =
-          findAllKeysByBatchTag(diagnosisKey.get().getUploader().getBatchTag());
-
-        if (checkFormat(diagnosisKeyEntitys, diagnosisKey)) {
-          return;
-        }
-
-        if (checkUploaderLimitation(diagnosisKeyEntitys, diagnosisKey.get().getUploader().getBatchTag())) {
-          return;
-        }
-
-        diagnosisKeyCollector.addAll(diagnosisKeyEntitys);
-
-        if (checkBatchSize(diagnosisKeyCollector)) {
-          break;
-        }
-
-        // update keys
-        updateDiagnosisKeys(diagnosisKeyEntitys, newBatch);
-      }
-      MDC.put("batchCount", String.valueOf(diagnosisKeyCollector.size()));
-      log.info("Batch process finished");
-      callbackService.notifyAllCountriesForNewBatchTag(newBatch);
+    boolean batchCreationResult;
+    do {
+      batchCreationResult = createNextBatch();
 
       long elapsedTime = System.currentTimeMillis() - startTime;
       if (elapsedTime > properties.getBatching().getTimelimit()) {
@@ -123,100 +78,132 @@ public class DiagnosisKeyBatchService {
         log.info("Maximum time for one batching execution reached.");
         break;
       }
+
+      batchCount += batchCreationResult ? 1 : 0;
+    } while (batchCreationResult);
+
+    MDC.put("batchCount", String.valueOf(batchCount));
+    log.info("Batch Process finished");
+
+
+    MDC.remove("batchCount");
+    MDC.remove("batchTime");
+  }
+
+  /**
+   * Creates a new Batch Entity and sets batchTag to all contained diagnosiskeys.
+   *
+   * @return true if a batch was created or false if not.
+   */
+  @Transactional(Transactional.TxType.REQUIRES_NEW)
+  public boolean createNextBatch() {
+
+    List<String> uploaderBatchTags = collectUploaderBatchTags();
+
+    if (uploaderBatchTags.isEmpty()) {
+      log.info("Successfully finished the document batching process - no more unprocessed diagnosis keys left");
+      return false;
     }
-  }
 
-  @Recover
-  public String recover(Throwable t) {
-    log.info("DiagnosisKeyBatchService.recover");
-    return "error class :: " + t.getClass().getName();
-  }
+    DiagnosisKeyBatchEntity newBatchEntity = createNextBatchEntityAndLinkPredecessor();
 
-  private List<DiagnosisKeyEntity> findAllKeysByBatchTag(String uploaderBatchTag) {
-    // find all keys by the uploader batch tag
-    List<DiagnosisKeyEntity> diagnosisKeyEntitys
-      = diagnosisKeyEntityRepository.findByBatchTagIsNullAndUploader_BatchTag(uploaderBatchTag);
-    log.info("found {} diagnosis keys with uploader tag {} for batching process",
-      diagnosisKeyEntitys.size(), uploaderBatchTag);
-    return diagnosisKeyEntitys;
-  }
+    int updatedRows = diagnosisKeyEntityRepository.setBatchTagByUploaderBatchTag(
+      uploaderBatchTags, newBatchEntity.getBatchName());
 
-  private boolean checkBatchSize(List<DiagnosisKeyEntity> diagnosisKeyCollector) {
-    if (diagnosisKeyCollector.size() > properties.getBatching().getDoclimit()) {
-      log.info("Continue the batching process to next batch while {} "
-          + "keys collected and the limit: {} of keys is reached",
-        diagnosisKeyCollector.size(), properties.getBatching().getDoclimit());
-      return true;
-    }
-    return false;
-  }
+    callbackService.notifyAllCountriesForNewBatchTag(newBatchEntity);
 
-  private boolean checkUploaderLimitation(List<DiagnosisKeyEntity> diagnosisKeyEntitys, String uploaderBatchTag) {
-    if (diagnosisKeyEntitys.size() > properties.getBatching().getDoclimit()) {
-      log.error("Stop batching process, while try to batch {} keys from one uploader: {}, "
-          + "but the configured batching limit of keys is {}",
-        diagnosisKeyEntitys.size(), uploaderBatchTag, properties.getBatching().getDoclimit());
-      return true;
-    }
-    return false;
-  }
 
-  private boolean checkFormat(List<DiagnosisKeyEntity> diagnosisKeyEntitys, Optional<DiagnosisKeyEntity> diagnosisKey) {
-
-    if (diagnosisKeyEntitys.stream()
-      .map(DiagnosisKeyEntity::getFormat)
-      .anyMatch(Predicate.not(diagnosisKey.get().getFormat()::equals))) {
-
-      MDC.put("format", "\"" + diagnosisKey.get().getFormat().toString() + "\"");
-
-      log.error("Stop batching process, while try to batch {} keys, but the keys have different format versions",
-        diagnosisKeyEntitys.size());
-      return true;
-    }
-    return false;
-  }
-
-  private void updateDiagnosisKeys(List<DiagnosisKeyEntity> diagnosisKeyEntitys, DiagnosisKeyBatchEntity newBatch) {
-    diagnosisKeyEntitys.forEach(key -> key.setBatchTag(newBatch.getBatchName()));
-    diagnosisKeyEntityRepository.saveAll(diagnosisKeyEntitys);
-
-    MDC.put("batchTag", newBatch.getBatchName());
-    MDC.put("diagnosisKeysCount", String.valueOf(diagnosisKeyEntitys.size()));
-
+    MDC.put("batchTag", newBatchEntity.getBatchName());
+    MDC.put("diagnosisKeyCount", String.valueOf(updatedRows));
     log.info("Batch created");
+    MDC.remove("diagnosisKeyCount");
+    MDC.remove("batchTag");
+
+    return true;
   }
 
-  private DiagnosisKeyBatchEntity saveBatches(Optional<DiagnosisKeyBatchEntity> lastEntry) {
-    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC);
-    String formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-    var batchEntity = new DiagnosisKeyBatchEntity();
+  /**
+   * Creates a new instance of DiagnosisKeyBatchEntity und generates a batchTag for it.
+   * Also the preceding batch entity will be linked to the newly created batch entity.
+   *
+   * @return the created DiagnosisKeyBatchEntity.
+   */
+  @Transactional(Transactional.TxType.MANDATORY)
+  public DiagnosisKeyBatchEntity createNextBatchEntityAndLinkPredecessor() {
+    DiagnosisKeyBatchEntity newBatchEntity = new DiagnosisKeyBatchEntity();
+    newBatchEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-    if (lastEntry.isPresent() && isBatchFromCurrentDay(lastEntry, currentDateTime)) {
-      batchEntity.setBatchName(formattedDate + "-" + getSequenceFromPreviousBatchAndCountOn(lastEntry));
-      lastEntry.get().setBatchLink(batchEntity.getBatchName());
-      // update the last batch by link to the new batch
-      diagnosisKeyBatchRepository.save(lastEntry.get());
-      log.info("successfully updated the linked batch entity");
-    } else {
-      batchEntity.setBatchName(formattedDate + "-1");
+    String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    Optional<DiagnosisKeyBatchEntity> lastBatchEntity = diagnosisKeyBatchRepository.findTopByOrderByCreatedAtDesc();
+
+    String newBatchTag;
+
+    // for today a batch already exists so generate the upcoming batchtag
+    if (lastBatchEntity.isPresent() && isBatchFromToday(lastBatchEntity.get())) {
+      newBatchTag = formattedDate + "-" + (getSequenceNumberFromBatchTag(lastBatchEntity.get().getBatchName()) + 1);
+
+      lastBatchEntity.get().setBatchLink(newBatchTag);
+      diagnosisKeyBatchRepository.save(lastBatchEntity.get());
+    } else { // otherwise create the first batch for today
+      newBatchTag = formattedDate + "-1";
     }
-    batchEntity.setBatchLink(null);
-    batchEntity.setCreatedAt(currentDateTime);
-    diagnosisKeyBatchRepository.save(batchEntity);
-    log.info("successfully save the new diagnosis key batch entity");
-    return batchEntity;
+
+    newBatchEntity.setBatchName(newBatchTag);
+    return diagnosisKeyBatchRepository.save(newBatchEntity);
   }
 
-  private int getSequenceFromPreviousBatchAndCountOn(Optional<DiagnosisKeyBatchEntity> lastEntry)
-    throws NumberFormatException {
-    String lastBatchName = lastEntry.get().getBatchName();
-    String lastBatchSequence = lastBatchName.substring(lastBatchName.indexOf("-") + 1);
-    int sequence = Integer.parseInt(lastBatchSequence);
-    return ++sequence;
+  /**
+   * Queries the database for unbatched uploaded keys until the maximum batch size is reached.
+   *
+   * @return a list of uploader batch tags that need to be put into one batch.
+   */
+  @Transactional(Transactional.TxType.MANDATORY)
+  public List<String> collectUploaderBatchTags() {
+    List<String> uploaderBatchTags = new ArrayList<>();
+    int newBatchSize = 0;
+    FormatInformation batchFormat = null;
+
+    while (true) {
+      Optional<DiagnosisKeyEntity> unbatchedDiagnosisKey = uploaderBatchTags.isEmpty()
+        ? diagnosisKeyEntityRepository.findFirstByBatchTagIsNull()
+        : diagnosisKeyEntityRepository.findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(uploaderBatchTags);
+
+      if (unbatchedDiagnosisKey.isEmpty()) {
+        // no more unprocessed keys
+        break;
+      }
+
+      if (batchFormat == null) {
+        batchFormat = unbatchedDiagnosisKey.get().getFormat();
+      } else {
+        // stop batch tag collecting when next upload batch has different format
+        if (!batchFormat.equals(unbatchedDiagnosisKey.get().getFormat())) {
+          break;
+        }
+      }
+
+      String uploaderBatchTag = unbatchedDiagnosisKey.get().getUploader().getBatchTag();
+      int uploadBatchSize = diagnosisKeyEntityRepository.countAllByUploader_BatchTag(uploaderBatchTag);
+
+      if (newBatchSize + uploadBatchSize <= properties.getBatching().getDoclimit()) {
+        newBatchSize += uploadBatchSize;
+        uploaderBatchTags.add(uploaderBatchTag);
+      } else {
+        break;
+      }
+    }
+
+    return uploaderBatchTags;
   }
 
-  private boolean isBatchFromCurrentDay(Optional<DiagnosisKeyBatchEntity> lastEntry, ZonedDateTime now) {
-    return lastEntry.get().getCreatedAt().toLocalDate().isEqual(now.toLocalDate());
+  private boolean isBatchFromToday(DiagnosisKeyBatchEntity lastEntry) {
+    return lastEntry.getCreatedAt().toLocalDate().isEqual(LocalDate.now());
+  }
+
+  private int getSequenceNumberFromBatchTag(String batchTag) {
+    String lastBatchSequence = batchTag.substring(batchTag.indexOf("-") + 1);
+    return Integer.parseInt(lastBatchSequence);
   }
 
   /**

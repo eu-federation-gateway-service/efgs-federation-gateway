@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT:8090}
+  port: 8090
 spring:
   application:
     name: eu-interop-federation-gateway
@@ -9,8 +9,6 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: validate
-      connection:
-        isolation: 8
   liquibase:
     enabled: true
     change-log: classpath:db/changelog.yml

@@ -133,7 +133,8 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | **Batching Service**
 | Batch Process started | INFO | Batch process started | n/a |
 | Batch Process: Created Batch | INFO | Batch created | batchTag, diagnosisKeyCount |
-| Batch Process failed, found different format versions in upload batch | ERROR | Stop batching process, while try to batch {} keys, but the keys have different format versions | format | 
+| Batch Process: Current execution took too much time. Execution is canceled | INFO | Maximum time for one batching execution reached. | batchTime |
+| Batch Process: Could not find any more unbatched diagnosis keys | INFO | Successfully finished the document batching process - no more unprocessed diagnosis keys left | n/a | 
 | Batch Process finished | INFO | Batch process finished | batchCount | 
 | **Callback Interface**
 | Deleting all created CallbackTasks for a subscription. This will be done if a CallbackSubscription gets invalid. | INFO | Deleting all CallbackTaskEntities for subscription. | callbackId, country |
