@@ -23,6 +23,7 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
+import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.time.LocalDate;
@@ -98,10 +99,9 @@ public class DiagnosisKeyBatchService {
   public boolean createNextBatch() {
 
     List<String> uploaderBatchTags = collectUploaderBatchTags();
-    log.info("collected batch tags");
 
     if (uploaderBatchTags.isEmpty()) {
-      log.info("successfully finish the document batching process - no more unprocessed diagnosis keys left");
+      log.info("Successfully finished the document batching process - no more unprocessed diagnosis keys left");
       return false;
     }
 
@@ -162,6 +162,7 @@ public class DiagnosisKeyBatchService {
   public List<String> collectUploaderBatchTags() {
     List<String> uploaderBatchTags = new ArrayList<>();
     int newBatchSize = 0;
+    FormatInformation batchFormat = null;
 
     while (true) {
       Optional<DiagnosisKeyEntity> unbatchedDiagnosisKey = uploaderBatchTags.isEmpty()
@@ -171,6 +172,15 @@ public class DiagnosisKeyBatchService {
       if (unbatchedDiagnosisKey.isEmpty()) {
         // no more unprocessed keys
         break;
+      }
+
+      if (batchFormat == null) {
+        batchFormat = unbatchedDiagnosisKey.get().getFormat();
+      } else {
+        // stop batch tag collecting when next upload batch has different format
+        if (!batchFormat.equals(unbatchedDiagnosisKey.get().getFormat())) {
+          break;
+        }
       }
 
       String uploaderBatchTag = unbatchedDiagnosisKey.get().getUploader().getBatchTag();

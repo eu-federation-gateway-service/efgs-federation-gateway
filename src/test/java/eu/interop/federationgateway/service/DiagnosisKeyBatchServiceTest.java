@@ -172,6 +172,39 @@ public class DiagnosisKeyBatchServiceTest {
   }
 
   @Test
+  public void diagnosisKeysFormatVersionShouldNotBeMixed() throws Exception {
+    // save test keys
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_DE", "DE", 1, 0));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_PL", "PL", 1, 0));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_ES", "ES", 1, 1));
+    keyRepository.saveAll(TestData.createTestDiagKeysList(2, "uploaderBatchTag_BG", "BG", 1, 0));
+
+    batchRepository.deleteAll();
+
+    batchService.batchDocuments();
+
+    // Expect 3 batches: 1: DE,PL 2: ES 3: BG
+    Assert.assertEquals(3, batchRepository.count());
+
+    Assert.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
+    Assert.assertEquals(formattedDate + "-3", batchRepository.findAll().get(2).getBatchName());
+
+
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
+    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(3).getBatchTag());
+
+    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(4).getBatchTag());
+    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
+
+    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(6).getBatchTag());
+    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(7).getBatchTag());
+  }
+
+
+  @Test
   public void documentBatchingShouldBeStoppedIfTimelimitIsReached() throws Exception {
     // save test keys
     keyRepository.saveAll(TestData.createTestDiagKeysList(5, "uploaderBatchTag_DE", "DE"));

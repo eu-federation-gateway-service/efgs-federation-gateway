@@ -371,6 +371,10 @@ public class TestData {
   }
 
   public static List<DiagnosisKeyEntity> createTestDiagKeysList(int count, String batchTag, String origin) throws NoSuchAlgorithmException {
+    return createTestDiagKeysList(count, batchTag, origin, 1, 0);
+  }
+
+  public static List<DiagnosisKeyEntity> createTestDiagKeysList(int count, String batchTag, String origin, int majorVersion, int minorVersion) throws NoSuchAlgorithmException {
 
     List<DiagnosisKeyEntity> testKeys = new ArrayList<>();
     Random random = new Random();
@@ -396,8 +400,8 @@ public class TestData {
       uploaderInformation.setThumbprint("thumbprint");
       key.setUploader(uploaderInformation);
       FormatInformation formatInformation = new FormatInformation();
-      formatInformation.setMajorVersion(1);
-      formatInformation.setMinorVersion(0);
+      formatInformation.setMajorVersion(majorVersion);
+      formatInformation.setMinorVersion(minorVersion);
       key.setFormat(formatInformation);
       testKeys.add(key);
     }

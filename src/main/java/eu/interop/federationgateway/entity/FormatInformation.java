@@ -39,4 +39,8 @@ public class FormatInformation implements Serializable {
   @Column(name = "format_minorVersion")
   private int minorVersion;
 
+  public boolean equals(FormatInformation other) {
+    return this.majorVersion == other.getMajorVersion() && this.minorVersion == other.getMinorVersion();
+  }
+
 }
