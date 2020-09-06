@@ -25,11 +25,9 @@ import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.service.CertificateService;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
-import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -137,10 +135,6 @@ public class BatchSignatureVerifier {
   }
 
   private boolean isCertValid(X509CertificateHolder certificate) {
-    if (!isCertificateSignatureValid(certificate)) {
-      log.error("wrong signature");
-      return false;
-    }
     try {
       byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded());
       String certHash = new BigInteger(1, certHashBytes).toString(16);
@@ -169,20 +163,6 @@ public class BatchSignatureVerifier {
 
     } catch (NoSuchAlgorithmException e) {
       log.error("Could not hash certificate thumbprint with SHA-256");
-      return false;
-    }
-  }
-
-  private boolean isCertificateSignatureValid(final X509CertificateHolder certificate) {
-    try {
-      final X509Certificate x509Certificate = toX509Certificate(certificate);
-      final Signature signature = createSignatureInstance(x509Certificate);
-      signature.initVerify(x509Certificate.getPublicKey());
-      signature.update(x509Certificate.getTBSCertificate());
-      return signature.verify(x509Certificate.getSignature());
-    } catch (NoSuchAlgorithmException | SignatureException | CertificateException | InvalidKeyException e) {
-      MDC.put("errorMessage", e.getMessage());
-      log.error("Could not verify signature of signing certificate");
       return false;
     }
   }
