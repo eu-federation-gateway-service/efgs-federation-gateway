@@ -29,6 +29,7 @@ import eu.interop.federationgateway.batchsigning.BatchSignatureUtilsTest;
 import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
+import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.model.EfgsProto;
@@ -38,7 +39,6 @@ import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -86,12 +86,9 @@ public class AuditControllerTest {
   private MockMvc mockMvc;
   private SignatureGenerator signatureGenerator;
 
-  private static String getDateString(LocalDateTime timestamp) {
-    return timestamp.format(DateTimeFormatter.ISO_DATE);
-  }
-
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException, OperatorCreationException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
+    OperatorCreationException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
@@ -111,12 +108,13 @@ public class AuditControllerTest {
     String batchTag = formattedDate + "-1";
 
     String batchSignature = createDiagnosisKeysTestData();
-    MvcResult mvcResult = mockMvc.perform(get("/diagnosiskeys/audit/download/" + batchTag)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
-      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
-      .andExpect(status().isOk())
-      .andReturn();
+    MvcResult mvcResult =
+      mockMvc.perform(get("/diagnosiskeys/audit/download/" + getDateString(currentDateTime) + "/" + batchTag)
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
+        .andExpect(status().isOk())
+        .andReturn();
 
     String jsonResult = mvcResult.getResponse().getContentAsString();
     mapper.registerModule(new JavaTimeModule());
@@ -134,11 +132,44 @@ public class AuditControllerTest {
 
   @Test
   public void testRequestShouldFailIfBatchTagDoesNotExists() throws Exception {
-    mockMvc.perform(get("/diagnosiskeys/audit/download/" + TestData.SECOND_BATCHTAG)
-      .accept(MediaType.APPLICATION_JSON_VALUE)
-      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
-      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
+    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC);
+    String formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String batchTag = formattedDate + "-1";
+
+    mockMvc.perform(
+      get("/diagnosiskeys/audit/download/" + getDateString(currentDateTime) + "/" + batchTag)
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void testRequestShouldFailIfNoEntityExistForDate() throws Exception {
+    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
+    String formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String batchTag = formattedDate + "-1";
+
+    createDiagnosisKeysTestData();
+    List<DiagnosisKeyEntity> all = diagnosisKeyEntityRepository.findAll();
+    mockMvc.perform(
+      get("/diagnosiskeys/audit/download/" + getDateString(currentDateTime) + "/" + batchTag)
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
+      .andExpect(status().isNotFound());
+  }
+
+  @Test
+  public void testRequestShouldFailIfDateExpired() throws Exception {
+    ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC).minusMonths(2);
+
+    mockMvc.perform(
+      get("/diagnosiskeys/audit/download/" + getDateString(currentDateTime) + "/" + TestData.SECOND_BATCHTAG)
+        .accept(MediaType.APPLICATION_JSON_VALUE)
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
+      .andExpect(status().isGone());
   }
 
   private String createDiagnosisKeysTestData() throws Exception {
@@ -168,5 +199,9 @@ public class AuditControllerTest {
 
     diagnosisKeyBatchService.batchDocuments();
     return signature;
+  }
+
+  private static String getDateString(ZonedDateTime timestamp) {
+    return timestamp.format(DateTimeFormatter.ISO_DATE);
   }
 }
