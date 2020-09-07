@@ -291,6 +291,14 @@ As shown in the figure below, the Federation Gateway (FG) Load Balancer authenti
 
 **SecReq-015**  The FG Service MUST use the log format defined by the Cyber Defense Center (CDC) **TODO:TBD**.   
  
+### 2.3 Storing Secrets
+The service has two secrets which need special handling during storage
+- private key of EFGS<sub>TLS</sub> for outgoing TLS connections (for call back), to allow mTLS authentication
+- public key of EFGS<sub>TA</sub> Trust Anchor  
+
+These keys need to be stored seperate from the database. They are stored in a Java KeyStore (https://en.wikipedia.org/wiki/Java_KeyStore) and deployed manually to the Tomcat instances. 
+
+
 ## 3. Batch Signature 
 
 ### 3.1. PKCS#7

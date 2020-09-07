@@ -90,8 +90,8 @@ public class BatchSignatureVerifier {
           return false;
         }
 
-        EfgsMdc.put("certNotBefore", signerCert.getNotBefore().toString());
-        EfgsMdc.put("certNotAfter", signerCert.getNotAfter().toString());
+        EfgsMdc.put("certNotBefore", signerCert.getNotBefore());
+        EfgsMdc.put("certNotAfter", signerCert.getNotAfter());
 
         if (!isCertNotExpired(signerCert)) {
           log.error("signing certificate expired");
