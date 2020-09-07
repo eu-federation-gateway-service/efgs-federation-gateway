@@ -59,9 +59,11 @@ public class EfgsMdc {
    * @throws IllegalArgumentException in case the "key" parameter is null
    */
   public static void put(String key, Date value) {
+    ZonedDateTime timestamp = ZonedDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC);
+
     put(
       key,
-      DateTimeFormatter.ISO_DATE_TIME.format(ZonedDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC))
+      timestamp.format(DateTimeFormatter.ISO_INSTANT)
     );
   }
 
