@@ -20,6 +20,11 @@
 
 package eu.interop.federationgateway.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.interop.federationgateway.TestData;
@@ -53,10 +58,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -110,13 +111,17 @@ public class CallbackAdminControllerTest {
     callbackCert = certificateRepository.save(new CertificateEntity(
       null, ZonedDateTime.now(ZoneOffset.UTC), "xxx",
       "DE", CertificateEntity.CertificateType.CALLBACK, false,
-      new URL(TestData.CALLBACK_URL_EFGS).getHost()
+      new URL(TestData.CALLBACK_URL_EFGS).getHost(),
+      null,
+      null
     ));
 
     callbackCert2 = certificateRepository.save(new CertificateEntity(
       null, ZonedDateTime.now(ZoneOffset.UTC), "xxx2",
       "DE", CertificateEntity.CertificateType.CALLBACK, false,
-      new URL(TestData.CALLBACK_URL_EXAMPLE).getHost()
+      new URL(TestData.CALLBACK_URL_EXAMPLE).getHost(),
+      null,
+      null
     ));
 
     mockMvc = MockMvcBuilders

@@ -339,7 +339,7 @@ public class CallbackTaskExecutorServiceTest {
 
   private CertificateEntity insertCallbackCertificate() throws MalformedURLException {
     CertificateEntity callbackCertificate = new CertificateEntity(
-      null, ZonedDateTime.now(ZoneOffset.UTC), "thumbprint", TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, false, "localhost"
+      null, ZonedDateTime.now(ZoneOffset.UTC), "thumbprint", TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, false, "localhost", null, null
     );
 
     return certificateRepository.save(callbackCertificate);

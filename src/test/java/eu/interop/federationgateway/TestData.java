@@ -111,6 +111,8 @@ public class TestData {
       certCountry,
       CertificateEntity.CertificateType.SIGNING,
       false,
+      null,
+      null,
       null
     );
 
@@ -140,6 +142,8 @@ public class TestData {
       AUTH_CERT_COUNTRY,
       CertificateEntity.CertificateType.AUTHENTICATION,
       false,
+      null,
+      null,
       null
     );
 
