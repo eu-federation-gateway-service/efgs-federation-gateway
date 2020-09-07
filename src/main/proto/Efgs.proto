@@ -15,7 +15,7 @@ message DiagnosisKey {
   repeated string visitedCountries = 5;
   string origin = 6; // country of origin
   ReportType reportType = 7; // set by backend
-  uint32 days_since_onset_of_symptoms = 8;
+  sint32 days_since_onset_of_symptoms = 8;
 }
 
 enum ReportType {
