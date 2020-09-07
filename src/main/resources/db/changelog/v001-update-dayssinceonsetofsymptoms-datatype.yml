@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-dayssinceonsetofsymptoms-datatype
+      author: f11h
+      changes:
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_days_since_onset_of_symptoms
+            newDataType: int
