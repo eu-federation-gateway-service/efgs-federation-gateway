@@ -23,6 +23,7 @@ package eu.interop.federationgateway.filter;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.service.CertificateService;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -38,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -133,8 +133,8 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
 
     headerDistinguishedName = URLDecoder.decode(headerDistinguishedName, StandardCharsets.UTF_8);
 
-    MDC.put("dnString", "\"" + headerDistinguishedName + "\"");
-    MDC.put("thumbprint", headerCertThumbprint);
+    EfgsMdc.put("dnString", headerDistinguishedName);
+    EfgsMdc.put("thumbprint", headerCertThumbprint);
 
     Map<String, String> distinguishNameMap = parseDistinguishNameString(headerDistinguishedName);
 

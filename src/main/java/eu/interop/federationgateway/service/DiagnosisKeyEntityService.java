@@ -23,6 +23,7 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -34,7 +35,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
@@ -96,9 +96,9 @@ public class DiagnosisKeyEntityService {
     if (resultMap.get(409).size() > 0 || resultMap.get(500).size() > 0) {
       resultMap.get(201).clear();
 
-      MDC.put("insertedKeyCount", String.valueOf(resultMap.get(201).size()));
-      MDC.put("conflictKeysCount", String.valueOf(resultMap.get(409).size()));
-      MDC.put("failedKeysCount", String.valueOf(resultMap.get(500).size()));
+      EfgsMdc.put("insertedKeyCount", resultMap.get(201).size());
+      EfgsMdc.put("conflictKeysCount", resultMap.get(409).size());
+      EfgsMdc.put("failedKeysCount", resultMap.get(500).size());
 
       log.error("error inserting keys");
       throw new DiagnosisKeyInsertException("Error during insertion of diagnosis keys!", resultMap);
@@ -141,7 +141,7 @@ public class DiagnosisKeyEntityService {
    * Gets all DiagnosisKeyEntitites with a specific batchtag on a specific date..
    *
    * @param batchTag the batchtag for the request
-   * @param date the date when the entity was created
+   * @param date     the date when the entity was created
    * @return all DiagnosisKeyEntitites that have the given batchTag
    */
   public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTagAndDate(String batchTag, LocalDate date) {

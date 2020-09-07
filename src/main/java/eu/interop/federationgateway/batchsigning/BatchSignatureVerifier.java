@@ -23,6 +23,7 @@ package eu.interop.federationgateway.batchsigning;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.service.CertificateService;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -48,7 +49,6 @@ import org.bouncycastle.cms.SignerInformationVerifier;
 import org.bouncycastle.cms.jcajce.JcaSimpleSignerInfoVerifierBuilder;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.util.Store;
-import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 /**
@@ -90,8 +90,8 @@ public class BatchSignatureVerifier {
           return false;
         }
 
-        MDC.put("certNotBefore", signerCert.getNotBefore().toString());
-        MDC.put("certNotAfter", signerCert.getNotAfter().toString());
+        EfgsMdc.put("certNotBefore", signerCert.getNotBefore().toString());
+        EfgsMdc.put("certNotAfter", signerCert.getNotAfter().toString());
 
         if (!isCertNotExpired(signerCert)) {
           log.error("signing certificate expired");
@@ -144,7 +144,7 @@ public class BatchSignatureVerifier {
         getCountryOfCertificate(certificate),
         CertificateEntity.CertificateType.SIGNING);
 
-      MDC.put("certThumbprint", certHash);
+      EfgsMdc.put("certThumbprint", certHash);
 
       if (certificateEntity.isEmpty()) {
         log.error("unknown signing certificate");

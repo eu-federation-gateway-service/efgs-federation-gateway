@@ -23,12 +23,12 @@ package eu.interop.federationgateway.config;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.Message;
 import com.googlecode.protobuf.format.ProtobufFormatter;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import eu.interop.federationgateway.utils.SemVerUtils;
 import java.io.IOException;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
@@ -103,7 +103,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       targetContentTypeVersion = properties.getContentNegotiation().getJsonVersion();
     }
 
-    MDC.put("requestedMediaType", "\"" + contentType.toString() + "\"");
+    EfgsMdc.put("requestedMediaType", contentType.toString());
 
     if (targetContentType == null) {
       log.error("Accepted Content-Type is not compatible");
@@ -159,7 +159,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Accept must be set!");
     }
 
-    MDC.put("requestedMediaType", "\"" + contentType.toString() + "\"");
+    EfgsMdc.put("requestedMediaType", contentType.toString());
 
     MediaType targetContentType = null;
     String targetContentTypeVersion = null;

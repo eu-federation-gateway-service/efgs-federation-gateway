@@ -26,6 +26,7 @@ import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -37,7 +38,6 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +74,7 @@ public class DiagnosisKeyBatchService {
 
       long elapsedTime = System.currentTimeMillis() - startTime;
       if (elapsedTime > properties.getBatching().getTimelimit()) {
-        MDC.put("batchTime", String.valueOf(elapsedTime));
+        EfgsMdc.put("batchTime", elapsedTime);
         log.info("Maximum time for one batching execution reached.");
         break;
       }
@@ -82,12 +82,12 @@ public class DiagnosisKeyBatchService {
       batchCount += batchCreationResult ? 1 : 0;
     } while (batchCreationResult);
 
-    MDC.put("batchCount", String.valueOf(batchCount));
+    EfgsMdc.put("batchCount", batchCount);
     log.info("Batch Process finished");
 
 
-    MDC.remove("batchCount");
-    MDC.remove("batchTime");
+    EfgsMdc.remove("batchCount");
+    EfgsMdc.remove("batchTime");
   }
 
   /**
@@ -113,11 +113,11 @@ public class DiagnosisKeyBatchService {
     callbackService.notifyAllCountriesForNewBatchTag(newBatchEntity);
 
 
-    MDC.put("batchTag", newBatchEntity.getBatchName());
-    MDC.put("diagnosisKeyCount", String.valueOf(updatedRows));
+    EfgsMdc.put("batchTag", newBatchEntity.getBatchName());
+    EfgsMdc.put("diagnosisKeyCount", updatedRows);
     log.info("Batch created");
-    MDC.remove("diagnosisKeyCount");
-    MDC.remove("batchTag");
+    EfgsMdc.remove("diagnosisKeyCount");
+    EfgsMdc.remove("batchTag");
 
     return true;
   }

@@ -24,6 +24,7 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -35,7 +36,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -120,7 +120,7 @@ public class AuditController {
     List<AuditEntry> auditResponse
       = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTagAndDate(batchTag, date);
 
-    MDC.put("batchTag", batchTag);
+    EfgsMdc.put("batchTag", batchTag);
     if (auditResponse.isEmpty()) {
       log.error("BatchTag Could not found");
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Batchtag not found");
