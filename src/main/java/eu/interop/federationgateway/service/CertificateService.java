@@ -23,11 +23,29 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.utils.EfgsMdc;
+import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.openssl.PEMParser;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -36,6 +54,10 @@ import org.springframework.stereotype.Component;
 public class CertificateService {
 
   private final CertificateRepository certificateRepository;
+
+  private final KeyStore keyStore;
+
+  private final String efgsTrustAnchorName = "efgs_trust_anchor";
 
   /**
    * Method to query the db for a certificate.
@@ -47,7 +69,9 @@ public class CertificateService {
    */
   public Optional<CertificateEntity> getCertificate(
     String thumbprint, String country, CertificateEntity.CertificateType type) {
-    return certificateRepository.getFirstByThumbprintAndCountryAndType(thumbprint, country, type);
+
+    return certificateRepository.getFirstByThumbprintAndCountryAndType(thumbprint, country, type)
+      .map(certificateEntity -> validateCertificateIntegrity(certificateEntity) ? certificateEntity : null);
   }
 
   /**
@@ -59,7 +83,8 @@ public class CertificateService {
    */
   public Optional<CertificateEntity> getCallbackCertificateForUrl(String url, String country) {
     try {
-      return getCallbackCertificateForHost(new URL(url).getHost(), country);
+      return getCallbackCertificateForHost(new URL(url).getHost(), country)
+        .map(certificateEntity -> validateCertificateIntegrity(certificateEntity) ? certificateEntity : null);
     } catch (MalformedURLException ignored) {
       EfgsMdc.put("url", url);
       log.error("Could not parse url.");
@@ -76,6 +101,94 @@ public class CertificateService {
    */
   public Optional<CertificateEntity> getCallbackCertificateForHost(String host, String country) {
     return certificateRepository.getFirstByHostIsAndCountryIsAndTypeIs(
-      host, country, CertificateEntity.CertificateType.CALLBACK);
+      host, country, CertificateEntity.CertificateType.CALLBACK)
+      .map(certificateEntity -> validateCertificateIntegrity(certificateEntity) ? certificateEntity : null);
+  }
+
+  private boolean validateCertificateIntegrity(CertificateEntity certificateEntity) {
+
+    // check if entity has signature and certificate information
+    if (certificateEntity.getSignature() == null || certificateEntity.getSignature().isEmpty()
+      || certificateEntity.getRawData() == null || certificateEntity.getRawData().isEmpty()) {
+      log.error("Certificate entity does not contain raw certificate or certificate signature.");
+      return false;
+    }
+
+    // check if raw data contains a x509 certificate
+    X509Certificate x509Certificate = getX509CertificateFromEntity(certificateEntity);
+    if (x509Certificate == null) {
+      log.error("Raw certificate data does not contain a valid x509Certificate.");
+      return false;
+    }
+
+    // verify if thumbprint in database matches the certificate in raw data
+    if (!verifyThumbprintMatchesCertificate(certificateEntity, x509Certificate)) {
+      log.error("Thumbprint in database does not match thumbprint of stored certificate.");
+      return false;
+    }
+
+    // load EFGS Trust Anchor PublicKey from KeyStore
+    PublicKey publicKey = null;
+    try {
+      publicKey = keyStore.getCertificate(efgsTrustAnchorName).getPublicKey();
+    } catch (KeyStoreException e) {
+      log.error("Could not load EFGS-TrustAnchor from KeyStore.");
+      return false;
+    }
+
+    // verify certificate signature
+    try {
+      Signature verifier = Signature.getInstance("SHA256with" + publicKey.getAlgorithm());
+      byte[] signatureBytes = Base64.getDecoder().decode(certificateEntity.getSignature());
+
+      verifier.initVerify(publicKey);
+      verifier.update(certificateEntity.getRawData().getBytes());
+      return verifier.verify(signatureBytes);
+    } catch (InvalidKeyException e) {
+      log.error("Could not use public key to initialize verifier.");
+      return false;
+    } catch (SignatureException e) {
+      log.error("Signature verifier is not initialized");
+      return false;
+    } catch (NoSuchAlgorithmException e) {
+      log.error("Unknown signing algorithm used by EFGS Trust Anchor.");
+      return false;
+    }
+  }
+
+  private boolean verifyThumbprintMatchesCertificate(CertificateEntity certificateEntity, X509Certificate certificate) {
+    String certHash;
+    try {
+      byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded());
+      certHash = new BigInteger(1, certHashBytes).toString(16);
+    } catch (NoSuchAlgorithmException | CertificateEncodingException e) {
+      log.error("Could not create thumbprint for certificate");
+      return false;
+    }
+
+    return certHash.equals(certificateEntity.getThumbprint());
+  }
+
+  private X509Certificate getX509CertificateFromEntity(CertificateEntity certificateEntity) {
+    PEMParser pemParser = new PEMParser(new StringReader(certificateEntity.getRawData()));
+
+    try {
+      while (pemParser.ready()) {
+        Object certificateContent = pemParser.readObject();
+
+        if (certificateContent == null) {
+          return null;
+        }
+        if (certificateContent instanceof X509Certificate) {
+          return (X509Certificate) certificateContent;
+        } else if (certificateContent instanceof X509CertificateHolder) {
+          JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
+          return converter.getCertificate((X509CertificateHolder) certificateContent);
+        }
+      }
+    } catch (IOException | CertificateException exception) {
+      log.error("Could not read x509Certificate from PEM-Data.");
+    }
+    return null;
   }
 }
