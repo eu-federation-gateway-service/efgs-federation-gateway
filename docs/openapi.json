@@ -6,25 +6,30 @@
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     },
-    "version": "0.2.0-SNAPSHOT"
+    "version": "1.0.0-SNAPSHOT"
   },
-  "servers": [
-    {
+  "servers": [{
       "url": "http://localhost:8090",
       "description": "Generated server url"
     }
   ],
   "paths": {
-    "/diagnosiskeys/audit/download/{batchTag}": {
+    "/diagnosiskeys/audit/download/{date}/{batchTag}": {
       "get": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Audit"
-        ],
-        "summary": "Gets audit information about the selected batchtag.",
+        "tags": ["Diagnosis Keys Exchange Interface", "Audit"],
+        "summary": "Gets audit information about the selected batchtag on a specific date.",
         "operationId": "getAuditInformation",
-        "parameters": [
-          {
+        "parameters": [{
+            "name": "date",
+            "in": "path",
+            "description": "date with which the database is searched.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "example": "2020-09-04"
+          }, {
             "name": "batchTag",
             "in": "path",
             "description": "batchTag with which the database is searched.",
@@ -33,8 +38,7 @@
               "type": "string"
             },
             "example": "20200730-1"
-          },
-          {
+          }, {
             "name": "Accept",
             "in": "header",
             "required": true,
@@ -66,68 +70,43 @@
           },
           "406": {
             "description": "Data format or content is not valid."
+          },
+          "410": {
+            "description": "Date for download expired. Date does not more exists."
           }
         }
       }
     },
     "/diagnosiskeys/callback": {
       "get": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Callback"
-        ],
-        "summary": "Gets the current callback URLs.",
-        "operationId": "getCallbacks",
+        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
+        "summary": "Gets the current callback subscription URLs.",
+        "operationId": "getCallbackSubscriptions",
         "responses": {
-          "200": {
-            "description": "OK.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Callback"
-                  }
-                }
-              }
-            }
-          },
           "403": {
-            "description": "Forbidden call in cause of missing or invalid client certificate.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Callback"
-                  }
-                }
-              }
-            }
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "200": {
+            "description": "OK."
           }
         }
       }
     },
     "/diagnosiskeys/callback/{id}": {
       "put": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Callback"
-        ],
-        "summary": "Put or Update new callback URL.",
-        "operationId": "putOrUpdateCallback",
-        "parameters": [
-          {
+        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
+        "summary": "Create or Update new callback subscription URL.",
+        "operationId": "putOrUpdateCallbackSubscription",
+        "parameters": [{
             "name": "id",
             "in": "path",
-            "description": "id of the entry",
+            "description": "callbackId of the entry",
             "required": true,
             "schema": {
               "type": "string"
             },
             "example": "ABC"
-          },
-          {
+          }, {
             "name": "url",
             "in": "query",
             "required": true,
@@ -141,6 +120,9 @@
           "200": {
             "description": "OK."
           },
+          "400": {
+            "description": "One or more parameters are invalid."
+          },
           "403": {
             "description": "Forbidden call in cause of missing or invalid client certificate."
           },
@@ -153,17 +135,13 @@
         }
       },
       "delete": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Callback"
-        ],
+        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
         "summary": "Delete callback URL.",
-        "operationId": "deleteCallback",
-        "parameters": [
-          {
+        "operationId": "deleteCallbackSubscription",
+        "parameters": [{
             "name": "id",
             "in": "path",
-            "description": "id of the entry",
+            "description": "callbackId of the entry",
             "required": true,
             "schema": {
               "type": "string"
@@ -171,11 +149,17 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "OK."
+          },
+          "400": {
+            "description": "The given callbackId is not valid."
           },
           "403": {
             "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "404": {
+            "description": "Id not found or no data exists."
           },
           "500": {
             "description": "Not able to write data. Retry please."
@@ -185,15 +169,11 @@
     },
     "/diagnosiskeys/download/{date}": {
       "get": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Download"
-        ],
+        "tags": ["Diagnosis Keys Exchange Interface", "Download"],
         "summary": "Downloads diagnosis keys dataset by date.",
         "description": "Downloads the latest data by date. The date indicates the start point for query. Means the last 5 Days are currentDate-5",
         "operationId": "downloadDiagnosisKeys",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "date",
             "in": "path",
             "description": "Date from where the query should start until today.",
@@ -203,8 +183,7 @@
               "format": "date"
             },
             "example": "2020-07-31"
-          },
-          {
+          }, {
             "name": "batchTag",
             "in": "header",
             "description": "Optional Tag to submit the last received batchTag of the day.",
@@ -260,10 +239,7 @@
         }
       },
       "options": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Download"
-        ],
+        "tags": ["Diagnosis Keys Exchange Interface", "Download"],
         "summary": "Returns information about the download-endpoint.",
         "operationId": "getEndpointInformation",
         "responses": {
@@ -296,15 +272,11 @@
     },
     "/diagnosiskeys/upload": {
       "post": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Upload"
-        ],
+        "tags": ["Diagnosis Keys Exchange Interface", "Upload"],
         "summary": "Uploads diagnosis key datasets.",
         "description": "Uploads the given batch to the server. Uploader Information is given by the client certificate.",
         "operationId": "uploadDiagnosisKeys",
-        "parameters": [
-          {
+        "parameters": [{
             "name": "batchTag",
             "in": "header",
             "description": "Required Tag to tag the send batch (must be not unique).",
@@ -313,8 +285,7 @@
               "type": "string"
             },
             "example": "20200731-1"
-          },
-          {
+          }, {
             "name": "batchSignature",
             "in": "header",
             "description": "PKC7 Payload signature in Base64 encoding.",
@@ -323,8 +294,7 @@
               "type": "string"
             },
             "example": "ABDBJ345231DJ122..."
-          },
-          {
+          }, {
             "name": "Content-Type",
             "in": "header",
             "required": true,
@@ -391,10 +361,7 @@
         }
       },
       "options": {
-        "tags": [
-          "Diagnosis Keys Exchange Interface",
-          "Upload"
-        ],
+        "tags": ["Diagnosis Keys Exchange Interface", "Upload"],
         "summary": "Returns information about the upload-endpoint.",
         "operationId": "getEndpointInformation_1",
         "responses": {
@@ -455,18 +422,6 @@
           }
         },
         "description": "Entity representation per country in audit results."
-      },
-      "Callback": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          }
-        },
-        "description": "Entity representation of a callback."
       }
     }
   }

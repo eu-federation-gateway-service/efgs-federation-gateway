@@ -24,6 +24,7 @@ This software implements a pan european solution a "European Federation Gateway 
 | Batch| An ordered set of diagnostic keys	|
 | Upload Tag| Unique Logical Name for uploads | 		
 | Batch Tag Name | Only relevant for downloads |
+| Country | A european country which interacts with the system | 
 
 # Context View
 The diagram below shows the dataflow from and to national backends.
