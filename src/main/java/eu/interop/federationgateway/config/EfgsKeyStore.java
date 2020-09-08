@@ -17,16 +17,31 @@ public class EfgsKeyStore {
   private final EfgsProperties efgsProperties;
 
   /**
-   * Creates a KeyStore instance with keys for EFGS.
+   * Creates a KeyStore instance with keys for EFGS TrustAnchor.
    *
    * @return KeyStore Instance
    */
   @Bean
-  public KeyStore keyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+  public KeyStore trustAnchorKeyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
     keyStore.load(
-      new FileInputStream(efgsProperties.getKeyStorePath()),
-      efgsProperties.getKeyStorePass().toCharArray()
+      new FileInputStream(efgsProperties.getTrustAnchor().getKeyStorePath()),
+      efgsProperties.getTrustAnchor().getKeyStorePass().toCharArray()
+    );
+    return keyStore;
+  }
+
+  /**
+   * Creates a KeyStore instance with keys for EFGS Callback feature.
+   *
+   * @return KeyStore Instance
+   */
+  @Bean
+  public KeyStore callbackKeyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    KeyStore keyStore = KeyStore.getInstance("JKS");
+    keyStore.load(
+      new FileInputStream(efgsProperties.getCallback().getKeyStorePath()),
+      efgsProperties.getCallback().getKeyStorePass().toCharArray()
     );
     return keyStore;
   }

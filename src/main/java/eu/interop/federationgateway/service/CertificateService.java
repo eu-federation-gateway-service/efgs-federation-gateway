@@ -20,6 +20,7 @@
 
 package eu.interop.federationgateway.service;
 
+import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.utils.EfgsMdc;
@@ -55,9 +56,9 @@ public class CertificateService {
 
   private final CertificateRepository certificateRepository;
 
-  private final KeyStore keyStore;
+  private final KeyStore trustAnchorKeyStore;
 
-  private final String efgsTrustAnchorName = "efgs_trust_anchor";
+  private final EfgsProperties efgsProperties;
 
   /**
    * Method to query the db for a certificate.
@@ -130,7 +131,8 @@ public class CertificateService {
     // load EFGS Trust Anchor PublicKey from KeyStore
     PublicKey publicKey = null;
     try {
-      publicKey = keyStore.getCertificate(efgsTrustAnchorName).getPublicKey();
+      publicKey = trustAnchorKeyStore.getCertificate(
+        efgsProperties.getTrustAnchor().getCertificateAlias()).getPublicKey();
     } catch (KeyStoreException e) {
       log.error("Could not load EFGS-TrustAnchor from KeyStore.");
       return false;

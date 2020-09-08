@@ -18,9 +18,15 @@ springdoc:
   swagger-ui:
     path: /swagger
 efgs:
-  keyStorePath: keystore/efgs-ta.jks
-  keyStorePass: 3fgs-p4ssw0rd
+  trustAnchor:
+    keyStorePath: keystore/efgs-ta.jks
+    keyStorePass: 3fgs-p4ssw0rd
+    certificateAlias: efgs_trust_anchor
   callback:
+    keyStorePath: keystore/efgs-cb-client.jks
+    keyStorePass: 3fgs-p4ssw0rd
+    keyStorePrivateKeyAlias: efgs_callback_key
+    keyStoreCertificateAlias: efgs_callback_cert
     execute-interval: 300000
     task-lock-timeout: 300
     proxy-host: localhost
