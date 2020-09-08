@@ -157,7 +157,7 @@ public class CallbackServiceTest {
   public void testCheckUrlMethod() {
     Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
       Optional.of(new CertificateEntity(42L, ZonedDateTime.now(), "thumb",
-        TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, false, "example.org")));
+        TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, false, "example.org", null, null)));
 
     // check if given string is a url
     Assert.assertFalse(callbackService.checkUrl("teststring1234", TestData.COUNTRY_A));
@@ -211,7 +211,7 @@ public class CallbackServiceTest {
 
     Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
       Optional.of(new CertificateEntity(42L, ZonedDateTime.now(), "thumb",
-        TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, true, "example.org")));
+        TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, true, "example.org", null, null)));
 
     // check that a certificate is not revoked
     Assert.assertFalse(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));

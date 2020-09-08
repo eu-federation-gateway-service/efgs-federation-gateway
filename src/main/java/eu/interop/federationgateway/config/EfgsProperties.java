@@ -37,6 +37,9 @@ public class EfgsProperties {
   private final Batching batching = new Batching();
   private final Callback callback = new Callback();
 
+  private String keyStorePath;
+  private String keyStorePass;
+
   @Getter
   @Setter
   public static class Callback {

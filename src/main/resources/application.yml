@@ -18,6 +18,8 @@ springdoc:
   swagger-ui:
     path: /swagger
 efgs:
+  keyStorePath: keystore/efgs-ta.jks
+  keyStorePass: 3fgs-p4ssw0rd
   callback:
     execute-interval: 300000
     task-lock-timeout: 300
