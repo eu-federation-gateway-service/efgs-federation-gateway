@@ -58,14 +58,11 @@ public class CallbackServiceTest {
   @Autowired
   DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
 
-  CertificateService certificateServiceMock;
-
   CallbackService callbackService;
 
   @Before
   public void setUp() {
-    certificateServiceMock = Mockito.mock(CertificateService.class);
-    callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepository, certificateServiceMock);
+     callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepository);
   }
 
   @Before
@@ -202,7 +199,7 @@ public class CallbackServiceTest {
   @Test
   public void callbackTaskCleanUpShouldCallRepoMethod() {
     CallbackTaskRepository callbackTaskRepositoryMock = Mockito.mock(CallbackTaskRepository.class);
-    callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepositoryMock, certificateServiceMock);
+    callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepositoryMock);
 
     ZonedDateTime timestamp = ZonedDateTime.now();
 
