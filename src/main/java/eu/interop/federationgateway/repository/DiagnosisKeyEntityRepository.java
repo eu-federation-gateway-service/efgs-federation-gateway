@@ -32,7 +32,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Transactional(isolation = Isolation.SERIALIZABLE)
+@Transactional(isolation = Isolation.REPEATABLE_READ)
 public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKeyEntity, Long> {
 
   @Modifying
