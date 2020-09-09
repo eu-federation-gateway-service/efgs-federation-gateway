@@ -227,8 +227,28 @@ public class TestData {
       TestData.keyPair = keyGen.generateKeyPair();
     }
 
-    if (TestData.validCertificate == null) {
-      TestData.validCertificate = generateCertificate(
+    TestData.validCertificate = generateCertificate(
+      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+      Date.from(ZonedDateTime.now().plusYears(1).toInstant())
+    );
+
+    TestData.expiredCertificate = generateCertificate(
+      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+      Date.from(ZonedDateTime.now().minusDays(1).toInstant())
+    );
+
+    TestData.notValidYetCertificate = generateCertificate(
+      Date.from(ZonedDateTime.now().plusDays(1).toInstant()),
+      Date.from(ZonedDateTime.now().plusDays(14).toInstant())
+    );
+
+    TestData.manipulatedCertificate = generateCertificate(
+      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+      Date.from(ZonedDateTime.now().plusDays(14).toInstant())
+    );
+
+    if (TestData.trustAnchor == null) {
+      TestData.trustAnchor = generateCertificate(
         Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
         Date.from(ZonedDateTime.now().plusYears(1).toInstant())
       );
@@ -236,34 +256,6 @@ public class TestData {
 
     if (TestData.validAuthenticationCertificate == null) {
       TestData.validAuthenticationCertificate = generateCertificate(
-        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-        Date.from(ZonedDateTime.now().plusYears(1).toInstant())
-      );
-    }
-
-    if (TestData.expiredCertificate == null) {
-      TestData.expiredCertificate = generateCertificate(
-        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-        Date.from(ZonedDateTime.now().minusDays(1).toInstant())
-      );
-    }
-
-    if (TestData.notValidYetCertificate == null) {
-      TestData.notValidYetCertificate = generateCertificate(
-        Date.from(ZonedDateTime.now().plusDays(1).toInstant()),
-        Date.from(ZonedDateTime.now().plusDays(14).toInstant())
-      );
-    }
-
-    if (TestData.manipulatedCertificate == null) {
-      TestData.manipulatedCertificate = generateCertificate(
-        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-        Date.from(ZonedDateTime.now().plusDays(14).toInstant())
-      );
-    }
-
-    if (TestData.trustAnchor == null) {
-      TestData.trustAnchor = generateCertificate(
         Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
         Date.from(ZonedDateTime.now().plusYears(1).toInstant())
       );

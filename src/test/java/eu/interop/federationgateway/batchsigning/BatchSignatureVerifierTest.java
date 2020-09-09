@@ -26,7 +26,6 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
@@ -60,7 +59,7 @@ public class BatchSignatureVerifierTest {
 
   @Before
   public void setup() throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException,
-    InvalidKeyException, SignatureException, KeyStoreException {
+    InvalidKeyException, SignatureException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
   }
 
