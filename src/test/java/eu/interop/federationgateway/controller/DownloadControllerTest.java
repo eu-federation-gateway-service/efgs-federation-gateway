@@ -32,8 +32,12 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -91,8 +95,8 @@ public class DownloadControllerTest {
   }
 
   @Before
-  public void setup() throws CertificateException, NoSuchAlgorithmException, CertIOException,
-    OperatorCreationException {
+  public void setup() throws CertificateException, NoSuchAlgorithmException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();

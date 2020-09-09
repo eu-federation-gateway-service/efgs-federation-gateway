@@ -26,11 +26,17 @@ import eu.interop.federationgateway.batchsigning.BatchSignatureUtilsTest;
 import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
+import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.Base64;
@@ -48,6 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -60,6 +67,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
+@Import(EfgsTestKeyStore.class)
 @RunWith(SpringRunner.class)
 public class UploadControllerTest {
 
@@ -80,12 +88,11 @@ public class UploadControllerTest {
 
   private SignatureGenerator signatureGenerator;
 
-
   private MockMvc mockMvc;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
-    OperatorCreationException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
@@ -98,6 +105,7 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestShouldFailOnMissingBatchSignature() throws Exception {
+    List<CertificateEntity> all = certificateRepository.findAll();
     mockMvc.perform(post("/diagnosiskeys/upload")
       .contentType("application/protobuf; version=1.0")
       .header("batchTag", TestData.FIRST_BATCHTAG)

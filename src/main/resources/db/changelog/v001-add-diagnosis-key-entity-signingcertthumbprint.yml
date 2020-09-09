@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-diagnosis-key-entity-signingcertthumbprint
+      author: mlaue-tech
+      changes:
+        - addColumn:
+            tableName: diagnosiskey
+            columns:
+              - column:
+                  name: uploader_information_signing_cert_thumbprint
+                  type: varchar(64)

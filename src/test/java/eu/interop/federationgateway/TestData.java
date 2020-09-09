@@ -29,12 +29,20 @@ import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.entity.UploaderInformation;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
+import eu.interop.federationgateway.service.CertificateService;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -43,6 +51,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -53,9 +62,15 @@ import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class TestData {
 
@@ -79,7 +94,9 @@ public class TestData {
   public static final byte[] BYTES = new byte[]{14, 15, 11, 14, 12, 15, 15, 16};
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
-  public static final String AUTH_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
+  public static final String AUTH_VALID_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
+  public static final String AUTH_CERT_HASH = "af8f74084e27cca43ed9eb0436e906c36c03b14304aa24fe5f9978395d639e3b";
+  public static final String SIGNING_CERT_HASH = "9433f80547d70af526a74f8fef35de9bc05c7a29518dd61fa0fd0e955e669e91";
   public static final String CALLBACK_ID_FIRST = "firstCallback";
   public static final String CALLBACK_ID_SECOND = "secondCallback";
   public static final String CALLBACK_URL_EFGS = "https://example.org";
@@ -92,17 +109,35 @@ public class TestData {
   public static KeyPair keyPair;
   public static X509Certificate expiredCertificate;
   public static X509Certificate validCertificate;
+  public static X509Certificate trustAnchor;
   public static String validCertificateHash;
   public static X509Certificate notValidYetCertificate;
   public static X509Certificate manipulatedCertificate;
 
-  private static String insertSigningCertificate(CertificateRepository certificateRepository, X509Certificate certificate) throws NoSuchAlgorithmException, CertificateEncodingException {
+  private static String insertSigningCertificate(CertificateRepository certificateRepository,
+                                                 X509Certificate certificate) throws NoSuchAlgorithmException,
+    CertificateEncodingException, IOException, InvalidKeyException, SignatureException {
     byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded());
     String certHash = new BigInteger(1, certHashBytes).toString(16);
 
     String certDn = certificate.getSubjectDN().toString();
     int countryIndex = certDn.indexOf(("C="));
     String certCountry = certDn.substring(countryIndex + 2, countryIndex + 4);
+
+    StringWriter stringWriter = new StringWriter();
+    JcaPEMWriter jcaPEMWriter = new JcaPEMWriter(stringWriter);
+    jcaPEMWriter.writeObject(certificate);
+    jcaPEMWriter.flush();
+    stringWriter.flush();
+    String rawData = stringWriter.toString().replace("\r", "");
+    jcaPEMWriter.close();
+    stringWriter.close();
+
+    Signature signer = Signature.getInstance("SHA256withRSA");
+    signer.initSign(keyPair.getPrivate());
+    signer.update(rawData.getBytes());
+    byte[] signedData = signer.sign();
+    String signature = Base64.getEncoder().encodeToString(signedData);
 
     CertificateEntity certificateEntity = new CertificateEntity(
       null,
@@ -112,8 +147,8 @@ public class TestData {
       CertificateEntity.CertificateType.SIGNING,
       false,
       null,
-      null,
-      null
+      signature,
+      rawData
     );
 
     Optional<CertificateEntity> certInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
@@ -125,7 +160,9 @@ public class TestData {
     return certHash;
   }
 
-  public static void insertCertificatesForAuthentication(CertificateRepository certificateRepository) throws NoSuchAlgorithmException, CertificateException, CertIOException, OperatorCreationException {
+  public static void insertCertificatesForAuthentication(CertificateRepository certificateRepository)
+    throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException,
+    InvalidKeyException, SignatureException, KeyStoreException {
     createCertificates();
 
     validCertificateHash = insertSigningCertificate(certificateRepository, validCertificate);
@@ -143,8 +180,48 @@ public class TestData {
       CertificateEntity.CertificateType.AUTHENTICATION,
       false,
       null,
-      null,
-      null
+      "Gmf1DsCtv5gXyaaHdswRjTKze6QNJ7UIbZpxAgsl5ODH1W8ZYoNJAbgINfWCbWEAIZBlSaHHWikSKTP3gGE4Ne6toxr19t3DP"
+        + "+6QTWpzY5uzaamOmD12YfgaIfI4TuLYcV+YEcp6Vq29871igXiGNe49le/tK4C6CbPMKuOuUKaGwKdF5tC++b+frjsI11IGpNwwGBG"
+        + "+GuUcuBWwhtdo3+T+3gVAjneSAWkCc15lhtvlh66LOTQ+luGpYuIiJRh0US6B8dWG5FdOSnuWQ/PoxoqXpaQ4wlqEeJD9K"
+        + "+UZ2Z2ehLXwrq/nvn3ZbQiyomB9rGiEG/USpQl4HHOvRM253g==",
+      "-----BEGIN CERTIFICATE-----\n"
+        + "MIIGpjCCBI6gAwIBAgIUUsiTxuVFRw7WoKKnDVsRmQd5uFowDQYJKoZIhvcNAQEL\n"
+        + "BQAwgbQxCzAJBgNVBAYTAkRFMRUwEwYDVQQHDAxTYWFyYnLDvGNrZW4xJTAjBgNV\n"
+        + "BAoTHFQtU3lzdGVtcyBJbnRlcm5hdGlvbmFsIEdtYkgxFjAUBgNVBAsTDUNXQSBU\n"
+        + "ZXN0IFRlYW0xIDAeBgNVBAMTF0VGR1MgU2ltdWxhdG9yIFRlc3QgQ0EyMS0wKwYJ\n"
+        + "KoZIhvcNAQkBFh5Db3JvbmFBcHBUZXN0aW5nQG1nLnRlbGVrb20uZGUwHhcNMjAw\n"
+        + "OTAyMTYzMDIyWhcNMjMwOTAzMTYzMDIyWjCBnDELMAkGA1UEBhMCQkUxEDAOBgNV\n"
+        + "BAgMB0JlbGdpdW0xEDAOBgNVBAcMB0JlbGdpdW0xFzAVBgNVBAoMDkVGR1MtVGVz\n"
+        + "dC1UZWFtMRcwFQYDVQQLDA5FRkdTLVRlc3QtVGVhbTE3MDUGA1UEAwwuY3dhLXNp\n"
+        + "bXVsYXRvci1iZS53ZXN0ZXVyb3BlLmNsb3VkYXBwLmF6dXJlLmNvbTCCAiIwDQYJ\n"
+        + "KoZIhvcNAQEBBQADggIPADCCAgoCggIBALp+Js+W9YMC6pN39OHrT1p32dbhXmzW\n"
+        + "W1NdRP//+Klrr8bsNiGNf74UQS9HA4uI+whHYfelx/nwlXFBeaCIQs5EL1sNSmRk\n"
+        + "2f3kgMP53RO42MCoXXTsAAjOtVl2h1zOduNiTgqlIAxdc/tMkPewV4izWxBLThmG\n"
+        + "jjlTFh81xFymWFRKz4pZmWbpgdrR0Smp0fJG1HOWvqKGX8Z9A9agLfLMapLorqVH\n"
+        + "uC/6wXbYj7RYcMkUMr85fjmNzc8OKLs6OQVZ552V7OgY/7D5P2mXE8Twdb+ama+7\n"
+        + "q9tHByF6ohbWNb2mywEsCeh+pYSTD4Qh2V7S2Z6o6eaPuq7sbOvPVT9hEc8InHHY\n"
+        + "J9PPUfJqPU8FhEHEKnqz1L/MrcD+JlmT3EO7y/btVRRE+A+KWXlVK7cvtw89f5u5\n"
+        + "2cZhyPxB8Z74oWr2BodCaNjcjdqT67+x5muKPVRzAXiHUuiWEuHki2Is3IX5FLTm\n"
+        + "c9qcovqjdgFOmpLJWKi12MUA8jkLYaRjgUULoSb+9vlRS6bQ8ix6bbTa9CqAsbQ5\n"
+        + "Gce01E+3SZt5jB6tEDgFQjGs+ZX4aUVibGc0C3tHwExgM1R/hUmYVZ/X6u8/+/1P\n"
+        + "/1M72GusQqzbBWTbmciixME9Xu+L+UrdXoGHjhLbxg1wQ/LBRdPzcPqq0wk1S29F\n"
+        + "7idSZ2NGBK/dAgMBAAGjgcUwgcIwCQYDVR0TBAIwADARBglghkgBhvhCAQEEBAMC\n"
+        + "BaAwMwYJYIZIAYb4QgENBCYWJE9wZW5TU0wgR2VuZXJhdGVkIENsaWVudCBDZXJ0\n"
+        + "aWZpY2F0ZTAdBgNVHQ4EFgQUMvQnnxeK0JmtnY9Q9U9SR+Td40YwHwYDVR0jBBgw\n"
+        + "FoAUSm16Zq46oc49eDPY7v1bay5xNygwDgYDVR0PAQH/BAQDAgXgMB0GA1UdJQQW\n"
+        + "MBQGCCsGAQUFBwMCBggrBgEFBQcDBDANBgkqhkiG9w0BAQsFAAOCAgEAdsitfnED\n"
+        + "cmXWkCzyldmKUUZk6FLv8Mr3ohhwt/8XPWZUuRMQNrdsxDGg7XH6r6dfJpsG6e+h\n"
+        + "vkRVAKcJ1i7FaKDm40wgrzrOZk6H8DLzoA+4O0gSGUqqvWzZUW149naYlzYO7ZNm\n"
+        + "XBXb8vFi4bUiyoBzaMihW2FpKXj/B+0lGrgOVgOaiyHt4mrebye4H0Nhq5kE8Fd1\n"
+        + "Ka5bJjsTq06i3BtMz8fZg6YUyHmKp++Bw57F4mEaHHW0dvmMxX5M4omTrQRrxeyL\n"
+        + "4prV/kmfUGvD1/u1wgUDrjpl0P5FEeb0gZXZi8ofzWOz9Rs/qGgN5UsH4hDTst0x\n"
+        + "ds9FzCmiYTAOQq7beGLAbTAyNyW34VNGYghcBG0pioSROZLaOVQ6KaYH5NTqHT4+\n"
+        + "gvEkbSytKLBkoyvKxX1UrgYFfttUMLnho5yaxctLL4PAkQqEhjDNrNr/9i+e9qvU\n"
+        + "qQN6/YXXOaLOSuoJGX2WOTnaaOtexANE9u8ATByWinx3XmxpR9gMRzNbkMR6nm2B\n"
+        + "v79GsuubnjF7e0ZUiCbjwAqLipMQbM9JDaxU9zS+lh4OszcM7rs+bFCUaxl067Ng\n"
+        + "WdOu75AfKTI83b6G0hOin9N/mDlW9df2Qu4wegXllC0oo1rIKNIWx0ECFHvCFBWF\n"
+        + "Os3mHyNHl7fVzpJ9VrnXgWuRnR3pZu+KeB4=\n"
+        + "-----END CERTIFICATE-----"
     );
 
     Optional<CertificateEntity> authCertInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
@@ -153,14 +230,16 @@ public class TestData {
     authCertInDb.ifPresent(certificateRepository::delete);
 
     certificateRepository.save(authCertificateEntity);
-  }
 
-  private static X509Certificate generateCertificate(Date validFrom, Date validTo) throws OperatorCreationException, CertIOException, CertificateException {
+  }
+  private static X509Certificate generateCertificate(Date validFrom, Date validTo) throws OperatorCreationException,
+    CertIOException, CertificateException {
     X500Name dnName = new X500Name("C=" + TestData.AUTH_CERT_COUNTRY + ", CN=" + COMMON_NAME_SIGNING_CERT);
     BigInteger certSerial = new BigInteger(Long.toString(System.currentTimeMillis()));
 
     ContentSigner contentSigner = new JcaContentSignerBuilder(DIGEST_ALGORITHM).build(TestData.keyPair.getPrivate());
-    JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(dnName, certSerial, validFrom, validTo, dnName, TestData.keyPair.getPublic());
+    JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(dnName, certSerial, validFrom, validTo,
+      dnName, TestData.keyPair.getPublic());
 
     BasicConstraints basicConstraints = new BasicConstraints(false);
     certBuilder.addExtension(new ASN1ObjectIdentifier("2.5.29.19"), true, basicConstraints);
@@ -168,7 +247,8 @@ public class TestData {
     return new JcaX509CertificateConverter().getCertificate(certBuilder.build(contentSigner));
   }
 
-  public static void createCertificates() throws NoSuchAlgorithmException, CertificateException, CertIOException, OperatorCreationException {
+  public static void createCertificates() throws NoSuchAlgorithmException, CertificateException, CertIOException,
+    OperatorCreationException {
     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
     keyGen.initialize(2048);
     TestData.keyPair = keyGen.generateKeyPair();
@@ -191,6 +271,11 @@ public class TestData {
     TestData.manipulatedCertificate = generateCertificate(
       Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
       Date.from(ZonedDateTime.now().plusDays(14).toInstant())
+    );
+
+    TestData.trustAnchor = generateCertificate(
+      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+      Date.from(ZonedDateTime.now().plusYears(1).toInstant())
     );
   }
 
@@ -216,7 +301,8 @@ public class TestData {
     }
 
     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-    TestData.manipulatedCertificate = (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+    TestData.manipulatedCertificate =
+      (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
   }
 
   public static EfgsProto.DiagnosisKey getDiagnosisKeyProto() {
@@ -249,7 +335,7 @@ public class TestData {
         DAYS_SINCE_ONSET_OF_SYMPTOMS
       ),
       new FormatInformation(1, 0),
-      new UploaderInformation(FIRST_BATCHTAG, "b", "c", "d")
+      new UploaderInformation(FIRST_BATCHTAG, "b", "c", "d", "e")
     );
   }
 
@@ -378,7 +464,8 @@ public class TestData {
     return createTestDiagKeysList(count, batchTag, origin, 1, 0);
   }
 
-  public static List<DiagnosisKeyEntity> createTestDiagKeysList(int count, String batchTag, String origin, int majorVersion, int minorVersion) throws NoSuchAlgorithmException {
+  public static List<DiagnosisKeyEntity> createTestDiagKeysList(int count, String batchTag, String origin,
+                                                                int majorVersion, int minorVersion) throws NoSuchAlgorithmException {
 
     List<DiagnosisKeyEntity> testKeys = new ArrayList<>();
     Random random = new Random();

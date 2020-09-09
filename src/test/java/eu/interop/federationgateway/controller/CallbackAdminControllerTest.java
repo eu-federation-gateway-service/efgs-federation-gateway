@@ -20,6 +20,10 @@
 
 package eu.interop.federationgateway.controller;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.SignatureException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -93,8 +97,8 @@ public class CallbackAdminControllerTest {
   private boolean dnsIsAvailable = false;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
-    OperatorCreationException, MalformedURLException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
 
     try {
       InetAddress.getByName("example.org");

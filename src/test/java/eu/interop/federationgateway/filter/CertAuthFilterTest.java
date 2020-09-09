@@ -20,6 +20,10 @@
 
 package eu.interop.federationgateway.filter;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.SignatureException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -72,7 +76,7 @@ public class CertAuthFilterTest {
   private MockMvc mockMvc;
 
   @Before
-  public void setup() throws CertificateException, NoSuchAlgorithmException, CertIOException, OperatorCreationException {
+  public void setup() throws CertificateException, NoSuchAlgorithmException, IOException, OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();

@@ -23,7 +23,10 @@ package eu.interop.federationgateway.batchsigning;
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
@@ -54,11 +57,14 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 
 public class SignatureGenerator {
 
-  public SignatureGenerator(CertificateRepository certificateRepository) throws CertificateException, NoSuchAlgorithmException, CertIOException, OperatorCreationException {
+  public SignatureGenerator(CertificateRepository certificateRepository) throws CertificateException,
+    NoSuchAlgorithmException, IOException, OperatorCreationException, InvalidKeyException, SignatureException,
+    KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
   }
 
-  public String sign(final byte[] data, X509Certificate cert) throws CertificateEncodingException, OperatorCreationException, CMSException, IOException {
+  public String sign(final byte[] data, X509Certificate cert) throws CertificateEncodingException,
+    OperatorCreationException, CMSException, IOException {
     return sign(data, cert, true, true);
   }
 
@@ -72,7 +78,8 @@ public class SignatureGenerator {
     return sign(data, TestData.validCertificate, true, false);
   }
 
-  private String sign(final byte[] data, X509Certificate cert, final boolean certMustBeAdded, final boolean signerInfoMustBeAdded)
+  private String sign(final byte[] data, X509Certificate cert, final boolean certMustBeAdded,
+                      final boolean signerInfoMustBeAdded)
     throws CertificateEncodingException, OperatorCreationException, IOException, CMSException {
     final CMSSignedDataGenerator signedDataGenerator = new CMSSignedDataGenerator();
     if (certMustBeAdded) {
@@ -94,11 +101,13 @@ public class SignatureGenerator {
     return Base64.getEncoder().encodeToString(cmsEnvelopedData.getEncoded());
   }
 
-  private SignerInfoGenerator createSignerInfo(X509Certificate cert) throws OperatorCreationException, CertificateEncodingException {
+  private SignerInfoGenerator createSignerInfo(X509Certificate cert) throws OperatorCreationException,
+    CertificateEncodingException {
     return new JcaSignerInfoGeneratorBuilder(createDigestBuilder()).build(createContentSigner(), cert);
   }
 
-  private X509CertificateHolder createCertificateHolder(X509Certificate cert) throws CertificateEncodingException, IOException {
+  private X509CertificateHolder createCertificateHolder(X509Certificate cert) throws CertificateEncodingException,
+    IOException {
     return new X509CertificateHolder(cert.getEncoded());
   }
 

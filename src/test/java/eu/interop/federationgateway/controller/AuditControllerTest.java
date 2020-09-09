@@ -37,7 +37,11 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -87,8 +91,8 @@ public class AuditControllerTest {
   private SignatureGenerator signatureGenerator;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
-    OperatorCreationException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
     signatureGenerator = new SignatureGenerator(certificateRepository);
 

@@ -8,7 +8,11 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
@@ -52,8 +56,8 @@ public class DiagnosisKeyBatchValidatorTest {
   private MockMvc mockMvc;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
-    OperatorCreationException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();

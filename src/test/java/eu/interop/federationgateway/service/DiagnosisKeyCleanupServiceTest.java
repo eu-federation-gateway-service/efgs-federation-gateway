@@ -128,6 +128,7 @@ public class DiagnosisKeyCleanupServiceTest {
         TestData.FIRST_BATCHTAG,
         "",
         "",
+        "",
         ""
       )
     ));
