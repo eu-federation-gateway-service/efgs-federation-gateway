@@ -52,7 +52,8 @@ public class EfgsKeyStore {
     return keyStore;
   }
 
-  private void loadKeyStore(KeyStore keyStore, String path, char[] password) throws CertificateException, NoSuchAlgorithmException, IOException {
+  private void loadKeyStore(KeyStore keyStore, String path, char[] password)
+    throws CertificateException, NoSuchAlgorithmException, IOException {
     if (path.startsWith("classpath:")) {
       String resourcePath = path.substring(10);
       keyStore.load(getClass().getClassLoader().getResourceAsStream(resourcePath), password);
