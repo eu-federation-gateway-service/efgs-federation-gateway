@@ -134,8 +134,8 @@ public class AuditControllerTest {
     Assert.assertEquals(3, auditEntry.getAmount());
     Assert.assertEquals(TestData.AUTH_CERT_HASH,
       auditEntry.getUploaderThumbprint());
-    Assert.assertNotNull(auditEntry.getUploaderOperatorSignature());
-    Assert.assertNotNull(auditEntry.getSigningCertificateOperatorSignature());
+    Assert.assertTrue(!auditEntry.getUploaderOperatorSignature().isEmpty());
+    Assert.assertTrue(!auditEntry.getSigningCertificateOperatorSignature().isEmpty());
     Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
   }
 
