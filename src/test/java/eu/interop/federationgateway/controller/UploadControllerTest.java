@@ -26,7 +26,6 @@ import eu.interop.federationgateway.batchsigning.BatchSignatureUtilsTest;
 import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
-import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
@@ -34,7 +33,6 @@ import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
 import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
@@ -336,6 +334,27 @@ public class UploadControllerTest {
         Assert.assertEquals("application/json; version=1.0, application/protobuf; version=1.0", accept);
       });
   }
+  
+  @Test
+  public void testRequestUploadKeysInProtobufFormatFailedByTrustedAnchor() throws Exception {
+    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
+    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
+    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
 
+    EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
+      .addAllKeys(Arrays.asList(key1, key2, key3)).build();
 
+    byte[] bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch);
+    String signature = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
+
+    mockMvc.perform(post("/diagnosiskeys/upload")
+      .contentType("application/protobuf; version=1.0")
+      .header("batchTag", TestData.FIRST_BATCHTAG)
+      .header("batchSignature", signature)
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), "trashHash")
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
+      .content(batch.toByteArray())
+    )
+      .andExpect(status().isForbidden());
+  }
 }

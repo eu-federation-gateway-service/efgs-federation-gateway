@@ -57,6 +57,11 @@ public class CertificateService {
 
   private final EfgsProperties efgsProperties;
 
+  /**
+   * Add operator signatures to the audit entries.
+   * @param auditEntries list of audit entries
+   * @return filled/added list of audit entries
+   */
   public List<AuditEntry> addOperatorSignatures(List<AuditEntry> auditEntries) {
     for (AuditEntry auditEntry : auditEntries) {
       String uploaderThumbprint = auditEntry.getUploaderThumbprint();

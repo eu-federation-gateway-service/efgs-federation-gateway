@@ -22,7 +22,8 @@ public class EfgsKeyStore {
    * @return KeyStore Instance
    */
   @Bean
-  public KeyStore trustAnchorKeyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+  public KeyStore trustAnchorKeyStore() throws KeyStoreException, IOException,
+          CertificateException, NoSuchAlgorithmException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
     keyStore.load(
       new FileInputStream(efgsProperties.getTrustAnchor().getKeyStorePath()),
@@ -37,7 +38,8 @@ public class EfgsKeyStore {
    * @return KeyStore Instance
    */
   @Bean
-  public KeyStore callbackKeyStore() throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+  public KeyStore callbackKeyStore() throws KeyStoreException, IOException,
+          CertificateException, NoSuchAlgorithmException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
     keyStore.load(
       new FileInputStream(efgsProperties.getCallback().getKeyStorePath()),

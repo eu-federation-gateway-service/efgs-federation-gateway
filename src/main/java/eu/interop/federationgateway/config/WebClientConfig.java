@@ -38,7 +38,8 @@ public class WebClientConfig {
    * @return Instance of WebClient
    */
   @Bean
-  public WebClient webClient() throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, SSLException {
+  public WebClient webClient() throws UnrecoverableKeyException, NoSuchAlgorithmException,
+          KeyStoreException, SSLException {
 
     PrivateKey privateKey = (PrivateKey) callbackKeyStore.getKey(
       efgsProperties.getCallback().getKeyStorePrivateKeyAlias(),

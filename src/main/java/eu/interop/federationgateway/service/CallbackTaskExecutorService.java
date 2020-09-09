@@ -51,6 +51,9 @@ public class CallbackTaskExecutorService {
 
   private final CallbackTaskRepository callbackTaskRepository;
 
+  /**
+   * Execute Callback processing.
+   */
   @Scheduled(fixedDelayString = "${efgs.callback.execute-interval}")
   public void execute() {
     log.info("Callback processing started.");

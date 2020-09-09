@@ -36,7 +36,6 @@ import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
-import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
@@ -51,7 +50,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,9 +62,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -134,6 +134,8 @@ public class AuditControllerTest {
     Assert.assertEquals(3, auditEntry.getAmount());
     Assert.assertEquals(TestData.AUTH_CERT_HASH,
       auditEntry.getUploaderThumbprint());
+    Assert.assertNotNull(auditEntry.getUploaderOperatorSignature());
+    Assert.assertNotNull(auditEntry.getSigningCertificateOperatorSignature());
     Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
   }
 
