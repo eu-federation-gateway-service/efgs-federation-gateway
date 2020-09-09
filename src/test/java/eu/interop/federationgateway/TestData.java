@@ -29,6 +29,7 @@ import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.entity.UploaderInformation;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
+import eu.interop.federationgateway.utils.CertificateUtils;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.security.KeyPair;
@@ -97,8 +98,7 @@ public class TestData {
   public static X509Certificate manipulatedCertificate;
 
   private static String insertSigningCertificate(CertificateRepository certificateRepository, X509Certificate certificate) throws NoSuchAlgorithmException, CertificateEncodingException {
-    byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded());
-    String certHash = new BigInteger(1, certHashBytes).toString(16);
+    String certHash = CertificateUtils.getCertThumbprint(certificate);
 
     String certDn = certificate.getSubjectDN().toString();
     int countryIndex = certDn.indexOf(("C="));

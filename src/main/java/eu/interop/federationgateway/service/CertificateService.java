@@ -23,21 +23,16 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CertificateRepository;
-import eu.interop.federationgateway.utils.EfgsMdc;
+import eu.interop.federationgateway.utils.CertificateUtils;
 import java.io.IOException;
 import java.io.StringReader;
-import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
@@ -76,33 +71,15 @@ public class CertificateService {
   }
 
   /**
-   * Queries the database for a callback certificate for host of given url.
+   * Method to query the db for a authentication certificate.
    *
-   * @param url     The url to search a certificate for.
-   * @param country the country of the certificate.
+   * @param thumbprint RSA-256 thumbprint of certificate.
    * @return Optional holding the certificate if found.
    */
-  public Optional<CertificateEntity> getCallbackCertificateForUrl(String url, String country) {
-    try {
-      return getCallbackCertificateForHost(new URL(url).getHost(), country)
-        .map(certificateEntity -> validateCertificateIntegrity(certificateEntity) ? certificateEntity : null);
-    } catch (MalformedURLException ignored) {
-      EfgsMdc.put("url", url);
-      log.error("Could not parse url.");
-      return Optional.empty();
-    }
-  }
+  public Optional<CertificateEntity> getAuthenticationCertificate(String thumbprint) {
 
-  /**
-   * Queries the database for a callback certificate for given host.
-   *
-   * @param host    The host to search a certificate for.
-   * @param country the country of the certificate.
-   * @return Optional holding the certificate if found.
-   */
-  public Optional<CertificateEntity> getCallbackCertificateForHost(String host, String country) {
-    return certificateRepository.getFirstByHostIsAndCountryIsAndTypeIs(
-      host, country, CertificateEntity.CertificateType.CALLBACK)
+    return certificateRepository.getFirstByThumbprintAndType(
+      thumbprint, CertificateEntity.CertificateType.AUTHENTICATION)
       .map(certificateEntity -> validateCertificateIntegrity(certificateEntity) ? certificateEntity : null);
   }
 
@@ -159,16 +136,9 @@ public class CertificateService {
   }
 
   private boolean verifyThumbprintMatchesCertificate(CertificateEntity certificateEntity, X509Certificate certificate) {
-    String certHash;
-    try {
-      byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded());
-      certHash = new BigInteger(1, certHashBytes).toString(16);
-    } catch (NoSuchAlgorithmException | CertificateEncodingException e) {
-      log.error("Could not create thumbprint for certificate");
-      return false;
-    }
+    String certHash = CertificateUtils.getCertThumbprint(certificate);
 
-    return certHash.equals(certificateEntity.getThumbprint());
+    return certHash != null && certHash.equals(certificateEntity.getThumbprint());
   }
 
   private X509Certificate getX509CertificateFromEntity(CertificateEntity certificateEntity) {
