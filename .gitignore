@@ -34,3 +34,5 @@ build/
 *.b64
 /testdata/
 *.log
+
+/keystore
