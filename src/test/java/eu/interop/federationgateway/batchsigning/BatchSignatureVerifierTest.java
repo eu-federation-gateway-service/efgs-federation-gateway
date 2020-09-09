@@ -23,6 +23,7 @@ package eu.interop.federationgateway.batchsigning;
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.repository.CertificateRepository;
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
@@ -33,7 +34,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
@@ -42,10 +42,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class BatchSignatureVerifierTest {
 
   @Autowired

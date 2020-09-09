@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,9 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
@@ -67,8 +66,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
-@Import(EfgsTestKeyStore.class)
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class UploadControllerTest {
 
   @Autowired
@@ -92,9 +91,8 @@ public class UploadControllerTest {
 
   @Before
   public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
-    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
+    OperatorCreationException, InvalidKeyException, SignatureException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
-    TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();
     mockMvc = MockMvcBuilders
@@ -105,7 +103,6 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestShouldFailOnMissingBatchSignature() throws Exception {
-    List<CertificateEntity> all = certificateRepository.findAll();
     mockMvc.perform(post("/diagnosiskeys/upload")
       .contentType("application/protobuf; version=1.0")
       .header("batchTag", TestData.FIRST_BATCHTAG)

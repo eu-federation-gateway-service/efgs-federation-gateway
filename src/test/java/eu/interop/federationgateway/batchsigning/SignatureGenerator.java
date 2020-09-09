@@ -58,8 +58,7 @@ import org.bouncycastle.operator.jcajce.JcaDigestCalculatorProviderBuilder;
 public class SignatureGenerator {
 
   public SignatureGenerator(CertificateRepository certificateRepository) throws CertificateException,
-    NoSuchAlgorithmException, IOException, OperatorCreationException, InvalidKeyException, SignatureException,
-    KeyStoreException {
+    NoSuchAlgorithmException, IOException, OperatorCreationException, InvalidKeyException, SignatureException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
   }
 

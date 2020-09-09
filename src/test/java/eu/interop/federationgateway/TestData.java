@@ -29,7 +29,6 @@ import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.entity.UploaderInformation;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
-import eu.interop.federationgateway.service.CertificateService;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -37,8 +36,6 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
@@ -66,11 +63,6 @@ import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class TestData {
 
@@ -95,7 +87,7 @@ public class TestData {
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
   public static final String AUTH_VALID_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
-  public static final String AUTH_CERT_HASH = "af8f74084e27cca43ed9eb0436e906c36c03b14304aa24fe5f9978395d639e3b";
+  public static String AUTH_CERT_HASH = "";
   public static final String SIGNING_CERT_HASH = "9433f80547d70af526a74f8fef35de9bc05c7a29518dd61fa0fd0e955e669e91";
   public static final String CALLBACK_ID_FIRST = "firstCallback";
   public static final String CALLBACK_ID_SECOND = "secondCallback";
@@ -107,6 +99,7 @@ public class TestData {
   private static final String TEST_BATCH_TAG_NL = "uploaderBatchTag_NL";
   private static final String COMMON_NAME_SIGNING_CERT = "demo";
   public static KeyPair keyPair;
+  public static X509Certificate validAuthenticationCertificate;
   public static X509Certificate expiredCertificate;
   public static X509Certificate validCertificate;
   public static X509Certificate trustAnchor;
@@ -162,7 +155,7 @@ public class TestData {
 
   public static void insertCertificatesForAuthentication(CertificateRepository certificateRepository)
     throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException,
-    InvalidKeyException, SignatureException, KeyStoreException {
+    InvalidKeyException, SignatureException {
     createCertificates();
 
     validCertificateHash = insertSigningCertificate(certificateRepository, validCertificate);
@@ -172,56 +165,38 @@ public class TestData {
 
     manipulateCertificate();
 
+    byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(validAuthenticationCertificate.getEncoded());
+    AUTH_CERT_HASH = new BigInteger(1, certHashBytes).toString(16);
+
+    String certDn = validAuthenticationCertificate.getSubjectDN().toString();
+    int countryIndex = certDn.indexOf(("C="));
+    String certCountry = certDn.substring(countryIndex + 2, countryIndex + 4);
+
+    StringWriter stringWriter = new StringWriter();
+    JcaPEMWriter jcaPEMWriter = new JcaPEMWriter(stringWriter);
+    jcaPEMWriter.writeObject(validAuthenticationCertificate);
+    jcaPEMWriter.flush();
+    stringWriter.flush();
+    String rawData = stringWriter.toString().replace("\r", "");
+    jcaPEMWriter.close();
+    stringWriter.close();
+
+    Signature signer = Signature.getInstance("SHA256withRSA");
+    signer.initSign(keyPair.getPrivate());
+    signer.update(rawData.getBytes());
+    byte[] signedData = signer.sign();
+    String signature = Base64.getEncoder().encodeToString(signedData);
+
     CertificateEntity authCertificateEntity = new CertificateEntity(
       null,
       ZonedDateTime.now(ZoneOffset.UTC),
       AUTH_CERT_HASH,
-      AUTH_CERT_COUNTRY,
+      certCountry,
       CertificateEntity.CertificateType.AUTHENTICATION,
       false,
       null,
-      "Gmf1DsCtv5gXyaaHdswRjTKze6QNJ7UIbZpxAgsl5ODH1W8ZYoNJAbgINfWCbWEAIZBlSaHHWikSKTP3gGE4Ne6toxr19t3DP"
-        + "+6QTWpzY5uzaamOmD12YfgaIfI4TuLYcV+YEcp6Vq29871igXiGNe49le/tK4C6CbPMKuOuUKaGwKdF5tC++b+frjsI11IGpNwwGBG"
-        + "+GuUcuBWwhtdo3+T+3gVAjneSAWkCc15lhtvlh66LOTQ+luGpYuIiJRh0US6B8dWG5FdOSnuWQ/PoxoqXpaQ4wlqEeJD9K"
-        + "+UZ2Z2ehLXwrq/nvn3ZbQiyomB9rGiEG/USpQl4HHOvRM253g==",
-      "-----BEGIN CERTIFICATE-----\n"
-        + "MIIGpjCCBI6gAwIBAgIUUsiTxuVFRw7WoKKnDVsRmQd5uFowDQYJKoZIhvcNAQEL\n"
-        + "BQAwgbQxCzAJBgNVBAYTAkRFMRUwEwYDVQQHDAxTYWFyYnLDvGNrZW4xJTAjBgNV\n"
-        + "BAoTHFQtU3lzdGVtcyBJbnRlcm5hdGlvbmFsIEdtYkgxFjAUBgNVBAsTDUNXQSBU\n"
-        + "ZXN0IFRlYW0xIDAeBgNVBAMTF0VGR1MgU2ltdWxhdG9yIFRlc3QgQ0EyMS0wKwYJ\n"
-        + "KoZIhvcNAQkBFh5Db3JvbmFBcHBUZXN0aW5nQG1nLnRlbGVrb20uZGUwHhcNMjAw\n"
-        + "OTAyMTYzMDIyWhcNMjMwOTAzMTYzMDIyWjCBnDELMAkGA1UEBhMCQkUxEDAOBgNV\n"
-        + "BAgMB0JlbGdpdW0xEDAOBgNVBAcMB0JlbGdpdW0xFzAVBgNVBAoMDkVGR1MtVGVz\n"
-        + "dC1UZWFtMRcwFQYDVQQLDA5FRkdTLVRlc3QtVGVhbTE3MDUGA1UEAwwuY3dhLXNp\n"
-        + "bXVsYXRvci1iZS53ZXN0ZXVyb3BlLmNsb3VkYXBwLmF6dXJlLmNvbTCCAiIwDQYJ\n"
-        + "KoZIhvcNAQEBBQADggIPADCCAgoCggIBALp+Js+W9YMC6pN39OHrT1p32dbhXmzW\n"
-        + "W1NdRP//+Klrr8bsNiGNf74UQS9HA4uI+whHYfelx/nwlXFBeaCIQs5EL1sNSmRk\n"
-        + "2f3kgMP53RO42MCoXXTsAAjOtVl2h1zOduNiTgqlIAxdc/tMkPewV4izWxBLThmG\n"
-        + "jjlTFh81xFymWFRKz4pZmWbpgdrR0Smp0fJG1HOWvqKGX8Z9A9agLfLMapLorqVH\n"
-        + "uC/6wXbYj7RYcMkUMr85fjmNzc8OKLs6OQVZ552V7OgY/7D5P2mXE8Twdb+ama+7\n"
-        + "q9tHByF6ohbWNb2mywEsCeh+pYSTD4Qh2V7S2Z6o6eaPuq7sbOvPVT9hEc8InHHY\n"
-        + "J9PPUfJqPU8FhEHEKnqz1L/MrcD+JlmT3EO7y/btVRRE+A+KWXlVK7cvtw89f5u5\n"
-        + "2cZhyPxB8Z74oWr2BodCaNjcjdqT67+x5muKPVRzAXiHUuiWEuHki2Is3IX5FLTm\n"
-        + "c9qcovqjdgFOmpLJWKi12MUA8jkLYaRjgUULoSb+9vlRS6bQ8ix6bbTa9CqAsbQ5\n"
-        + "Gce01E+3SZt5jB6tEDgFQjGs+ZX4aUVibGc0C3tHwExgM1R/hUmYVZ/X6u8/+/1P\n"
-        + "/1M72GusQqzbBWTbmciixME9Xu+L+UrdXoGHjhLbxg1wQ/LBRdPzcPqq0wk1S29F\n"
-        + "7idSZ2NGBK/dAgMBAAGjgcUwgcIwCQYDVR0TBAIwADARBglghkgBhvhCAQEEBAMC\n"
-        + "BaAwMwYJYIZIAYb4QgENBCYWJE9wZW5TU0wgR2VuZXJhdGVkIENsaWVudCBDZXJ0\n"
-        + "aWZpY2F0ZTAdBgNVHQ4EFgQUMvQnnxeK0JmtnY9Q9U9SR+Td40YwHwYDVR0jBBgw\n"
-        + "FoAUSm16Zq46oc49eDPY7v1bay5xNygwDgYDVR0PAQH/BAQDAgXgMB0GA1UdJQQW\n"
-        + "MBQGCCsGAQUFBwMCBggrBgEFBQcDBDANBgkqhkiG9w0BAQsFAAOCAgEAdsitfnED\n"
-        + "cmXWkCzyldmKUUZk6FLv8Mr3ohhwt/8XPWZUuRMQNrdsxDGg7XH6r6dfJpsG6e+h\n"
-        + "vkRVAKcJ1i7FaKDm40wgrzrOZk6H8DLzoA+4O0gSGUqqvWzZUW149naYlzYO7ZNm\n"
-        + "XBXb8vFi4bUiyoBzaMihW2FpKXj/B+0lGrgOVgOaiyHt4mrebye4H0Nhq5kE8Fd1\n"
-        + "Ka5bJjsTq06i3BtMz8fZg6YUyHmKp++Bw57F4mEaHHW0dvmMxX5M4omTrQRrxeyL\n"
-        + "4prV/kmfUGvD1/u1wgUDrjpl0P5FEeb0gZXZi8ofzWOz9Rs/qGgN5UsH4hDTst0x\n"
-        + "ds9FzCmiYTAOQq7beGLAbTAyNyW34VNGYghcBG0pioSROZLaOVQ6KaYH5NTqHT4+\n"
-        + "gvEkbSytKLBkoyvKxX1UrgYFfttUMLnho5yaxctLL4PAkQqEhjDNrNr/9i+e9qvU\n"
-        + "qQN6/YXXOaLOSuoJGX2WOTnaaOtexANE9u8ATByWinx3XmxpR9gMRzNbkMR6nm2B\n"
-        + "v79GsuubnjF7e0ZUiCbjwAqLipMQbM9JDaxU9zS+lh4OszcM7rs+bFCUaxl067Ng\n"
-        + "WdOu75AfKTI83b6G0hOin9N/mDlW9df2Qu4wegXllC0oo1rIKNIWx0ECFHvCFBWF\n"
-        + "Os3mHyNHl7fVzpJ9VrnXgWuRnR3pZu+KeB4=\n"
-        + "-----END CERTIFICATE-----"
+      signature,
+      rawData
     );
 
     Optional<CertificateEntity> authCertInDb = certificateRepository.getFirstByThumbprintAndCountryAndType(
@@ -230,8 +205,8 @@ public class TestData {
     authCertInDb.ifPresent(certificateRepository::delete);
 
     certificateRepository.save(authCertificateEntity);
-
   }
+
   private static X509Certificate generateCertificate(Date validFrom, Date validTo) throws OperatorCreationException,
     CertIOException, CertificateException {
     X500Name dnName = new X500Name("C=" + TestData.AUTH_CERT_COUNTRY + ", CN=" + COMMON_NAME_SIGNING_CERT);
@@ -249,11 +224,18 @@ public class TestData {
 
   public static void createCertificates() throws NoSuchAlgorithmException, CertificateException, CertIOException,
     OperatorCreationException {
-    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-    keyGen.initialize(2048);
-    TestData.keyPair = keyGen.generateKeyPair();
+    if (TestData.keyPair == null) {
+      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+      keyGen.initialize(2048);
+      TestData.keyPair = keyGen.generateKeyPair();
+    }
 
     TestData.validCertificate = generateCertificate(
+      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+      Date.from(ZonedDateTime.now().plusYears(1).toInstant())
+    );
+
+    TestData.validAuthenticationCertificate = generateCertificate(
       Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
       Date.from(ZonedDateTime.now().plusYears(1).toInstant())
     );
@@ -272,6 +254,14 @@ public class TestData {
       Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
       Date.from(ZonedDateTime.now().plusDays(14).toInstant())
     );
+
+  }
+
+  public static void createTrustAnchorCertificate() throws CertificateException, CertIOException,
+    OperatorCreationException, NoSuchAlgorithmException {
+    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+    keyGen.initialize(2048);
+    TestData.keyPair = keyGen.generateKeyPair();
 
     TestData.trustAnchor = generateCertificate(
       Date.from(ZonedDateTime.now().minusDays(14).toInstant()),

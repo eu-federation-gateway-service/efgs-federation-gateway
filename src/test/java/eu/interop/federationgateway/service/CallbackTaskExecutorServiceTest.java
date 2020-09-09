@@ -30,6 +30,7 @@ import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CallbackTaskRepository;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.ZoneOffset;
@@ -42,17 +43,21 @@ import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ContextConfiguration(classes = EfgsTestKeyStore.class)
+@Ignore
 public class CallbackTaskExecutorServiceTest {
 
   CallbackTaskExecutorService callbackTaskExecutorService;

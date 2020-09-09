@@ -23,6 +23,7 @@ package eu.interop.federationgateway.controller;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.model.AuditEntry;
+import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,6 +60,8 @@ public class AuditController {
   private final EfgsProperties properties;
 
   private final DiagnosisKeyEntityService diagnosisKeyEntityService;
+
+  private final CertificateService certificateService;
 
   /**
    * This endpoint returns audit information for the interop gateway to inspect the exchanged data.
@@ -119,6 +122,8 @@ public class AuditController {
 
     List<AuditEntry> auditResponse
       = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTagAndDate(batchTag, date);
+
+    auditResponse = certificateService.addOperatorSignatures(auditResponse);
 
     EfgsMdc.put("batchTag", batchTag);
     if (auditResponse.isEmpty()) {
