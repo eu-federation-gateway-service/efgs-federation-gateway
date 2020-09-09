@@ -1,5 +1,6 @@
 package eu.interop.federationgateway.config;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,12 +65,14 @@ public class EfgsKeyStore {
       String resourcePath = path.substring(10);
       fileStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
     } else {
-      fileStream = new FileInputStream(path);
+      File file = new File(path);
+      fileStream = file.exists() ? new FileInputStream(file) : null;
     }
 
-    if (fileStream != null) {
+    if (fileStream != null && fileStream.available() > 0) {
       keyStore.load(fileStream, password);
     } else {
+      keyStore.load(null);
       log.info("Could not find Keystore {}", path);
     }
   }
