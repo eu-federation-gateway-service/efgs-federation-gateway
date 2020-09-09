@@ -49,13 +49,13 @@ public class EfgsProperties {
   @Getter
   @Setter
   public static class Callback {
-    private String proxyHost;
     private int timeout = 10000;
     private int maxRetries = 5;
     private int retryWait = 300000;
-    private int proxyPort;
     private int coreThreadPoolSize = 1;
     private int taskLockTimeout = 300;
+    private String proxyHost;
+    private Integer proxyPort;
     private String proxyUser;
     private String proxyPassword;
     private String keyStorePath;

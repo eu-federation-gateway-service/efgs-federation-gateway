@@ -23,14 +23,12 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
-import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.repository.CallbackTaskRepository;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import java.net.URI;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,10 +51,8 @@ public class CallbackTaskExecutorService {
 
   private final CallbackTaskRepository callbackTaskRepository;
 
-  private final CertificateService certificateService;
-
   @Scheduled(fixedDelayString = "${efgs.callback.execute-interval}")
-  void execute() {
+  public void execute() {
     log.info("Callback processing started.");
 
     CallbackTaskEntity currentTask = getNextCallbackTask();
@@ -77,18 +73,7 @@ public class CallbackTaskExecutorService {
         continue;
       }
 
-      Optional<CertificateEntity> callbackCertificateOptional = certificateService.getCallbackCertificateForUrl(
-        subscription.getUrl(), subscription.getCountry());
-
-      if (callbackCertificateOptional.isEmpty()) {
-        log.error("Could not find callback certificate.");
-
-        callbackService.deleteCallbackSubscription(subscription);
-        currentTask = getNextCallbackTask();
-        continue;
-      }
-
-      boolean callbackResult = sendCallback(currentTask, callbackCertificateOptional.get());
+      boolean callbackResult = sendCallback(currentTask);
       EfgsMdc.put("retry", currentTask.getRetries());
 
       if (callbackResult) {
@@ -125,7 +110,7 @@ public class CallbackTaskExecutorService {
     });
   }
 
-  boolean sendCallback(CallbackTaskEntity callbackTask, CertificateEntity certificate) {
+  boolean sendCallback(CallbackTaskEntity callbackTask) {
     CallbackSubscriptionEntity callbackSubscription = callbackTask.getCallbackSubscription();
 
     EfgsMdc.put("callbackId", callbackSubscription.getCallbackId());
@@ -136,11 +121,17 @@ public class CallbackTaskExecutorService {
       .queryParam("date", callbackTask.getBatch().getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE))
       .build().toUri();
 
-    ClientResponse callbackResponse = webClient.get()
-      .uri(requestUri)
-      .header(efgsProperties.getCertAuth().getHeaderFields().getThumbprint(), certificate.getThumbprint())
-      .exchange()
-      .block();
+    ClientResponse callbackResponse;
+    try {
+      callbackResponse = webClient.get()
+        .uri(requestUri)
+        .exchange()
+        .block();
+    } catch (Exception e) {
+      EfgsMdc.put("callbackErrorMessage", e.getMessage());
+      log.error("Callback request failed");
+      return false;
+    }
 
     if (callbackResponse != null && callbackResponse.statusCode().is2xxSuccessful()) {
       log.info("Got 2xx response for callback.");

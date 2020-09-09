@@ -87,9 +87,6 @@ public class TestData {
   public static final byte[] BYTES = new byte[]{14, 15, 11, 14, 12, 15, 15, 16};
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
-  public static final String AUTH_VALID_CERT_HASH = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e";
-  public static String AUTH_CERT_HASH = "";
-  public static final String SIGNING_CERT_HASH = "9433f80547d70af526a74f8fef35de9bc05c7a29518dd61fa0fd0e955e669e91";
   public static final String CALLBACK_ID_FIRST = "firstCallback";
   public static final String CALLBACK_ID_SECOND = "secondCallback";
   public static final String CALLBACK_URL_EFGS = "https://example.org";
@@ -99,6 +96,7 @@ public class TestData {
   private static final String TEST_BATCH_TAG_DE = "uploaderBatchTag_DE";
   private static final String TEST_BATCH_TAG_NL = "uploaderBatchTag_NL";
   private static final String COMMON_NAME_SIGNING_CERT = "demo";
+  public static String AUTH_CERT_HASH;
   public static KeyPair keyPair;
   public static X509Certificate validAuthenticationCertificate;
   public static X509Certificate expiredCertificate;
@@ -154,6 +152,7 @@ public class TestData {
   public static void insertCertificatesForAuthentication(CertificateRepository certificateRepository)
     throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException,
     InvalidKeyException, SignatureException {
+
     createCertificates();
 
     validCertificateHash = insertSigningCertificate(certificateRepository, validCertificate);
@@ -228,43 +227,47 @@ public class TestData {
       TestData.keyPair = keyGen.generateKeyPair();
     }
 
-    TestData.validCertificate = generateCertificate(
-      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-      Date.from(ZonedDateTime.now().plusYears(1).toInstant())
-    );
+    if (TestData.validCertificate == null) {
+      TestData.validCertificate = generateCertificate(
+        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+        Date.from(ZonedDateTime.now().plusYears(1).toInstant())
+      );
+    }
 
-    TestData.validAuthenticationCertificate = generateCertificate(
-      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-      Date.from(ZonedDateTime.now().plusYears(1).toInstant())
-    );
+    if (TestData.validAuthenticationCertificate == null) {
+      TestData.validAuthenticationCertificate = generateCertificate(
+        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+        Date.from(ZonedDateTime.now().plusYears(1).toInstant())
+      );
+    }
 
-    TestData.expiredCertificate = generateCertificate(
-      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-      Date.from(ZonedDateTime.now().minusDays(1).toInstant())
-    );
+    if (TestData.expiredCertificate == null) {
+      TestData.expiredCertificate = generateCertificate(
+        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+        Date.from(ZonedDateTime.now().minusDays(1).toInstant())
+      );
+    }
 
-    TestData.notValidYetCertificate = generateCertificate(
-      Date.from(ZonedDateTime.now().plusDays(1).toInstant()),
-      Date.from(ZonedDateTime.now().plusDays(14).toInstant())
-    );
+    if (TestData.notValidYetCertificate == null) {
+      TestData.notValidYetCertificate = generateCertificate(
+        Date.from(ZonedDateTime.now().plusDays(1).toInstant()),
+        Date.from(ZonedDateTime.now().plusDays(14).toInstant())
+      );
+    }
 
-    TestData.manipulatedCertificate = generateCertificate(
-      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-      Date.from(ZonedDateTime.now().plusDays(14).toInstant())
-    );
+    if (TestData.manipulatedCertificate == null) {
+      TestData.manipulatedCertificate = generateCertificate(
+        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+        Date.from(ZonedDateTime.now().plusDays(14).toInstant())
+      );
+    }
 
-  }
-
-  public static void createTrustAnchorCertificate() throws CertificateException, CertIOException,
-    OperatorCreationException, NoSuchAlgorithmException {
-    KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-    keyGen.initialize(2048);
-    TestData.keyPair = keyGen.generateKeyPair();
-
-    TestData.trustAnchor = generateCertificate(
-      Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
-      Date.from(ZonedDateTime.now().plusYears(1).toInstant())
-    );
+    if (TestData.trustAnchor == null) {
+      TestData.trustAnchor = generateCertificate(
+        Date.from(ZonedDateTime.now().minusDays(14).toInstant()),
+        Date.from(ZonedDateTime.now().plusYears(1).toInstant())
+      );
+    }
   }
 
   private static void manipulateCertificate() throws CertificateException {
