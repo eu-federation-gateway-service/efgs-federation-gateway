@@ -23,12 +23,14 @@ public class EfgsKeyStore {
    */
   @Bean
   public KeyStore trustAnchorKeyStore() throws KeyStoreException, IOException,
-          CertificateException, NoSuchAlgorithmException {
+    CertificateException, NoSuchAlgorithmException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
-    keyStore.load(
-      new FileInputStream(efgsProperties.getTrustAnchor().getKeyStorePath()),
-      efgsProperties.getTrustAnchor().getKeyStorePass().toCharArray()
-    );
+
+    loadKeyStore(
+      keyStore,
+      efgsProperties.getTrustAnchor().getKeyStorePath(),
+      efgsProperties.getTrustAnchor().getKeyStorePass().toCharArray());
+
     return keyStore;
   }
 
@@ -39,12 +41,23 @@ public class EfgsKeyStore {
    */
   @Bean
   public KeyStore callbackKeyStore() throws KeyStoreException, IOException,
-          CertificateException, NoSuchAlgorithmException {
+    CertificateException, NoSuchAlgorithmException {
     KeyStore keyStore = KeyStore.getInstance("JKS");
-    keyStore.load(
-      new FileInputStream(efgsProperties.getCallback().getKeyStorePath()),
-      efgsProperties.getCallback().getKeyStorePass().toCharArray()
-    );
+
+    loadKeyStore(
+      keyStore,
+      efgsProperties.getCallback().getKeyStorePath(),
+      efgsProperties.getCallback().getKeyStorePass().toCharArray());
+
     return keyStore;
+  }
+
+  private void loadKeyStore(KeyStore keyStore, String path, char[] password) throws CertificateException, NoSuchAlgorithmException, IOException {
+    if (path.startsWith("classpath:")) {
+      String resourcePath = path.substring(10);
+      keyStore.load(getClass().getClassLoader().getResourceAsStream(resourcePath), password);
+    } else {
+      keyStore.load(new FileInputStream(path), password);
+    }
   }
 }
