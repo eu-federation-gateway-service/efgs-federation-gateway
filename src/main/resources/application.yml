@@ -29,12 +29,14 @@ efgs:
     keyStoreCertificateAlias: efgs_callback_cert
     execute-interval: 300000
     task-lock-timeout: 300
-    proxy-host: localhost
-    proxy-port: 1234
+    proxy-host: ${https.proxyHost:}
+    proxy-port: ${https.proxyPort:-1}
+    proxy-user: ${https.proxyUser:}
+    proxy-password: ${https.proxyPassword:}
     timeout: 10000
     core-thread-pool-size: 0
     max-retries: 5
-    retry-wait: 300000
+    retry-wait: 300
   content-negotiation:
     protobuf-version: 1.0
     json-version: 1.0
