@@ -20,6 +20,12 @@
 
 package eu.interop.federationgateway.filter;
 
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
+import java.security.SignatureException;
+import org.springframework.test.context.ContextConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,6 +55,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Slf4j
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class CertAuthFilterTest {
 
   @Autowired
@@ -72,7 +79,7 @@ public class CertAuthFilterTest {
   private MockMvc mockMvc;
 
   @Before
-  public void setup() throws CertificateException, NoSuchAlgorithmException, CertIOException, OperatorCreationException {
+  public void setup() throws CertificateException, NoSuchAlgorithmException, IOException, OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();

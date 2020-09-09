@@ -25,10 +25,12 @@ import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Schema(
   description = "Entity representation per country in audit results."
 )
@@ -42,6 +44,13 @@ public class AuditEntry {
 
   @Schema(example = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e")
   private String uploaderThumbprint;
+
+  private String uploaderOperatorSignature;
+
+  @Schema(example = "69c697c045b4cdaa441a28af0ec1bb4128153b9ddc796b66bfa04b02ea3e103e")
+  private String uploaderSigningThumbprint;
+
+  private String signingCertificateOperatorSignature;
 
   @Schema(example = "3")
   private long amount;

@@ -36,8 +36,14 @@ import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -54,6 +60,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -66,6 +73,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Slf4j
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class AuditControllerTest {
 
   private final ObjectMapper mapper = new ObjectMapper();
@@ -87,9 +95,8 @@ public class AuditControllerTest {
   private SignatureGenerator signatureGenerator;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
-    OperatorCreationException {
-    TestData.insertCertificatesForAuthentication(certificateRepository);
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
     diagnosisKeyBatchRepository.deleteAll();
@@ -125,7 +132,7 @@ public class AuditControllerTest {
     AuditEntry auditEntry = auditEntries.get(0);
     Assert.assertEquals("DE", auditEntry.getCountry());
     Assert.assertEquals(3, auditEntry.getAmount());
-    Assert.assertEquals("69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e",
+    Assert.assertEquals(TestData.AUTH_CERT_HASH,
       auditEntry.getUploaderThumbprint());
     Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
   }

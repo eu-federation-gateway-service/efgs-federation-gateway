@@ -46,7 +46,7 @@ public class DiagnosiskeyMapperTest {
     List<DiagnosisKeyEntity> converted = mapper.protoToEntity(
       Arrays.asList(TestData.getDiagnosisKeyProto(), TestData.getDiagnosisKeyProto()),
       TestData.FIRST_BATCHTAG,
-      "b", "c", "d",
+      "b", "c", "d", "e",
       new MediaType("application", "json", Map.of("version", "1.0"))
     );
 

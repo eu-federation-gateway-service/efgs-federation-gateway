@@ -22,6 +22,7 @@ package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
+import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.utils.CertificateUtils;
 import java.io.IOException;
@@ -36,6 +37,7 @@ import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +56,36 @@ public class CertificateService {
   private final KeyStore trustAnchorKeyStore;
 
   private final EfgsProperties efgsProperties;
+
+  public List<AuditEntry> addOperatorSignatures(List<AuditEntry> auditEntries) {
+    for (AuditEntry auditEntry : auditEntries) {
+      String uploaderThumbprint = auditEntry.getUploaderThumbprint();
+      String uploaderSigningThumbprint = auditEntry.getUploaderSigningThumbprint();
+      String country = auditEntry.getCountry();
+      CertificateEntity certificateEntity;
+
+      Optional<CertificateEntity> authenticationCertificate = getCertificate(
+        uploaderThumbprint,
+        country,
+        CertificateEntity.CertificateType.AUTHENTICATION);
+
+      if (authenticationCertificate.isPresent()) {
+        certificateEntity = authenticationCertificate.get();
+        auditEntry.setUploaderOperatorSignature(certificateEntity.getSignature());
+      }
+
+      Optional<CertificateEntity> signingCertificate = getCertificate(
+        uploaderSigningThumbprint,
+        country,
+        CertificateEntity.CertificateType.SIGNING);
+
+      if (signingCertificate.isPresent()) {
+        certificateEntity = signingCertificate.get();
+        auditEntry.setSigningCertificateOperatorSignature(certificateEntity.getSignature());
+      }
+    }
+    return auditEntries;
+  }
 
   /**
    * Method to query the db for a certificate.

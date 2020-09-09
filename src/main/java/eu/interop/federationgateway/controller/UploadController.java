@@ -39,6 +39,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -143,7 +144,7 @@ public class UploadController {
     @DiagnosisKeyBatchConstraint EfgsProto.DiagnosisKeyBatch body,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String uploaderCountry,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT) String uploaderCertThumbprint
-  ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
+  ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException, NoSuchAlgorithmException {
     int maximumUploadBatchSize = properties.getUploadSettings().getMaximumUploadBatchSize();
 
     EfgsMdc.put("batchTag", batchTag);
@@ -160,7 +161,8 @@ public class UploadController {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "BatchTag already exists.");
     }
 
-    if (!signatureVerifier.verify(body, batchSignature)) {
+    String signingCertThumbprint = signatureVerifier.checkBatchSignature(body, batchSignature);
+    if (signingCertThumbprint == null) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid signature");
     }
     log.info("verified batch signature");
@@ -176,6 +178,7 @@ public class UploadController {
       batchTag,
       batchSignature,
       uploaderCertThumbprint,
+      signingCertThumbprint,
       uploaderCountry,
       MediaType.parseMediaType(contentType)
     );

@@ -42,6 +42,9 @@ public class UploaderInformation implements Serializable {
   @Column(name = "uploaderInformation_thumbprint")
   private String thumbprint;
 
+  @Column(name = "uploaderInformation_signingCertThumbprint")
+  private String signingCertThumbprint;
+
   @Column(name = "uploaderInformation_country")
   private String country;
 }
