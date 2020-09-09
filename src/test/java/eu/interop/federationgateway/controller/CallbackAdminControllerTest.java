@@ -162,7 +162,7 @@ public class CallbackAdminControllerTest {
   }
 
   @Test
-  public void testSubscribCallbackWithInvalidUrl() throws Exception {
+  public void testSubscribeCallbackWithInvalidUrl() throws Exception {
 
     String firstId = TestData.CALLBACK_ID_FIRST;
 
@@ -192,16 +192,6 @@ public class CallbackAdminControllerTest {
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
       .param("url", "https://notify.me/?you=evil_sql_injection")
-      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
-      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
-      .andExpect(status().isBadRequest());
-
-    Assert.assertEquals(0, callbackSubscriptionRepository.count());
-
-    certificateRepository.delete(callbackCert);
-
-    mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .param("url", TestData.CALLBACK_URL_EFGS)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());
