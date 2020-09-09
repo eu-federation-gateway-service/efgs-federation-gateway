@@ -2,16 +2,19 @@ package eu.interop.federationgateway.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class EfgsKeyStore {
 
   private final EfgsProperties efgsProperties;
@@ -54,11 +57,20 @@ public class EfgsKeyStore {
 
   private void loadKeyStore(KeyStore keyStore, String path, char[] password)
     throws CertificateException, NoSuchAlgorithmException, IOException {
+
+    InputStream fileStream;
+
     if (path.startsWith("classpath:")) {
       String resourcePath = path.substring(10);
-      keyStore.load(getClass().getClassLoader().getResourceAsStream(resourcePath), password);
+      fileStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
     } else {
-      keyStore.load(new FileInputStream(path), password);
+      fileStream = new FileInputStream(path);
+    }
+
+    if (fileStream != null) {
+      keyStore.load(fileStream, password);
+    } else {
+      log.info("Could not find Keystore {}", path);
     }
   }
 }
