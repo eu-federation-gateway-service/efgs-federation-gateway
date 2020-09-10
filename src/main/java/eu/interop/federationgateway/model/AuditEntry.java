@@ -42,6 +42,25 @@ public class AuditEntry {
   @Schema(example = "2020-07-31T11:24:43.086Z")
   private ZonedDateTime uploadedTime;
 
+  @Schema(example = "-----BEGIN CERTIFICATE-----\n"
+    + "MIICyDCCAbCgAwIBAgIGAXR3DZUUMA0GCSqGSIb3DQEBBQUAMBwxCzAJBgNVBAYT\n"
+    + "AkRFMQ0wCwYDVQQDDARkZW1vMB4XDTIwMDgyNzA4MDY1MloXDTIxMDkxMDA4MDY1\n"
+    + "MlowHDELMAkGA1UEBhMCREUxDTALBgNVBAMMBGRlbW8wggEiMA0GCSqGSIb3DQEB\n"
+    + "AQUAA4IBDwAwggEKAoIBAQCKR0TEJOO4z0ks4OMAovcyxuPpeZuR1JykNNFd3OR+\n"
+    + "vFWJLJtDYgRjtuqSuKCghLa/ci+0yIs3OeitGtajqFIukYksvX2LxOZDYDUbnpGQ\n"
+    + "DPNMVmpEavDBbvKON8C8K036pC41bNvwkTrfUyZ8iE+hV2+kj1SHUyw7jweEUoiw\n"
+    + "NmMiaXXPiMIOj7D0qnmM+iTGN9g/DrJ/IvvsgiGpK3QlQ5pnHs2BvzrSw4LFAZ8c\n"
+    + "SQfWKheZVHfQf26mJFdEzowrzfzForDdeFAPIIirhufE3jWFxj1thfztu+VSMj84\n"
+    + "sDqodEt2VJOY+DvLB1Ls/26LSmFtMnCEuBAhkbQ1E0tbAgMBAAGjEDAOMAwGA1Ud\n"
+    + "EwEB/wQCMAAwDQYJKoZIhvcNAQEFBQADggEBABaMEQz4Gbj+G0SZGZaIDoUFDB6n\n"
+    + "1R6iUS0zTBgsV8pSpFhwPryRiLdeNzIzsDdQ1ack1NfQ6YPn3/yOJ/SvnXs6n+vO\n"
+    + "WQW2KsuiymPSd/wjeywRRMfCysHjrmE+m+8lrFDrKuPnrACwQIsX9PDEsRRBnpSy\n"
+    + "5NKUZn6u3iPV9x6rwYCdCa/8VDGLqVb3eEE5dbFaYG9uW02cSbmsiZm8KmW8b6BF\n"
+    + "eIwHVRAH6Cs1VZI8UIrdVGCE111tUo/0957rF+/doFyJcwX+4ESH0m2MsHFjXDfG\n"
+    + "U8yTjiUh/b2Erk4TCmrJpux30QRhsNZwkmEYSbRv+vp5/obgH1mL5ouoV5I=\n"
+    + "-----END CERTIFICATE-----\n")
+  private String uploaderCertificate;
+
   @Schema(example = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e")
   private String uploaderThumbprint;
 
@@ -51,6 +70,25 @@ public class AuditEntry {
     + "FdkHkcdrED8kg7AnYyML315iijWKH14iWrcwiuBYyIYvGxArhufuyyJf"
     + "VO/bpcVvFgGrEo8SpxPJhtWRi1xLnjKHJQKdrV7dS9dD5OQHcpFQtIp7pZ9SRB3FqcCcfMMg==")
   private String uploaderOperatorSignature;
+
+  @Schema(example = "-----BEGIN CERTIFICATE-----\n"
+    + "MIICyDCCAbCgAwIBAgIGAXR3DdOUMA0GCSqGSIb3DQEBBQUAMBwxCzAJBgNVBAYT\n"
+    + "AkRFMQ0wCwYDVQQDDARkZW1vMB4XDTIwMDgyNzA4MDcwOFoXDTIxMDkxMDA4MDcw\n"
+    + "OFowHDELMAkGA1UEBhMCREUxDTALBgNVBAMMBGRlbW8wggEiMA0GCSqGSIb3DQEB\n"
+    + "AQUAA4IBDwAwggEKAoIBAQCKR0TEJOO4z0ks4OMAovcyxuPpeZuR1JykNNFd3OR+\n"
+    + "vFWJLJtDYgRjtuqSuKCghLa/ci+0yIs3OeitGtajqFIukYksvX2LxOZDYDUbnpGQ\n"
+    + "DPNMVmpEavDBbvKON8C8K036pC41bNvwkTrfUyZ8iE+hV2+kj1SHUyw7jweEUoiw\n"
+    + "NmMiaXXPiMIOj7D0qnmM+iTGN9g/DrJ/IvvsgiGpK3QlQ5pnHs2BvzrSw4LFAZ8c\n"
+    + "SQfWKheZVHfQf26mJFdEzowrzfzForDdeFAPIIirhufE3jWFxj1thfztu+VSMj84\n"
+    + "sDqodEt2VJOY+DvLB1Ls/26LSmFtMnCEuBAhkbQ1E0tbAgMBAAGjEDAOMAwGA1Ud\n"
+    + "EwEB/wQCMAAwDQYJKoZIhvcNAQEFBQADggEBABISpoT/FgaCMlV0zXVq+HrHgcgl\n"
+    + "GSm3OQfgG1cY+YnkFY+vngdxZutJAWdCaEPmX2xBHQGp0VW7Sd6ueNpOekSZT15N\n"
+    + "3ZKhYc7Lqn4Ra/VkgRoOYZbmalp61unrS9AjPrlGu9/vXjLUEJOc3Qm8na3MFWgl\n"
+    + "hs1tOZW+CwIJM9yWRh5VmTBDIcWj/cbjizAoLEetIPeD2RiP6k1YSZ0prDPP9zGg\n"
+    + "JHOmNJWHTWsi6jx3Ipqm55iq2uBpasxoOBS1zAbb86vKni4R1nDAVK1MqTVHc0CD\n"
+    + "uGc+5KKdtbio8/zueC+PI5nN5JckuBwkOu3LYs4s6GyGNYM0zbtnqiWST0Y=\n"
+    + "-----END CERTIFICATE-----\n")
+  private String signingCertificate;
 
   @Schema(example = "69c697c045b4cdaa441a28af0ec1bb4128153b9ddc796b66bfa04b02ea3e103e")
   private String uploaderSigningThumbprint;

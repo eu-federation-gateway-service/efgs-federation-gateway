@@ -59,8 +59,9 @@ public class CertificateService {
 
   /**
    * Add operator signatures to the audit entries.
+   *
    * @param auditEntries list of audit entries
-   * @return filled/added list of audit entries
+   * @return list of audit entries with operatorSignatures and certificate raw data
    */
   public List<AuditEntry> addOperatorSignatures(List<AuditEntry> auditEntries) {
     for (AuditEntry auditEntry : auditEntries) {
@@ -76,6 +77,7 @@ public class CertificateService {
 
       if (authenticationCertificate.isPresent()) {
         certificateEntity = authenticationCertificate.get();
+        auditEntry.setUploaderCertificate(certificateEntity.getRawData());
         auditEntry.setUploaderOperatorSignature(certificateEntity.getSignature());
       }
 
@@ -86,6 +88,7 @@ public class CertificateService {
 
       if (signingCertificate.isPresent()) {
         certificateEntity = signingCertificate.get();
+        auditEntry.setSigningCertificate(certificateEntity.getRawData());
         auditEntry.setSigningCertificateOperatorSignature(certificateEntity.getSignature());
       }
     }

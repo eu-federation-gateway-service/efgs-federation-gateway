@@ -45,7 +45,7 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
   int countAllByUploader_BatchTag(String batchTag);
 
   @Query("SELECT new eu.interop.federationgateway.model.AuditEntry("
-    + "min(uploader.country), min(createdAt), min(uploader.thumbprint), '', min(uploader.signingCertThumbprint), "
+    + "min(uploader.country), min(createdAt),'', min(uploader.thumbprint), '','', min(uploader.signingCertThumbprint), "
     + "'', COUNT(*), min(uploader.batchSignature))"
     + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag AND createdAt BETWEEN :begin AND :end "
     + "GROUP BY uploader.batchTag")
