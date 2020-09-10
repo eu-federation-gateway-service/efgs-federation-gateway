@@ -70,6 +70,12 @@ public class CertificateEntity implements Serializable {
   @Column(name = "host")
   private String host;
 
+  @Column(name = "signature")
+  private String signature;
+
+  @Column(name = "rawData")
+  private String rawData;
+
   public enum CertificateType {
     AUTHENTICATION,
     SIGNING,

@@ -26,7 +26,10 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.util.List;
@@ -50,14 +53,16 @@ public class DiagnosisKeyBatchAndSignatureGeneratorTest {
   SignatureGenerator signatureGenerator;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException, OperatorCreationException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException,
+    InvalidKeyException, SignatureException, KeyStoreException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
   }
 
   @Test
   public void test() throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
 
-    final DiagnosisKeyBatch diagnosisKeyBatch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123", "456", "abc"));
+    final DiagnosisKeyBatch diagnosisKeyBatch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123", "456",
+      "abc"));
     final byte[] bytesToSign = BatchSignatureUtilsTest.createBytesToSignForDummyBatch(diagnosisKeyBatch);
     final String signature = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
 

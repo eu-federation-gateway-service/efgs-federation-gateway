@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-certificate-entity-signature-and-rawdata
+      author: f11h
+      changes:
+        - addColumn:
+            tableName: certificate
+            columns:
+              - column:
+                  name: signature
+                  type: varchar(500)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: raw_data
+                  type: varchar(10240)
+                  constraints:
+                    nullable: true

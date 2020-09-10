@@ -58,14 +58,11 @@ public class CallbackServiceTest {
   @Autowired
   DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
 
-  CertificateService certificateServiceMock;
-
   CallbackService callbackService;
 
   @Before
   public void setUp() {
-    certificateServiceMock = Mockito.mock(CertificateService.class);
-    callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepository, certificateServiceMock);
+     callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepository);
   }
 
   @Before
@@ -155,10 +152,6 @@ public class CallbackServiceTest {
 
   @Test
   public void testCheckUrlMethod() {
-    Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
-      Optional.of(new CertificateEntity(42L, ZonedDateTime.now(), "thumb",
-        TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, false, "example.org")));
-
     // check if given string is a url
     Assert.assertFalse(callbackService.checkUrl("teststring1234", TestData.COUNTRY_A));
 
@@ -201,26 +194,12 @@ public class CallbackServiceTest {
       Assert.assertTrue(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
     } catch (UnknownHostException ignored) {
     } // skipping positive test case if no name resolution is possible
-
-    Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
-      Optional.empty()
-    );
-
-    // check that a certificate is present
-    Assert.assertFalse(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
-
-    Mockito.when(certificateServiceMock.getCallbackCertificateForHost("example.org", TestData.COUNTRY_A)).thenReturn(
-      Optional.of(new CertificateEntity(42L, ZonedDateTime.now(), "thumb",
-        TestData.COUNTRY_A, CertificateEntity.CertificateType.CALLBACK, true, "example.org")));
-
-    // check that a certificate is not revoked
-    Assert.assertFalse(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
   }
 
   @Test
   public void callbackTaskCleanUpShouldCallRepoMethod() {
     CallbackTaskRepository callbackTaskRepositoryMock = Mockito.mock(CallbackTaskRepository.class);
-    callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepositoryMock, certificateServiceMock);
+    callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepositoryMock);
 
     ZonedDateTime timestamp = ZonedDateTime.now();
 

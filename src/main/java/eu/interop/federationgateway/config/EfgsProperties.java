@@ -36,17 +36,32 @@ public class EfgsProperties {
   private final CertAuth certAuth = new CertAuth();
   private final Batching batching = new Batching();
   private final Callback callback = new Callback();
+  private final TrustAnchor trustAnchor = new TrustAnchor();
+
+  @Getter
+  @Setter
+  public static class TrustAnchor {
+    private String keyStorePath;
+    private String keyStorePass;
+    private String certificateAlias;
+  }
 
   @Getter
   @Setter
   public static class Callback {
-    private String proxyHost;
     private int timeout = 10000;
     private int maxRetries = 5;
     private int retryWait = 300000;
-    private int proxyPort;
     private int coreThreadPoolSize = 1;
     private int taskLockTimeout = 300;
+    private String proxyHost;
+    private Integer proxyPort;
+    private String proxyUser;
+    private String proxyPassword;
+    private String keyStorePath;
+    private String keyStorePass;
+    private String keyStorePrivateKeyAlias;
+    private String keyStoreCertificateAlias;
   }
 
   @Getter

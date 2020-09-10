@@ -23,14 +23,9 @@ package eu.interop.federationgateway.batchsigning;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.service.CertificateService;
+import eu.interop.federationgateway.utils.CertificateUtils;
 import eu.interop.federationgateway.utils.EfgsMdc;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.Signature;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
@@ -38,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.x500.RDN;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -71,7 +65,7 @@ public class BatchSignatureVerifier {
    * @param base64BatchSignature the base64-encoded batch signature to be verified.
    * @return true if the batch signature is correct. False otherwise.
    */
-  public boolean verify(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
+  public String checkBatchSignature(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
     final byte[] batchSignatureBytes = BatchSignatureUtils.b64ToBytes(base64BatchSignature);
     if (batchSignatureBytes != null) {
       try {
@@ -80,14 +74,14 @@ public class BatchSignatureVerifier {
 
         if (signerInfo == null) {
           log.error("no signer information");
-          return false;
+          return null;
         }
 
         final X509CertificateHolder signerCert = getSignerCert(signedData.getCertificates(), signerInfo.getSID());
 
         if (signerCert == null) {
           log.error("no signer certificate");
-          return false;
+          return null;
         }
 
         EfgsMdc.put("certNotBefore", signerCert.getNotBefore());
@@ -95,25 +89,27 @@ public class BatchSignatureVerifier {
 
         if (!isCertNotExpired(signerCert)) {
           log.error("signing certificate expired");
-          return false;
+          return null;
         }
-
-        if (!isCertValid(signerCert)) {
+        String signingCertThumbprint = checkCertValidityAndReturnThumbprint(signerCert);
+        if (signingCertThumbprint == null) {
           log.error("invalid signing certificate signature");
-          return false;
+          return null;
         }
 
         if (!allOriginsMatchingCertCountry(batch, signerCert)) {
           log.error("different origins");
-          return false;
+          return null;
         }
-
-        return verifySignerInfo(signerInfo, signerCert);
+        if (!verifySignerInfo(signerInfo, signerCert)) {
+          return null;
+        }
+        return signingCertThumbprint;
       } catch (CertificateException | OperatorCreationException | CMSException e) {
         log.error("error verifying batch signature", e);
       }
     }
-    return false;
+    return null;
   }
 
   private boolean allOriginsMatchingCertCountry(DiagnosisKeyBatch batch, X509CertificateHolder certificate) {
@@ -134,47 +130,27 @@ public class BatchSignatureVerifier {
       && certificate.getNotAfter().after(now);
   }
 
-  private boolean isCertValid(X509CertificateHolder certificate) {
-    try {
-      byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(certificate.getEncoded());
-      String certHash = new BigInteger(1, certHashBytes).toString(16);
+  private String checkCertValidityAndReturnThumbprint(X509CertificateHolder certificate) {
 
-      Optional<CertificateEntity> certificateEntity = certificateService.getCertificate(
-        certHash,
-        getCountryOfCertificate(certificate),
-        CertificateEntity.CertificateType.SIGNING);
+    String certHash = CertificateUtils.getCertThumbprint(certificate);
 
-      EfgsMdc.put("certThumbprint", certHash);
+    Optional<CertificateEntity> certificateEntity = certificateService.getCertificate(
+      certHash,
+      getCountryOfCertificate(certificate),
+      CertificateEntity.CertificateType.SIGNING);
 
-      if (certificateEntity.isEmpty()) {
-        log.error("unknown signing certificate");
-        return false;
-      }
+    EfgsMdc.put("certThumbprint", certHash);
 
-      if (certificateEntity.get().getRevoked()) {
-        log.error("certificate is revoked");
-        return false;
-      }
-      return true;
-
-    } catch (IOException e) {
-      log.error("Failed to hash certificate thumbprint");
-      return false;
-
-    } catch (NoSuchAlgorithmException e) {
-      log.error("Could not hash certificate thumbprint with SHA-256");
-      return false;
+    if (certificateEntity.isEmpty()) {
+      log.error("unknown signing certificate");
+      return null;
     }
-  }
 
-  private Signature createSignatureInstance(final X509Certificate x509Certificate)
-    throws NoSuchAlgorithmException {
-    return Signature.getInstance(x509Certificate.getSigAlgName());
-  }
-
-  private X509Certificate toX509Certificate(final X509CertificateHolder certificate) throws CertificateException {
-    final JcaX509CertificateConverter converter = new JcaX509CertificateConverter();
-    return converter.getCertificate(certificate);
+    if (certificateEntity.get().getRevoked()) {
+      log.error("certificate is revoked");
+      return null;
+    }
+    return certHash;
   }
 
   private String getCountryOfCertificate(X509CertificateHolder certificate) {

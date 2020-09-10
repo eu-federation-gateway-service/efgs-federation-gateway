@@ -10,7 +10,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import org.bouncycastle.cert.CertIOException;
@@ -18,6 +21,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +38,8 @@ public class TestDataGenerator {
   SignatureGenerator signatureGenerator;
 
   @Before
-  public void setup() throws OperatorCreationException, CertificateException, CertIOException, NoSuchAlgorithmException {
+  public void setup() throws OperatorCreationException, CertificateException, IOException, NoSuchAlgorithmException,
+    InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
     signatureGenerator = new SignatureGenerator(certificateRepository);
   }
@@ -46,8 +51,9 @@ public class TestDataGenerator {
    * This Testcase is ignored by default. To create testdata remove the @Ignore annotation temporary.
    */
   @Test
-  //@Ignore
-  public void createTestDataForManualTesting() throws IOException, CertificateEncodingException, OperatorCreationException, CMSException {
+  @Ignore
+  public void createTestDataForManualTesting() throws IOException, CertificateEncodingException,
+    OperatorCreationException, CMSException {
     if (Files.isDirectory(Path.of("testdata"))) {
       Files.deleteIfExists(Path.of("testdata/batch1_3keys.bin"));
       Files.deleteIfExists(Path.of("testdata/batch2_3keys.bin"));
@@ -103,19 +109,23 @@ public class TestDataGenerator {
     certFileOutputStreamWriter.write("\n\n");
 
     certFileOutputStreamWriter.write("batch1_3keys.bin signature: ");
-    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch1), TestData.validCertificate));
+    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch1),
+      TestData.validCertificate));
     certFileOutputStreamWriter.write("\n\n");
 
     certFileOutputStreamWriter.write("batch2_3keys.bin signature: ");
-    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch2), TestData.validCertificate));
+    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch2),
+      TestData.validCertificate));
     certFileOutputStreamWriter.write("\n\n");
 
     certFileOutputStreamWriter.write("batch3_2keys.bin signature: ");
-    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch3), TestData.validCertificate));
+    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch3),
+      TestData.validCertificate));
     certFileOutputStreamWriter.write("\n\n");
 
     certFileOutputStreamWriter.write("batch4_2keys.bin signature: ");
-    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch4), TestData.validCertificate));
+    certFileOutputStreamWriter.write(signatureGenerator.sign(BatchSignatureUtilsTest.createBytesToSign(batch4),
+      TestData.validCertificate));
     certFileOutputStreamWriter.write("\n");
 
     certFileOutputStreamWriter.close();

@@ -59,6 +59,7 @@ public abstract class DiagnosisKeyMapper {
     String uploadBatchTag,
     String uploadBatchSignature,
     String certificateThumbprint,
+    String signingThumbprint,
     String certificateCountry,
     MediaType format
   ) {
@@ -89,6 +90,7 @@ public abstract class DiagnosisKeyMapper {
       uploadBatchTag,
       uploadBatchSignature,
       certificateThumbprint,
+      signingThumbprint,
       certificateCountry
     ));
 
@@ -117,6 +119,7 @@ public abstract class DiagnosisKeyMapper {
     String uploadBatchTag,
     String uploadBatchSignature,
     String certificateThumbprint,
+    String signingThumbprint,
     String certificateCountry,
     MediaType format
   ) {
@@ -126,6 +129,7 @@ public abstract class DiagnosisKeyMapper {
         uploadBatchTag,
         uploadBatchSignature,
         certificateThumbprint,
+        signingThumbprint,
         certificateCountry,
         format
       ))

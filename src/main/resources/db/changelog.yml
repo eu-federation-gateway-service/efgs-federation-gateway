@@ -20,4 +20,10 @@ databaseChangeLog:
   - include:
       file: changelog/v001-update-dayssinceonsetofsymptoms-datatype.yml
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v001-add-certificate-entity-signature-and-rawdata.yml
+      relativeToChangelogFile: true
+  - include:
+      file: changelog/v001-add-diagnosis-key-entity-signingcertthumbprint.yml
+      relativeToChangelogFile: true
 
