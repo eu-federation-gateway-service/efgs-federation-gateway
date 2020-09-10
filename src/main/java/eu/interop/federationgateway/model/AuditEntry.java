@@ -45,11 +45,20 @@ public class AuditEntry {
   @Schema(example = "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e")
   private String uploaderThumbprint;
 
+  @Schema(example = "KfyyJxglK3ol/ckgqbcZKhpazYlNAfQd/hdrBNGuTTFkFwaUYvbA4ydPOu6SXZuyqhUuLsfdK6dDVaETumMZHVLT0R"
+    + "/YWTsAFSAk/hmJPv+KLh1rk4+BwhfRc7E7Y7MH1JFFMuRH+hAVjMEO8LtPLmb6yMXXe"
+    + "+8CTTwaPG5HCVnGNsvrVuRbQekRRULmftRWyeEFxuv8CTikFG3CVl5bbB"
+    + "FdkHkcdrED8kg7AnYyML315iijWKH14iWrcwiuBYyIYvGxArhufuyyJf"
+    + "VO/bpcVvFgGrEo8SpxPJhtWRi1xLnjKHJQKdrV7dS9dD5OQHcpFQtIp7pZ9SRB3FqcCcfMMg==")
   private String uploaderOperatorSignature;
 
   @Schema(example = "69c697c045b4cdaa441a28af0ec1bb4128153b9ddc796b66bfa04b02ea3e103e")
   private String uploaderSigningThumbprint;
 
+  @Schema(example = "o53CbAa77LyIMFc5Gz+B2Jc275Gdg/SdLayw7gx0GrTcinR95zfTLr8nNHgJMYlX3rD8Y11zB/Osyt0VLCcDZr"
+    + "+e6gtMms8qr0qMzw1G74cSPiKCb6TEpc/pBBGxljtOfinvksLjJzW3Pu4fbKz6KikdUjXA8lxYx//aosd7qWxo2lnxbJlo1URXw/BINanoKj"
+    + "+RZSSCheZzi8dbUjmfOP8IZUFvtpf3isyMpaD+5+gpcGgNqNz9aUPvwk++jjTlKj+e4ZtFkUh0nPR4hYsmXct9jn32lk2M3r3CcmvgwvW"
+    + "+VIrYRGSEmgjGy2EwzvA5nVhsaA+/udnmbyQw9LjAOQ==")
   private String signingCertificateOperatorSignature;
 
   @Schema(example = "3")

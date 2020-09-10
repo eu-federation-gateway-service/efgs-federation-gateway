@@ -132,8 +132,7 @@ public class AuditControllerTest {
     AuditEntry auditEntry = auditEntries.get(0);
     Assert.assertEquals("DE", auditEntry.getCountry());
     Assert.assertEquals(3, auditEntry.getAmount());
-    Assert.assertEquals(TestData.AUTH_CERT_HASH,
-      auditEntry.getUploaderThumbprint());
+    Assert.assertEquals(TestData.AUTH_CERT_HASH, auditEntry.getUploaderThumbprint());
     Assert.assertTrue(!auditEntry.getUploaderOperatorSignature().isEmpty());
     Assert.assertTrue(!auditEntry.getSigningCertificateOperatorSignature().isEmpty());
     Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
