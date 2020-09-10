@@ -36,6 +36,17 @@ import lombok.Setter;
 )
 public class AuditEntry {
 
+
+  /**
+   * The constructor for the audit-entries.
+   *
+   * @param country                   the country
+   * @param uploadedTime              the time of the upload
+   * @param uploaderThumbprint        the uploader-thumbprint
+   * @param uploaderSigningThumbprint the thumbprint of the signing certificate
+   * @param amount                    the amount of the uploaded keys
+   * @param batchSignature            the batchsignature
+   */
   public AuditEntry(String country, ZonedDateTime uploadedTime, String uploaderThumbprint,
                     String uploaderSigningThumbprint, long amount, String batchSignature) {
     this.country = country;
