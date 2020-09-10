@@ -77,21 +77,6 @@
         }
       }
     },
-    "/diagnosiskeys/callback": {
-      "get": {
-        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
-        "summary": "Gets the current callback subscription URLs.",
-        "operationId": "getCallbackSubscriptions",
-        "responses": {
-          "403": {
-            "description": "Forbidden call in cause of missing or invalid client certificate."
-          },
-          "200": {
-            "description": "OK."
-          }
-        }
-      }
-    },
     "/diagnosiskeys/callback/{id}": {
       "put": {
         "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
@@ -163,6 +148,21 @@
           },
           "500": {
             "description": "Not able to write data. Retry please."
+          }
+        }
+      }
+    },
+    "/diagnosiskeys/callback": {
+      "get": {
+        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
+        "summary": "Gets the current callback subscription URLs.",
+        "operationId": "getCallbackSubscriptions",
+        "responses": {
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "200": {
+            "description": "OK."
           }
         }
       }
@@ -407,9 +407,29 @@
             "format": "date-time",
             "example": "2020-07-31T11:24:43.086Z"
           },
+          "uploaderCertificate": {
+            "type": "string",
+            "example": "-----BEGIN CERTIFICATE-----\nMIICyDCCAbCgAwIBAgIGAXR3DZUUMA0GCSqGSIb3DQEBBQUAMBwxCzAJBgNVBAYT\nAkRFMQ0wCwYDVQQDDARkZW1vMB4XDTIwMDgyNzA4MDY1MloXDTIxMDkxMDA4MDY1\nMlowHDELMAkGA1UEBhMCREUxDTALBgNVBAMMBGRlbW8wggEiMA0GCSqGSIb3DQEB\nAQUAA4IBDwAwggEKAoIBAQCKR0TEJOO4z0ks4OMAovcyxuPpeZuR1JykNNFd3OR+\nvFWJLJtDYgRjtuqSuKCghLa/ci+0yIs3OeitGtajqFIukYksvX2LxOZDYDUbnpGQ\nDPNMVmpEavDBbvKON8C8K036pC41bNvwkTrfUyZ8iE+hV2+kj1SHUyw7jweEUoiw\nNmMiaXXPiMIOj7D0qnmM+iTGN9g/DrJ/IvvsgiGpK3QlQ5pnHs2BvzrSw4LFAZ8c\nSQfWKheZVHfQf26mJFdEzowrzfzForDdeFAPIIirhufE3jWFxj1thfztu+VSMj84\nsDqodEt2VJOY+DvLB1Ls/26LSmFtMnCEuBAhkbQ1E0tbAgMBAAGjEDAOMAwGA1Ud\nEwEB/wQCMAAwDQYJKoZIhvcNAQEFBQADggEBABaMEQz4Gbj+G0SZGZaIDoUFDB6n\n1R6iUS0zTBgsV8pSpFhwPryRiLdeNzIzsDdQ1ack1NfQ6YPn3/yOJ/SvnXs6n+vO\nWQW2KsuiymPSd/wjeywRRMfCysHjrmE+m+8lrFDrKuPnrACwQIsX9PDEsRRBnpSy\n5NKUZn6u3iPV9x6rwYCdCa/8VDGLqVb3eEE5dbFaYG9uW02cSbmsiZm8KmW8b6BF\neIwHVRAH6Cs1VZI8UIrdVGCE111tUo/0957rF+/doFyJcwX+4ESH0m2MsHFjXDfG\nU8yTjiUh/b2Erk4TCmrJpux30QRhsNZwkmEYSbRv+vp5/obgH1mL5ouoV5I=\n-----END CERTIFICATE-----\n"
+          },
           "uploaderThumbprint": {
             "type": "string",
             "example": "69c697c045b4cdaa441a28af0ec1cc4128153b9ddc796b66bfa04b02ea3e103e"
+          },
+          "uploaderOperatorSignature": {
+            "type": "string",
+            "example": "KfyyJxglK3ol/ckgqbcZKhpazYlNAfQd/hdrBNGuTTFkFwaUYvbA4ydPOu6SXZuyqhUuLsfdK6dDVaETumMZHVLT0R/YWTsAFSAk/hmJPv+KLh1rk4+BwhfRc7E7Y7MH1JFFMuRH+hAVjMEO8LtPLmb6yMXXe+8CTTwaPG5HCVnGNsvrVuRbQekRRULmftRWyeEFxuv8CTikFG3CVl5bbBFdkHkcdrED8kg7AnYyML315iijWKH14iWrcwiuBYyIYvGxArhufuyyJfVO/bpcVvFgGrEo8SpxPJhtWRi1xLnjKHJQKdrV7dS9dD5OQHcpFQtIp7pZ9SRB3FqcCcfMMg=="
+          },
+          "signingCertificate": {
+            "type": "string",
+            "example": "-----BEGIN CERTIFICATE-----\nMIICyDCCAbCgAwIBAgIGAXR3DdOUMA0GCSqGSIb3DQEBBQUAMBwxCzAJBgNVBAYT\nAkRFMQ0wCwYDVQQDDARkZW1vMB4XDTIwMDgyNzA4MDcwOFoXDTIxMDkxMDA4MDcw\nOFowHDELMAkGA1UEBhMCREUxDTALBgNVBAMMBGRlbW8wggEiMA0GCSqGSIb3DQEB\nAQUAA4IBDwAwggEKAoIBAQCKR0TEJOO4z0ks4OMAovcyxuPpeZuR1JykNNFd3OR+\nvFWJLJtDYgRjtuqSuKCghLa/ci+0yIs3OeitGtajqFIukYksvX2LxOZDYDUbnpGQ\nDPNMVmpEavDBbvKON8C8K036pC41bNvwkTrfUyZ8iE+hV2+kj1SHUyw7jweEUoiw\nNmMiaXXPiMIOj7D0qnmM+iTGN9g/DrJ/IvvsgiGpK3QlQ5pnHs2BvzrSw4LFAZ8c\nSQfWKheZVHfQf26mJFdEzowrzfzForDdeFAPIIirhufE3jWFxj1thfztu+VSMj84\nsDqodEt2VJOY+DvLB1Ls/26LSmFtMnCEuBAhkbQ1E0tbAgMBAAGjEDAOMAwGA1Ud\nEwEB/wQCMAAwDQYJKoZIhvcNAQEFBQADggEBABISpoT/FgaCMlV0zXVq+HrHgcgl\nGSm3OQfgG1cY+YnkFY+vngdxZutJAWdCaEPmX2xBHQGp0VW7Sd6ueNpOekSZT15N\n3ZKhYc7Lqn4Ra/VkgRoOYZbmalp61unrS9AjPrlGu9/vXjLUEJOc3Qm8na3MFWgl\nhs1tOZW+CwIJM9yWRh5VmTBDIcWj/cbjizAoLEetIPeD2RiP6k1YSZ0prDPP9zGg\nJHOmNJWHTWsi6jx3Ipqm55iq2uBpasxoOBS1zAbb86vKni4R1nDAVK1MqTVHc0CD\nuGc+5KKdtbio8/zueC+PI5nN5JckuBwkOu3LYs4s6GyGNYM0zbtnqiWST0Y=\n-----END CERTIFICATE-----\n"
+          },
+          "uploaderSigningThumbprint": {
+            "type": "string",
+            "example": "69c697c045b4cdaa441a28af0ec1bb4128153b9ddc796b66bfa04b02ea3e103e"
+          },
+          "signingCertificateOperatorSignature": {
+            "type": "string",
+            "example": "o53CbAa77LyIMFc5Gz+B2Jc275Gdg/SdLayw7gx0GrTcinR95zfTLr8nNHgJMYlX3rD8Y11zB/Osyt0VLCcDZr+e6gtMms8qr0qMzw1G74cSPiKCb6TEpc/pBBGxljtOfinvksLjJzW3Pu4fbKz6KikdUjXA8lxYx//aosd7qWxo2lnxbJlo1URXw/BINanoKj+RZSSCheZzi8dbUjmfOP8IZUFvtpf3isyMpaD+5+gpcGgNqNz9aUPvwk++jjTlKj+e4ZtFkUh0nPR4hYsmXct9jn32lk2M3r3CcmvgwvW+VIrYRGSEmgjGy2EwzvA5nVhsaA+/udnmbyQw9LjAOQ=="
           },
           "amount": {
             "type": "integer",
