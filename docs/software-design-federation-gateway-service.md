@@ -297,7 +297,7 @@ The service has two secrets which need special handling during storage
 - private key of EFGS<sub>TLS</sub> for outgoing TLS connections (for call back), to allow mTLS authentication
 - public key of EFGS<sub>TA</sub> Trust Anchor  
 
-These keys need to be stored seperate from the database. They are stored in a Java KeyStore (https://en.wikipedia.org/wiki/Java_KeyStore) and deployed manually to the Tomcat instances. 
+These keys need to be stored seperate from the database. They are stored in two different Java KeyStore (https://en.wikipedia.org/wiki/Java_KeyStore) and deployed manually to the Tomcat instances. The keystores are protected with a password, the password is set as JVM property.
 
 
 ## 3. Batch Signature 
