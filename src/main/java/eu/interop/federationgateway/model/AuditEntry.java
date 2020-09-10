@@ -36,6 +36,16 @@ import lombok.Setter;
 )
 public class AuditEntry {
 
+  public AuditEntry(String country, ZonedDateTime uploadedTime, String uploaderThumbprint,
+                    String uploaderSigningThumbprint, long amount, String batchSignature) {
+    this.country = country;
+    this.uploadedTime = uploadedTime;
+    this.uploaderThumbprint = uploaderThumbprint;
+    this.uploaderSigningThumbprint = uploaderSigningThumbprint;
+    this.amount = amount;
+    this.batchSignature = batchSignature;
+  }
+
   @Schema(example = "DE")
   private String country;
 
