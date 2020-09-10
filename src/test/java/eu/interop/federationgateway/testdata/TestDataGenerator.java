@@ -21,6 +21,7 @@ import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class TestDataGenerator {
    * This Testcase is ignored by default. To create testdata remove the @Ignore annotation temporary.
    */
   @Test
-  //@Ignore
+  @Ignore
   public void createTestDataForManualTesting() throws IOException, CertificateEncodingException,
     OperatorCreationException, CMSException {
     if (Files.isDirectory(Path.of("testdata"))) {
