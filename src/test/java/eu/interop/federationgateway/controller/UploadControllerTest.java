@@ -26,10 +26,12 @@ import eu.interop.federationgateway.batchsigning.BatchSignatureUtilsTest;
 import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
+import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -51,6 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Example;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ContextConfiguration;
@@ -82,6 +85,9 @@ public class UploadControllerTest {
 
   @Autowired
   private CertificateRepository certificateRepository;
+
+  @Autowired
+  private CertificateService certificateService;
 
   private SignatureGenerator signatureGenerator;
 
@@ -151,6 +157,41 @@ public class UploadControllerTest {
     )
       .andExpect(status().isCreated())
       .andExpect(result -> Assert.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
+  }
+
+  @Test
+  public void testRequestUploadKeysInProtobufFormatWithModifiedCertDatabase() throws Exception {
+    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder()
+      .setTransmissionRiskLevel(1).setOrigin(TestData.COUNTRY_A).build();
+    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().
+      setTransmissionRiskLevel(2).setOrigin(TestData.COUNTRY_A).build();
+    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder()
+      .setTransmissionRiskLevel(3).setOrigin(TestData.COUNTRY_A).build();
+
+    EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
+      .addAllKeys(Arrays.asList(key1, key2, key3)).build();
+
+    byte[] bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch);
+    String signature = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
+
+    CertificateEntity certificateEntity = certificateService.getCertificate(
+      TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING
+    ).get();
+
+    certificateEntity.setCountry(TestData.COUNTRY_A);
+
+    certificateRepository.save(certificateEntity);
+
+    mockMvc.perform(post("/diagnosiskeys/upload")
+      .contentType("application/protobuf; version=1.0")
+      .header("batchTag", TestData.FIRST_BATCHTAG)
+      .header("batchSignature", signature)
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
+      .content(batch.toByteArray())
+    )
+      .andExpect(status().isBadRequest())
+      .andExpect(result -> Assert.assertEquals(0, diagnosisKeyEntityRepository.count()));
   }
 
   @Test
