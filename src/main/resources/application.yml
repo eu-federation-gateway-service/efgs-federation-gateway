@@ -19,11 +19,11 @@ springdoc:
     path: /swagger
 efgs:
   trustAnchor:
-    keyStorePath: classpath:keystore/efgs-ta.jks
+    keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
     keyStorePass: 3fgs-p4ssw0rd
     certificateAlias: efgs_trust_anchor
   callback:
-    keyStorePath: classpath:keystore/efgs-cb-client.jks
+    keyStorePath: /ec/prod/app/san/efgs/efgs-cb-client.jks
     keyStorePass: 3fgs-p4ssw0rd
     keyStorePrivateKeyAlias: efgs_callback_key
     keyStoreCertificateAlias: efgs_callback_cert
