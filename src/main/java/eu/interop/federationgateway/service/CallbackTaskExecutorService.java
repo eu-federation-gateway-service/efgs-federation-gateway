@@ -29,9 +29,11 @@ import java.net.URI;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -195,6 +197,9 @@ public class CallbackTaskExecutorService {
       efgsProperties.getCallback().getRetryWait()
     );
 
-    return callbackTaskRepository.findNextPendingCallbackTask(timestamp);
+    List<CallbackTaskEntity> callbackTaskEntities = callbackTaskRepository
+      .findNextPendingCallbackTask(timestamp, PageRequest.of(0, 1));
+
+    return callbackTaskEntities.size() == 1 ? callbackTaskEntities.get(0) : null;
   }
 }
