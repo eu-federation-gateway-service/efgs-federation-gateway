@@ -20,8 +20,13 @@
 
 package eu.interop.federationgateway.entity;
 
+import eu.interop.federationgateway.dbencryption.DbEncryptionByteArrayConverter;
+import eu.interop.federationgateway.dbencryption.DbEncryptionIntConverter;
+import eu.interop.federationgateway.dbencryption.DbEncryptionReportTypeConverter;
+import eu.interop.federationgateway.dbencryption.DbEncryptionStringConverter;
 import java.io.Serializable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,27 +39,35 @@ import lombok.NoArgsConstructor;
 public class DiagnosisKeyPayload implements Serializable {
 
   @Column(name = "payload_keyData")
+  @Convert(converter = DbEncryptionByteArrayConverter.class)
   private byte[] keyData;
 
   @Column(name = "payload_rollingStartIntervalNumber")
+  @Convert(converter = DbEncryptionIntConverter.class)
   private int rollingStartIntervalNumber;
 
   @Column(name = "payload_rollingPeriod")
+  @Convert(converter = DbEncryptionIntConverter.class)
   private int rollingPeriod;
 
   @Column(name = "payload_transmissionRiskLevel")
+  @Convert(converter = DbEncryptionIntConverter.class)
   private int transmissionRiskLevel;
 
   @Column(name = "payload_visitedCountries")
+  @Convert(converter = DbEncryptionStringConverter.class)
   private String visitedCountries;
 
   @Column(name = "payload_origin")
+  @Convert(converter = DbEncryptionStringConverter.class)
   private String origin;
 
   @Column(name = "payload_reportType")
+  @Convert(converter = DbEncryptionReportTypeConverter.class)
   private ReportType reportType;
 
   @Column(name = "payload_daysSinceOnsetOfSymptoms")
+  @Convert(converter = DbEncryptionIntConverter.class)
   private int daysSinceOnsetOfSymptoms;
 
   public enum ReportType {
