@@ -55,4 +55,11 @@ jobs:
       with:
           name: CORONA_TRACING_BACKEND001_PRD-PROD
           path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_PRD*
-
+    - name: mvn clean install -P docker
+      run: mvn clean install -P docker
+    - name: Log into registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+    - name: Build docker image
+      run: docker build target/docker --file target/docker/Dockerfile --tag docker.pkg.github.com/${{ github.repository }}/backend:latest
+    - name: Push docker image
+      run: docker push docker.pkg.github.com/${{ github.repository }}/backend:latest
