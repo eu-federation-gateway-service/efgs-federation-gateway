@@ -32,7 +32,6 @@ import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -148,7 +147,7 @@ public class CallbackTaskExecutorServiceTest {
 
   @Test
   public void callbackExecutorShouldDeleteSubscriptionIfUrlCheckFails() {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
     createCallbackTask(subscription1, batch, null);
 
@@ -163,7 +162,7 @@ public class CallbackTaskExecutorServiceTest {
 
   @Test
   public void callbackExecutorShouldRetryRequestIfCertificateIsMissing() {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
     createCallbackTask(subscription1, batch, null);
 
@@ -180,8 +179,8 @@ public class CallbackTaskExecutorServiceTest {
   }
 
   @Test
-  public void callbackExecutorShouldCallCallbackURL() throws InterruptedException, MalformedURLException {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+  public void callbackExecutorShouldCallCallbackURL() throws InterruptedException {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
     createCallbackTask(subscription1, batch, null);
 
@@ -199,8 +198,33 @@ public class CallbackTaskExecutorServiceTest {
   }
 
   @Test
-  public void callbackExecutorShouldDeleteSubscriptionAfterMaxRetriesIsReached() throws InterruptedException, MalformedURLException {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+  public void callbackExecutorShouldNotFailWhenMultipleCallbackTasksArePending() throws InterruptedException {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
+    CallbackSubscriptionEntity subscription2 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_B);
+    DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
+    createCallbackTask(subscription1, batch, null);
+    createCallbackTask(subscription2, batch, null);
+
+    mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+    mockWebServer.enqueue(new MockResponse().setResponseCode(200));
+
+    callbackTaskExecutorService.execute();
+
+    RecordedRequest request = mockWebServer.takeRequest();
+    Assert.assertEquals(batch.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+
+    request = mockWebServer.takeRequest();
+    Assert.assertEquals(batch.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+
+    Assert.assertEquals(0, callbackTaskRepository.count());
+    Assert.assertEquals(2, callbackSubscriptionRepository.count());
+  }
+
+  @Test
+  public void callbackExecutorShouldDeleteSubscriptionAfterMaxRetriesIsReached() throws InterruptedException {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch1 = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
     CallbackTaskEntity task = createCallbackTask(subscription1, batch1, null);
 
@@ -234,8 +258,8 @@ public class CallbackTaskExecutorServiceTest {
   }
 
   @Test
-  public void callbackExecutorShouldProcessMultipleTasksInCorrectOrder() throws InterruptedException, MalformedURLException {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+  public void callbackExecutorShouldProcessMultipleTasksInCorrectOrder() throws InterruptedException {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch1 = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
     DiagnosisKeyBatchEntity batch2 = createDiagnosisKeyBatch("BT2", ZonedDateTime.now(ZoneOffset.UTC));
     DiagnosisKeyBatchEntity batch3 = createDiagnosisKeyBatch("BT3", ZonedDateTime.now(ZoneOffset.UTC));
@@ -296,8 +320,8 @@ public class CallbackTaskExecutorServiceTest {
   }
 
   @Test
-  public void callbackExecutorShouldMarkTaskForRetryOnFailedRequest() throws MalformedURLException {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+  public void callbackExecutorShouldMarkTaskForRetryOnFailedRequest() {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
     createCallbackTask(subscription1, batch, null);
 
@@ -314,8 +338,8 @@ public class CallbackTaskExecutorServiceTest {
   }
 
   @Test
-  public void callbackExecutorShoulRemoveNotBeforeFromNextTaskOnSuccess() throws MalformedURLException {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+  public void callbackExecutorShouldRemoveNotBeforeFromNextTaskOnSuccess() {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(1));
     DiagnosisKeyBatchEntity batch2 = createDiagnosisKeyBatch("BT2", ZonedDateTime.now(ZoneOffset.UTC));
     CallbackTaskEntity task1 = createCallbackTask(subscription1, batch, null);
@@ -333,8 +357,8 @@ public class CallbackTaskExecutorServiceTest {
   }
 
   @Test
-  public void callbackExecutorShoulNotRemoveNotBeforeFromNextTaskOnFailure() throws MalformedURLException {
-    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST);
+  public void callbackExecutorShoulNotRemoveNotBeforeFromNextTaskOnFailure() {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
     DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(1));
     DiagnosisKeyBatchEntity batch2 = createDiagnosisKeyBatch("BT2", ZonedDateTime.now(ZoneOffset.UTC));
     CallbackTaskEntity task1 = createCallbackTask(subscription1, batch, null);
@@ -366,9 +390,9 @@ public class CallbackTaskExecutorServiceTest {
     return callbackTaskRepository.save(task);
   }
 
-  private CallbackSubscriptionEntity createSubscription(String callbackId) {
+  private CallbackSubscriptionEntity createSubscription(String callbackId, String country) {
     CallbackSubscriptionEntity subscription = new CallbackSubscriptionEntity(
-      null, ZonedDateTime.now(ZoneOffset.UTC), callbackId, mockCallbackUrl, TestData.COUNTRY_A
+      null, ZonedDateTime.now(ZoneOffset.UTC), callbackId, mockCallbackUrl, country
     );
 
     return callbackSubscriptionRepository.save(subscription);

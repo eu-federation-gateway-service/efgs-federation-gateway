@@ -94,7 +94,7 @@ public class CertificateServiceTest {
   }
 
   @Test
-  public void certificateRepositoryShouldNotReturnCertificateIfIntegrityOfThumbprintIsViolated() {
+  public void certificateRepositoryShouldNotReturnCertificateIfIntegrityOfSignatureIsViolated() {
     Optional<CertificateEntity> certOptional = certificateService.getCertificate(TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
     Optional<CertificateEntity> anotherCertOptional = certificateService.getCertificate(
       CertificateUtils.getCertThumbprint(TestData.notValidYetCertificate), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
@@ -108,6 +108,26 @@ public class CertificateServiceTest {
     certificateRepository.save(cert);
 
     certOptional = certificateService.getCertificate(TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
+    Assert.assertTrue(certOptional.isEmpty());
+  }
+
+  @Test
+  public void certificateRepositoryShouldNotReturnCertificateIfIntegrityOfThumbprintIsViolated() {
+    Optional<CertificateEntity> certOptional = certificateService.getCertificate(TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
+    Optional<CertificateEntity> anotherCertOptional = certificateService.getCertificate(
+      CertificateUtils.getCertThumbprint(TestData.notValidYetCertificate), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
+
+    Assert.assertTrue(certOptional.isPresent());
+    Assert.assertTrue(anotherCertOptional.isPresent());
+
+    certificateRepository.delete(anotherCertOptional.get());
+
+    CertificateEntity cert = certOptional.get();
+    cert.setThumbprint(anotherCertOptional.get().getThumbprint());
+
+    certificateRepository.save(cert);
+
+    certOptional = certificateService.getCertificate(anotherCertOptional.get().getThumbprint(), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
     Assert.assertTrue(certOptional.isEmpty());
   }
 }
