@@ -77,6 +77,21 @@
         }
       }
     },
+    "/diagnosiskeys/callback": {
+      "get": {
+        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
+        "summary": "Gets the current callback subscription URLs.",
+        "operationId": "getCallbackSubscriptions",
+        "responses": {
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "200": {
+            "description": "OK."
+          }
+        }
+      }
+    },
     "/diagnosiskeys/callback/{id}": {
       "put": {
         "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
@@ -148,21 +163,6 @@
           },
           "500": {
             "description": "Not able to write data. Retry please."
-          }
-        }
-      }
-    },
-    "/diagnosiskeys/callback": {
-      "get": {
-        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
-        "summary": "Gets the current callback subscription URLs.",
-        "operationId": "getCallbackSubscriptions",
-        "responses": {
-          "200": {
-            "description": "OK."
-          },
-          "403": {
-            "description": "Forbidden call in cause of missing or invalid client certificate."
           }
         }
       }
