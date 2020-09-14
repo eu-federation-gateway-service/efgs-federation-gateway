@@ -36,15 +36,12 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +50,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -192,31 +188,4 @@ public class UploadController {
       .build();
   }
 
-  /**
-   * This endpoint enabled the information about the download-endpoint.
-   *
-   * @return the endpoint information
-   */
-  @Operation(
-    summary = "Returns information about the upload-endpoint.",
-    tags = {"Diagnosis Keys Exchange Interface", "Upload"},
-    responses = {
-      @ApiResponse(responseCode = "200", description = "OK.",
-        headers = {
-          @Header(name = HttpHeaders.ACCEPT,
-            schema = @Schema(example = "application/json; version=1.0, application/protobuf; version=1.0")),
-          @Header(name = HttpHeaders.ALLOW,
-            schema = @Schema(example = "POST,OPTIONS"))
-        })
-    })
-  @RequestMapping(value = UPLOAD_ROUTE,
-    method = RequestMethod.OPTIONS,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> getEndpointInformation() {
-    return ResponseEntity
-      .ok()
-      .allow(HttpMethod.POST, HttpMethod.OPTIONS)
-      .header(HttpHeaders.ACCEPT, "application/json; version=1.0, application/protobuf; version=1.0")
-      .build();
-  }
 }

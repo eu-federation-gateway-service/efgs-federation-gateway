@@ -53,13 +53,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Example;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -364,18 +360,6 @@ public class UploadControllerTest {
       .andExpect(result -> Assert.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
   }
 
-  @Test
-  public void testOptionsReturnsEndpointInformation() throws Exception {
-    mockMvc.perform(options("/diagnosiskeys/upload"))
-      .andExpect(status().isOk())
-      .andExpect(mvcResult -> {
-        String allowHeader = mvcResult.getResponse().getHeader(HttpHeaders.ALLOW);
-        String accept = mvcResult.getResponse().getHeader(HttpHeaders.ACCEPT);
-        Assert.assertEquals(HttpMethod.POST.name() + "," + HttpMethod.OPTIONS.name(), allowHeader);
-        Assert.assertEquals("application/json; version=1.0, application/protobuf; version=1.0", accept);
-      });
-  }
-  
   @Test
   public void testRequestUploadKeysInProtobufFormatFailedByTrustedAnchor() throws Exception {
     EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();

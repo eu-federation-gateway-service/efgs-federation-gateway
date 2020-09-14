@@ -77,6 +77,21 @@
         }
       }
     },
+    "/diagnosiskeys/callback": {
+      "get": {
+        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
+        "summary": "Gets the current callback subscription URLs.",
+        "operationId": "getCallbackSubscriptions",
+        "responses": {
+          "403": {
+            "description": "Forbidden call in cause of missing or invalid client certificate."
+          },
+          "200": {
+            "description": "OK."
+          }
+        }
+      }
+    },
     "/diagnosiskeys/callback/{id}": {
       "put": {
         "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
@@ -152,17 +167,36 @@
         }
       }
     },
-    "/diagnosiskeys/callback": {
-      "get": {
-        "tags": ["Diagnosis Keys Exchange Interface", "Callback"],
-        "summary": "Gets the current callback subscription URLs.",
-        "operationId": "getCallbackSubscriptions",
+    "/diagnosiskeys": {
+      "options": {
+        "tags": ["Diagnosis Keys Exchange Interface"],
+        "summary": "Options for diagnosis keys. E.g. supported media types",
+        "description": "Offers the options for the diagnosiskeys routes.",
+        "operationId": "getOptions",
         "responses": {
-          "403": {
-            "description": "Forbidden call in cause of missing or invalid client certificate."
-          },
           "200": {
-            "description": "OK."
+            "description": "OK.",
+            "headers": {
+              "Accept": {
+                "style": "simple",
+                "schema": {
+                  "example": "application/json; version=1.0, application/protobuf; version=1.0"
+                }
+              },
+              "Allow": {
+                "style": "simple",
+                "schema": {
+                  "example": "POST,GET,OPTIONS"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           }
         }
       }
@@ -235,37 +269,6 @@
           },
           "410": {
             "description": "Date for download expired. Date does not more exists."
-          }
-        }
-      },
-      "options": {
-        "tags": ["Diagnosis Keys Exchange Interface", "Download"],
-        "summary": "Returns information about the download-endpoint.",
-        "operationId": "getEndpointInformation",
-        "responses": {
-          "200": {
-            "description": "OK.",
-            "headers": {
-              "Accept": {
-                "style": "simple",
-                "schema": {
-                  "example": "application/json; version=1.0,application/protobuf; version=1.0"
-                }
-              },
-              "Allow": {
-                "style": "simple",
-                "schema": {
-                  "example": "GET,OPTIONS"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
           }
         }
       }
@@ -357,37 +360,6 @@
           },
           "500": {
             "description": "Not able to write data. Retry please."
-          }
-        }
-      },
-      "options": {
-        "tags": ["Diagnosis Keys Exchange Interface", "Upload"],
-        "summary": "Returns information about the upload-endpoint.",
-        "operationId": "getEndpointInformation_1",
-        "responses": {
-          "200": {
-            "description": "OK.",
-            "headers": {
-              "Accept": {
-                "style": "simple",
-                "schema": {
-                  "example": "application/json; version=1.0, application/protobuf; version=1.0"
-                }
-              },
-              "Allow": {
-                "style": "simple",
-                "schema": {
-                  "example": "POST,OPTIONS"
-                }
-              }
-            },
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
           }
         }
       }

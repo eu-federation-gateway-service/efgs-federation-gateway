@@ -36,7 +36,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -47,8 +46,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +55,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -189,30 +185,4 @@ public class DownloadController {
       .body(protoBatch);
   }
 
-  /**
-   * This endpoint enabled the information about the download-endpoint.
-   *
-   * @return the endpoint information
-   */
-  @Operation(
-    summary = "Returns information about the download-endpoint.",
-    tags = {"Diagnosis Keys Exchange Interface", "Download"},
-    responses = {
-      @ApiResponse(responseCode = "200", description = "OK.", headers = {
-        @Header(name = HttpHeaders.ACCEPT,
-          schema = @Schema(example = "application/json; version=1.0,application/protobuf; version=1.0")),
-        @Header(name = HttpHeaders.ALLOW,
-          schema = @Schema(example = "GET,OPTIONS"))
-      })
-    })
-  @RequestMapping(value = DOWNLOAD_ROUTE,
-    method = RequestMethod.OPTIONS,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> getEndpointInformation() {
-    return ResponseEntity
-      .ok()
-      .allow(HttpMethod.GET, HttpMethod.OPTIONS)
-      .header(HttpHeaders.ACCEPT, "application/json; version=1.0, application/protobuf; version=1.0")
-      .build();
-  }
 }

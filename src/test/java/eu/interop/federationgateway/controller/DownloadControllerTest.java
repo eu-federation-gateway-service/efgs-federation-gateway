@@ -53,13 +53,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -376,23 +373,6 @@ public class DownloadControllerTest {
         Assert.assertEquals(origin1, response.getKeys(0).getOrigin());
         Assert.assertEquals(origin2, response.getKeys(1).getOrigin());
         Assert.assertEquals(2, response.getKeysCount());
-      });
-  }
-
-  @Test
-  public void testOptionsReturnEndpointInformation() throws Exception {
-    ZonedDateTime timestampBatchTag = ZonedDateTime.now(ZoneOffset.UTC).minusHours(2);
-    String batchTag = getDateString(timestampBatchTag) + "-14";
-
-    mockMvc.perform(options("/diagnosiskeys/download/" + getDateString(timestampBatchTag))
-      .accept("application/json; version=1.0")
-      .header("batchTag", batchTag))
-      .andExpect(status().isOk())
-      .andExpect(mvcResult -> {
-        String allowHeader = mvcResult.getResponse().getHeader(HttpHeaders.ALLOW);
-        String acceptHeader = mvcResult.getResponse().getHeader(HttpHeaders.ACCEPT);
-        Assert.assertEquals(HttpMethod.GET.name() + "," + HttpMethod.OPTIONS.name(), allowHeader);
-        Assert.assertEquals("application/json; version=1.0, application/protobuf; version=1.0", acceptHeader);
       });
   }
 
