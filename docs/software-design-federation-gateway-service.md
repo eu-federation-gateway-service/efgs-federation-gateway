@@ -3,7 +3,10 @@ by Alexander Stiefel (alexander.stiefel@t-systems.com)
 
 ##	Introduction
 This documents describes detailed aspects of the implementation of the European Federation Gateway Service. It is closely related to the document [European Proximity Tracing An Interoperability Architecture](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_architecture_en.pdf), 
-to which it adds details. Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
+to which it adds details and the document [European Interoperability Certificate
+Governance](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_certificate_governance_en.pdf) which defines the certificate structure and documents important naming conventions. 
+
+Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
 
 This document is not finished and major aspects are missing.
 This document is still in proposal state, meaning feedback is welcome and will change its content.
