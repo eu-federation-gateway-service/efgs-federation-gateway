@@ -23,8 +23,10 @@ package eu.interop.federationgateway.repository;
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -45,8 +47,8 @@ public interface CallbackTaskRepository extends JpaRepository<CallbackTaskEntity
   void deleteAllByCallbackSubscriptionIs(CallbackSubscriptionEntity subscriptionEntity);
 
   @Query("SELECT t FROM CallbackTaskEntity t WHERE t.notBefore is null "
-    + " AND t.executionLock is null AND (t.lastTry is null OR t.lastTry < :lastTry) ")
-  CallbackTaskEntity findNextPendingCallbackTask(@Param("lastTry") ZonedDateTime lastTry);
+    + " AND t.executionLock is null AND (t.lastTry is null OR t.lastTry < :lastTry)")
+  List<CallbackTaskEntity> findNextPendingCallbackTask(@Param("lastTry") ZonedDateTime lastTry, Pageable pageable);
 
   Optional<CallbackTaskEntity> findFirstByNotBeforeIs(CallbackTaskEntity callbackTaskEntity);
 
