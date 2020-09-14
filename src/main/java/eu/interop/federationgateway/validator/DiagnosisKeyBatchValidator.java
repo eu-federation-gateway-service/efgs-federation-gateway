@@ -20,9 +20,6 @@ public class DiagnosisKeyBatchValidator implements
       if (diagnosisKey.getReportType() == EfgsProto.ReportType.UNKNOWN) {
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid report-type.");
         return false;
-      } else if (diagnosisKey.getRollingStartIntervalNumber() == 0) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid rolling start interval number.");
-        return false;
       } else if (diagnosisKey.getKeyData() == null || diagnosisKey.getKeyData().isEmpty()) {
         log.error(VALIDATION_FAILED_MESSAGE + "The keydata is empty or null.");
         return false;
