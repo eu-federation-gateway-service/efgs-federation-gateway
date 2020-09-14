@@ -31,17 +31,20 @@ import eu.interop.federationgateway.model.Callback;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.service.CallbackService;
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.After;
 import org.junit.Assert;
@@ -51,6 +54,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -63,6 +67,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Slf4j
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class CallbackAdminControllerTest {
 
   @Autowired
@@ -92,8 +97,8 @@ public class CallbackAdminControllerTest {
   private boolean dnsIsAvailable = false;
 
   @Before
-  public void setup() throws NoSuchAlgorithmException, CertificateException, CertIOException,
-    OperatorCreationException, MalformedURLException {
+  public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
+    OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
 
     try {
       InetAddress.getByName("example.org");
@@ -110,13 +115,17 @@ public class CallbackAdminControllerTest {
     callbackCert = certificateRepository.save(new CertificateEntity(
       null, ZonedDateTime.now(ZoneOffset.UTC), "xxx",
       "DE", CertificateEntity.CertificateType.CALLBACK, false,
-      new URL(TestData.CALLBACK_URL_EFGS).getHost()
+      new URL(TestData.CALLBACK_URL_EFGS).getHost(),
+      null,
+      null
     ));
 
     callbackCert2 = certificateRepository.save(new CertificateEntity(
       null, ZonedDateTime.now(ZoneOffset.UTC), "xxx2",
       "DE", CertificateEntity.CertificateType.CALLBACK, false,
-      new URL(TestData.CALLBACK_URL_EXAMPLE).getHost()
+      new URL(TestData.CALLBACK_URL_EXAMPLE).getHost(),
+      null,
+      null
     ));
 
     mockMvc = MockMvcBuilders
@@ -153,7 +162,7 @@ public class CallbackAdminControllerTest {
   }
 
   @Test
-  public void testSubscribCallbackWithInvalidUrl() throws Exception {
+  public void testSubscribeCallbackWithInvalidUrl() throws Exception {
 
     String firstId = TestData.CALLBACK_ID_FIRST;
 
@@ -183,16 +192,6 @@ public class CallbackAdminControllerTest {
 
     mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
       .param("url", "https://notify.me/?you=evil_sql_injection")
-      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
-      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
-      .andExpect(status().isBadRequest());
-
-    Assert.assertEquals(0, callbackSubscriptionRepository.count());
-
-    certificateRepository.delete(callbackCert);
-
-    mockMvc.perform(put("/diagnosiskeys/callback/" + firstId)
-      .param("url", TestData.CALLBACK_URL_EFGS)
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE))
       .andExpect(status().isBadRequest());

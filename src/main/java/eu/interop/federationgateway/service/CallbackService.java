@@ -22,7 +22,6 @@ package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
-import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CallbackTaskRepository;
@@ -49,8 +48,6 @@ public class CallbackService {
   private final CallbackSubscriptionRepository callbackSubscriptionRepository;
 
   private final CallbackTaskRepository callbackTaskRepository;
-
-  private final CertificateService certificateService;
 
   public int removeTaskLocksOlderThan(ZonedDateTime timestamp) {
     return callbackTaskRepository.removeTaskLocksOlderThan(timestamp);
@@ -198,21 +195,6 @@ public class CallbackService {
 
     if (url.getQuery() != null) {
       log.error("URL must not contain any parameters");
-      return false;
-    }
-
-    Optional<CertificateEntity> callbackCertificate =
-      certificateService.getCallbackCertificateForHost(url.getHost(), country);
-
-    if (callbackCertificate.isEmpty()) {
-      log.error("Could not find a Callback Certificate for host");
-      return false;
-    }
-
-    EfgsMdc.put("thumbprint", callbackCertificate.get().getThumbprint());
-
-    if (callbackCertificate.get().getRevoked()) {
-      log.error("Found Callback Certificate, but it is revoked");
       return false;
     }
 

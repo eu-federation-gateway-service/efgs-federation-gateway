@@ -3,7 +3,10 @@ by Alexander Stiefel (alexander.stiefel@t-systems.com)
 
 ##	Introduction
 This documents describes detailed aspects of the implementation of the European Federation Gateway Service. It is closely related to the document [European Proximity Tracing An Interoperability Architecture](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_architecture_en.pdf), 
-to which it adds details. Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
+to which it adds details and the document [European Interoperability Certificate
+Governance](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileapps_interop_certificate_governance_en.pdf) which defines the certificate structure and documents important naming conventions. 
+
+Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
 
 This document is not finished and major aspects are missing.
 This document is still in proposal state, meaning feedback is welcome and will change its content.
@@ -297,7 +300,7 @@ The service has two secrets which need special handling during storage
 - private key of EFGS<sub>TLS</sub> for outgoing TLS connections (for call back), to allow mTLS authentication
 - public key of EFGS<sub>TA</sub> Trust Anchor  
 
-These keys need to be stored seperate from the database. They are stored in a Java KeyStore (https://en.wikipedia.org/wiki/Java_KeyStore) and deployed manually to the Tomcat instances. 
+These keys need to be stored seperate from the database. They are stored in two different Java KeyStore (https://en.wikipedia.org/wiki/Java_KeyStore) and deployed manually to the Tomcat instances. The keystores are protected with a password, the password is set as JVM property.
 
 
 ## 3. Batch Signature 
