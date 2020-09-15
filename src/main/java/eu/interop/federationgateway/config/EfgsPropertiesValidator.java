@@ -45,7 +45,7 @@ public class EfgsPropertiesValidator {
 
     int passwordLength = efgsProperties.getDbencryption().getPassword().length();
 
-    if (passwordLength != 16 && passwordLength != 24 && passwordLength != 32 && passwordLength != 33) {
+    if (passwordLength != 16 && passwordLength != 24 && passwordLength != 32) {
       throw new ValidationException(
         "Invalid Application Configuration: Database password must be a string with length of 16, 24, 32 or 33.");
     }
