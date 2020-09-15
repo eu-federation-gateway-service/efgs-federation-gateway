@@ -186,7 +186,7 @@ public class CallbackService {
       return false;
     }
 
-    EfgsMdc.put("hostname", url.getHost());
+    EfgsMdc.put("callbackHostname", url.getHost());
 
     if (!url.getProtocol().equals("https")) {
       log.error("Callback URL must use https");
