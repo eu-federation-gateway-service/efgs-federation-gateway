@@ -43,9 +43,11 @@ public class EfgsPropertiesValidator {
         "Invalid Application Configuration: Maximum upload size must be less or smaller then batch size!");
     }
 
-    if (efgsProperties.getDbencryption().getPassword().length() != 32) {
+    int passwordLength = efgsProperties.getDbencryption().getPassword().length();
+
+    if (passwordLength != 16 && passwordLength != 24 && passwordLength != 32 && passwordLength != 33) {
       throw new ValidationException(
-        "Invalid Application Configuration: Database password must be a string with length of 32.");
+        "Invalid Application Configuration: Database password must be a string with length of 16, 24, 32 or 33.");
     }
 
     if (efgsProperties.getDbencryption().getInitVector().length() != 16) {
