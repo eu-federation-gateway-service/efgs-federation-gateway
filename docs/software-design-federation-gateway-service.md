@@ -55,8 +55,7 @@ The automated deletion after 14 days is implemented as scheduled job in the web 
 
 ### Database Isolation Level
 
-[Hypothesis] Need to use the highest isolation level TRANSACTION_SERIALIZABLE to isolate upload, download 
-and batching operations.
+The isolation level REPEATABLE READ is used to prevent the creation of download batches containing partial upload batch data.
 
 ## Monitoring
 ## Audit Logging
