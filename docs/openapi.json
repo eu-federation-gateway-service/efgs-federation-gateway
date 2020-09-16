@@ -60,7 +60,7 @@
             }
           },
           "400": {
-            "description": "Invalid BatchTag used."
+            "description": "Invalid or missing request header."
           },
           "403": {
             "description": "Forbidden call in cause of missing or invalid client certificate."
@@ -256,7 +256,7 @@
             }
           },
           "400": {
-            "description": "Invalid BatchTag used."
+            "description": "Invalid or missing request header."
           },
           "403": {
             "description": "Forbidden call in cause of missing or invalid client certificate."
