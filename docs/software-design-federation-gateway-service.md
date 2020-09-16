@@ -171,7 +171,17 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Content Deserialization failed, Content-Type header is null | ERROR | Accept must be set | n/a |
 | Content Deserialization failed, unknown MIME Type in Content-Type Header | ERROR | Accepted Content-Type is not compatible | requestedMediaType |
 | Content Deserialization failed, version parameter in Content-Type Header is missing | ERROR | Version parameter of Accepted Content-Type is required | requestedMediaType |
-| Content Deserialization failed, incompatible version parameter | ERROR | Serialization: Protocol version is not compatible | requestedVersion | 
+| Content Deserialization failed, incompatible version parameter | ERROR | Serialization: Protocol version is not compatible | requestedVersion |
+| **Certificate Integrity Check**
+| Certificate integrity check failed: Calculated thumbprint does not match stored thumbprint in database. (data manipulation!) | ERROR | Thumbprint in database does not match thumbprint of stored certificate. | certVerifyThumbprint |
+| Certificate integrity check failed: Certificate signature is not issued by TrustAnchor or signature is corrupted (data manipulation!) | ERROR | Verification of certificate signature failed! | certVerifyThumbprint |
+| Certificate integrity check failed: Certificate entity does not contain raw certificate or certificate signature. (data migration failure) | ERROR | Certificate entity does not contain raw certificate or certificate signature. | certVerifyThumbprint |
+| Certificate integrity check failed: Raw certificate data does not contain a valid x509Certificate. (parsing error) | ERROR | Raw certificate data does not contain a valid x509Certificate. | certVerifyThumbprint |
+| Certificate integrity check failed: Could not load EFGS-TrustAnchor from KeyStore. (initialization error) | ERROR | Could not load EFGS-TrustAnchor from KeyStore. | certVerifyThumbprint |
+| Certificate integrity check failed: Could not use public key to initialize verifier. (initialization error) | ERROR | Could not use public key to initialize verifier. | certVerifyThumbprint |
+| Certificate integrity check failed: Signature verifier is not initialized (initialization error) | ERROR | Signature verifier is not initialized | certVerifyThumbprint |
+| Certificate integrity check failed: Unknown signing algorithm used by EFGS Trust Anchor. (initialization error) | ERROR | Unknown signing algorithm used by EFGS Trust Anchor. | certVerifyThumbprint |
+
  
 # Integration into Data Center Infrastructure
 
