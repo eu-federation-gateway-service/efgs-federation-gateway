@@ -38,8 +38,6 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
   @Modifying
   int deleteByCreatedAtBefore(ZonedDateTime before);
 
-  List<DiagnosisKeyEntity> findByPayloadVisitedCountriesIsContaining(String country);
-
   List<DiagnosisKeyEntity> findAllByPayloadOrigin(String country);
 
   int countAllByUploader_BatchTag(String batchTag);

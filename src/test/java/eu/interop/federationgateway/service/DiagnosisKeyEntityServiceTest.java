@@ -170,12 +170,6 @@ public class DiagnosisKeyEntityServiceTest {
   }
 
   @Test
-  public void testGetAllFromVisitedMethod() {
-    diagnosisKeyEntityService.getAllDiagnosisKeyEntityFromVisited("test");
-    verify(diagnosisKeyEntityRepositoryMock).findByPayloadVisitedCountriesIsContaining(matches("test"));
-  }
-
-  @Test
   public void testGetAllFromOriginMethod() {
     diagnosisKeyEntityService.getAllDiagnosisKeyEntityFromOrigin("test");
     verify(diagnosisKeyEntityRepositoryMock).findAllByPayloadOrigin(matches("test"));

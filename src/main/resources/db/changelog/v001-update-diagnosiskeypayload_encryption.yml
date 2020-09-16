@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-diagnosiskeypayload-encryption
+      author: f11h
+      changes:
+        - delete:
+            tableName: callback_task
+        - delete:
+            tableName: diagnosiskey
+        - delete:
+            tableName: diagnosiskeybatch
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_key_data
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_rolling_start_interval_number
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_rolling_period
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_transmission_risk_level
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_report_type
+            newDataType: varchar(255)
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_days_since_onset_of_symptoms
+            newDataType: varchar(255)
+

@@ -19,6 +19,9 @@ springdoc:
   swagger-ui:
     path: /swagger
 efgs:
+  dbencryption:
+    initVector: Ho^RDYDuGt0Ki`\x
+    password: G&B3zSk|fNE!.Pa9+Xv2kUYRx2zp|@=|
   trustAnchor:
     keyStorePath: keystore/efgs-ta.jks
     keyStorePass: 3fgs-p4ssw0rd
