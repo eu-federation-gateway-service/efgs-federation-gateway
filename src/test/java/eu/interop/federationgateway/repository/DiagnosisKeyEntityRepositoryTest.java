@@ -85,14 +85,6 @@ public class DiagnosisKeyEntityRepositoryTest {
   }
 
   @Test
-  public void testFindByVisitedCountries() {
-    List<DiagnosisKeyEntity> result = repository.findByPayloadVisitedCountriesIsContaining(TestData.VISITED_COUNTRIES_PLUS_ONE_ONLY);
-
-    Assert.assertEquals(1, result.size());
-    Assert.assertTrue(result.get(0).getPayload().getVisitedCountries().contains(TestData.VISITED_COUNTRIES_PLUS_ONE_ONLY));
-  }
-
-  @Test
   public void testFindByPayloadOrigin() {
     List<DiagnosisKeyEntity> result = repository.findAllByPayloadOrigin(TestData.FIRST_ORIGIN);
 

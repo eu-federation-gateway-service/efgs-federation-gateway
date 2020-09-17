@@ -116,17 +116,6 @@ public class DiagnosisKeyEntityService {
   }
 
   /**
-   * Gets all DiagnosisKeyEntitites that list the country as Visited as {@link DiagnosisKeyEntity} instances.
-   *
-   * @param country Countrycode for the request
-   * @return all DiagnosisKeyEntitites that include given country
-   */
-  public List<DiagnosisKeyEntity> getAllDiagnosisKeyEntityFromVisited(String country) {
-    log.info("Requested all DiagnosisKeyEntitites.");
-    return diagnosisKeyEntityRepository.findByPayloadVisitedCountriesIsContaining(country);
-  }
-
-  /**
    * Gets all DiagnosisKeyEntitites that list the country with the origin as {@link DiagnosisKeyEntity} instances.
    *
    * @param country Countrycode for the request

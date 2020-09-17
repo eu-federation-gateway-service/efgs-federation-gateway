@@ -25,6 +25,7 @@ import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.utils.CertificateUtils;
+import eu.interop.federationgateway.utils.EfgsMdc;
 import java.io.IOException;
 import java.io.StringReader;
 import java.security.InvalidKeyException;
@@ -125,6 +126,8 @@ public class CertificateService {
 
   private boolean validateCertificateIntegrity(CertificateEntity certificateEntity) {
 
+    EfgsMdc.put("certVerifyThumbprint", certificateEntity.getThumbprint());
+
     // check if entity has signature and certificate information
     if (certificateEntity.getSignature() == null || certificateEntity.getSignature().isEmpty()
       || certificateEntity.getRawData() == null || certificateEntity.getRawData().isEmpty()) {
@@ -162,7 +165,15 @@ public class CertificateService {
 
       verifier.initVerify(publicKey);
       verifier.update(certificateEntity.getRawData().getBytes());
-      return verifier.verify(signatureBytes);
+
+      if (verifier.verify(signatureBytes)) {
+        EfgsMdc.remove("certVerifyThumbprint");
+        return true;
+      } else {
+        log.error("Verification of certificate signature failed!");
+        EfgsMdc.remove("certVerifyThumbprint");
+        return false;
+      }
     } catch (InvalidKeyException e) {
       log.error("Could not use public key to initialize verifier.");
       return false;
@@ -198,9 +209,9 @@ public class CertificateService {
           return converter.getCertificate((X509CertificateHolder) certificateContent);
         }
       }
-    } catch (IOException | CertificateException exception) {
-      log.error("Could not read x509Certificate from PEM-Data.");
+      return null;
+    } catch (IOException | CertificateException ignored) {
+      return null;
     }
-    return null;
   }
 }

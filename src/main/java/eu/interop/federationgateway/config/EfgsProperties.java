@@ -37,6 +37,14 @@ public class EfgsProperties {
   private final Batching batching = new Batching();
   private final Callback callback = new Callback();
   private final TrustAnchor trustAnchor = new TrustAnchor();
+  private final Dbencryption dbencryption = new Dbencryption();
+
+  @Getter
+  @Setter
+  public static class Dbencryption {
+    private String password;
+    private String initVector;
+  }
 
   @Getter
   @Setter

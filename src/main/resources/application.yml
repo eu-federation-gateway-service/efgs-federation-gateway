@@ -18,6 +18,8 @@ springdoc:
   swagger-ui:
     path: /swagger
 efgs:
+  dbencryption:
+    initVector: WnU2IQhlAAN@bK~L
   trustAnchor:
     keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
     keyStorePass: 3fgs-p4ssw0rd

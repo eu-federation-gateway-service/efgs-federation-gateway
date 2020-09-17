@@ -96,7 +96,7 @@ public class AuditController {
     },
     responses = {
       @ApiResponse(responseCode = "200", description = "OK. Returns the audit information to the selected batch."),
-      @ApiResponse(responseCode = "400", description = "Invalid BatchTag used.", content = @Content),
+      @ApiResponse(responseCode = "400", description = "Invalid or missing request header.", content = @Content),
       @ApiResponse(responseCode = "403",
         description = "Forbidden call in cause of missing or invalid client certificate.", content = @Content),
       @ApiResponse(responseCode = "404", description = "BatchTag not found or no data exists.", content = @Content),

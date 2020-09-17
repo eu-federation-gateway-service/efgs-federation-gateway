@@ -6,3 +6,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+efgs:
+  dbencryption:
+    password: m:zteZXp4QPaD?J@f+|'#y;be1fJRXnY
+  trustAnchor:
+    keyStorePath: classpath:keystore/efgs-ta.jks
