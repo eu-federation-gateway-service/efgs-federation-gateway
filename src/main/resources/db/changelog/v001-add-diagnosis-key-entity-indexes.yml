@@ -9,11 +9,9 @@ databaseChangeLog:
             columns:
               - column:
                   name: uploader_information_batch_tag
-                  type: varchar(64)
         - createIndex:
             tableName: diagnosiskey
             indexName: idx_diagnosiskey_batch_tag
             columns:
               - column:
                   name: batch_tag
-                  type: varchar(64)
