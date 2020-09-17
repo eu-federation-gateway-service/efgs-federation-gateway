@@ -4,11 +4,14 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.slf4j.MDC;
 
 /**
  * Wrapper for MDC to escape values for better log files.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EfgsMdc {
 
   /**

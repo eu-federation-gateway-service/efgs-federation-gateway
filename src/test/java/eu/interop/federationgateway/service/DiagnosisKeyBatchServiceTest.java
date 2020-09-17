@@ -67,6 +67,8 @@ public class DiagnosisKeyBatchServiceTest {
 
   private DiagnosisKeyBatchService batchService;
 
+  private TransactionalDiagnosisKeyBatchService transactionalBatchService;
+
   private CallbackService callbackServiceMock;
 
   @Before
@@ -75,7 +77,8 @@ public class DiagnosisKeyBatchServiceTest {
     keyRepository.deleteAll();
 
     callbackServiceMock = Mockito.mock(CallbackService.class);
-    batchService = new DiagnosisKeyBatchService(efgsProperties, keyRepository, batchRepository, callbackServiceMock);
+    transactionalBatchService = new TransactionalDiagnosisKeyBatchService(efgsProperties, keyRepository, batchRepository, callbackServiceMock);
+    batchService = new DiagnosisKeyBatchService(efgsProperties, batchRepository, transactionalBatchService);
   }
 
   /**

@@ -160,7 +160,7 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
       return;
     }
 
-    if (certFromDb.get().getRevoked()) {
+    if (certFromDb.get().getRevoked().equals(Boolean.TRUE)) {
       log.error("Certificate is revoked");
       handlerExceptionResolver.resolveException(
         httpServletRequest, httpServletResponse, null,

@@ -180,8 +180,8 @@ public class DownloadController {
 
     return ResponseEntity
       .ok()
-      .header("batchTag", batchTag)
-      .header("nextBatchTag", nextBatchTag)
+      .header(BATCHTAG_HEADER, batchTag)
+      .header(NEXT_BATCHTAG_HEADER, nextBatchTag)
       .body(protoBatch);
   }
 
