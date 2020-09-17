@@ -67,7 +67,7 @@ public class BatchSignatureVerifier {
    */
   public String checkBatchSignature(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
     final byte[] batchSignatureBytes = BatchSignatureUtils.b64ToBytes(base64BatchSignature);
-    if (batchSignatureBytes.length == 0) {
+    if (batchSignatureBytes.length > 0) {
       try {
         final CMSSignedData signedData = new CMSSignedData(getBatchBytes(batch), batchSignatureBytes);
         final SignerInformation signerInfo = getSignerInformation(signedData);
