@@ -12,11 +12,6 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog.yml
-springdoc:
-  api-docs:
-    path: /api/docs
-  swagger-ui:
-    path: /swagger
 efgs:
   dbencryption:
     initVector: WnU2IQhlAAN@bK~L
