@@ -31,17 +31,16 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class provides help methods used by {@link BatchSignatureVerifier} to verify a batch signature.
  */
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class BatchSignatureUtils {
-
-  private BatchSignatureUtils() {
-    throw new IllegalStateException("Class has no public constructor!");
-  }
 
   /**
    * Extracts the information (e.g., keyData, rollingPeriod, origin, etc.) from a {@link DiagnosisKeyBatch} object,

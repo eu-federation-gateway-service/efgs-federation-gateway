@@ -4,10 +4,13 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.cert.X509CertificateHolder;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CertificateUtils {
 
   /**
