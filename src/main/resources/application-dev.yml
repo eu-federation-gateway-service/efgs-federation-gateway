@@ -1,11 +1,16 @@
 spring:
   profiles:
     include:
-      - h2
+      - mysql
   h2:
     console:
       enabled: true
       path: /h2-console
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /swagger
 efgs:
   dbencryption:
     password: m:zteZXp4QPaD?J@f+|'#y;be1fJRXnY
