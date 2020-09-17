@@ -235,8 +235,9 @@ public class UploadControllerTest {
         List<Integer> list500 = (List<Integer>) map.get("500");
 
         Assert.assertTrue(list500.isEmpty());
-        Assert.assertTrue(list201.isEmpty());
+        Assert.assertTrue(list201.contains(1));
         Assert.assertTrue(list409.contains(0));
+        Assert.assertEquals(1, list201.size());
         Assert.assertEquals(1, list409.size());
       });
   }

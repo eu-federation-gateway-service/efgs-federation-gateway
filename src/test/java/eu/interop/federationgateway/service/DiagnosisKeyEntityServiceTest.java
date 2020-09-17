@@ -128,7 +128,8 @@ public class DiagnosisKeyEntityServiceTest {
     try {
       diagnosisKeyEntityService.saveDiagnosisKeyEntities(List.of(testEntity, testEntity2, testEntity3));
     } catch (DiagnosisKeyEntityService.DiagnosisKeyInsertException e) {
-      Assert.assertTrue(e.getResultMap().get(201).isEmpty());
+      Assert.assertTrue(e.getResultMap().get(201).contains(0));
+      Assert.assertTrue(e.getResultMap().get(201).contains(2));
       Assert.assertTrue(e.getResultMap().get(500).isEmpty());
       Assert.assertTrue(e.getResultMap().get(409).contains(1));
 
