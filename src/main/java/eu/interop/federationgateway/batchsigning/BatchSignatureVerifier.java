@@ -67,7 +67,7 @@ public class BatchSignatureVerifier {
    */
   public String checkBatchSignature(final DiagnosisKeyBatch batch, final String base64BatchSignature) {
     final byte[] batchSignatureBytes = BatchSignatureUtils.b64ToBytes(base64BatchSignature);
-    if (batchSignatureBytes != null) {
+    if (batchSignatureBytes.length == 0) {
       try {
         final CMSSignedData signedData = new CMSSignedData(getBatchBytes(batch), batchSignatureBytes);
         final SignerInformation signerInfo = getSignerInformation(signedData);
@@ -146,7 +146,7 @@ public class BatchSignatureVerifier {
       return null;
     }
 
-    if (certificateEntity.get().getRevoked()) {
+    if (certificateEntity.get().getRevoked().equals(Boolean.TRUE)) {
       log.error("certificate is revoked");
       return null;
     }

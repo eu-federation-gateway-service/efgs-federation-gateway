@@ -59,14 +59,20 @@ public class EfgsKeyStore {
   private void loadKeyStore(KeyStore keyStore, String path, char[] password)
     throws CertificateException, NoSuchAlgorithmException, IOException {
 
-    InputStream fileStream;
+    InputStream fileStream = null;
 
     if (path.startsWith("classpath:")) {
       String resourcePath = path.substring(10);
       fileStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
     } else {
       File file = new File(path);
-      fileStream = file.exists() ? new FileInputStream(file) : null;
+      try {
+        fileStream = file.exists() ? new FileInputStream(file) : null;
+      } finally {
+        if (fileStream != null) {
+          fileStream.close();
+        }
+      }
     }
 
     if (fileStream != null && fileStream.available() > 0) {

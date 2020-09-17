@@ -34,8 +34,6 @@ import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.AbstractHttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -64,6 +62,8 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
 
   private static final MediaType JSON_MEDIA_TYPE = new MediaType("application", "json");
 
+  private static final String VERSION_STRING = "version";
+
   private final EfgsProperties properties;
 
   @Override
@@ -85,7 +85,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
   protected Message readInternal(
     Class<? extends Message> clazz,
     HttpInputMessage httpInputMessage
-  ) throws HttpMessageNotReadableException, IOException {
+  ) throws IOException {
     MediaType contentType = httpInputMessage.getHeaders().getContentType();
     if (contentType == null) {
       log.error("Accept must be set");
@@ -110,7 +110,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown Content-Type!");
     }
 
-    if (contentType.getParameter("version") == null) {
+    if (contentType.getParameter(VERSION_STRING) == null) {
       log.error("Version parameter of Accepted Content-Type is required");
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Version parameter of Content-Type is required!");
     }
@@ -118,7 +118,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
     try {
       if (!SemVerUtils.parseSemVerAndCheckCompatibility(
         targetContentTypeVersion,
-        contentType.getParameter("version")
+        contentType.getParameter(VERSION_STRING)
       )) {
         log.error("Serialization: Protocol version is not compatible");
         throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Protocol version is not compatible!");
@@ -138,21 +138,20 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
 
     if (targetContentType == PROTOBUF_MEDIA_TYPE) {
       return builder.mergeFrom(httpInputMessage.getBody()).build();
-    } else if (targetContentType == JSON_MEDIA_TYPE) {
+    } else {
       ProtobufFormatter formatter = new ProtobufConverter();
 
       formatter.merge(httpInputMessage.getBody(), builder);
       return builder.build();
     }
 
-    return null;
   }
 
   @Override
   protected void writeInternal(
     Message message,
     HttpOutputMessage httpOutputMessage
-  ) throws IOException, HttpMessageNotWritableException {
+  ) throws IOException {
     MediaType contentType = httpOutputMessage.getHeaders().getContentType();
     if (contentType == null) {
       log.error("Accept must be set");
@@ -177,7 +176,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Content-Type is not compatible");
     }
 
-    if (contentType.getParameter("version") == null) {
+    if (contentType.getParameter(VERSION_STRING) == null) {
       log.error("Version parameter of Accepted Content-Type is required");
       throw new ResponseStatusException(
         HttpStatus.UNSUPPORTED_MEDIA_TYPE,
@@ -187,7 +186,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
     try {
       if (!SemVerUtils.parseSemVerAndCheckCompatibility(
         targetContentTypeVersion,
-        contentType.getParameter("version")
+        contentType.getParameter(VERSION_STRING)
       )) {
         log.error("Serialization: Protocol version is not compatible");
         throw new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Protocol version is not compatible!");
@@ -201,7 +200,7 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
       CodedOutputStream codedOutputStream = CodedOutputStream.newInstance(httpOutputMessage.getBody());
       message.writeTo(codedOutputStream);
       codedOutputStream.flush();
-    } else if (targetContentType == JSON_MEDIA_TYPE) {
+    } else {
       ProtobufFormatter formatter = new ProtobufConverter();
       formatter.print(message, httpOutputMessage.getBody());
       httpOutputMessage.getBody().flush();

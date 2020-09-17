@@ -31,11 +31,17 @@ import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class provides help methods used by {@link BatchSignatureVerifier} to verify a batch signature.
  */
+@Slf4j
 public class BatchSignatureUtils {
+
+  private BatchSignatureUtils() {
+    throw new IllegalStateException("Class has no public constructor!");
+  }
 
   /**
    * Extracts the information (e.g., keyData, rollingPeriod, origin, etc.) from a {@link DiagnosisKeyBatch} object,
@@ -80,14 +86,14 @@ public class BatchSignatureUtils {
    * Converts a Base64 string into a byte array.
    *
    * @param batchSignatureBase64 the base64 string of the batch signature.
-   * @return the batch signature decoded as byte array.
+   * @return the batch signature decoded as byte array. Returns an empty array if conversion failed.
    */
   static byte[] b64ToBytes(final String batchSignatureBase64) {
     try {
       return Base64.getDecoder().decode(batchSignatureBase64.getBytes());
     } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-      return null;
+      log.error("Failed to convert base64 to byte array");
+      return new byte[0];
     }
   }
 
