@@ -81,10 +81,10 @@ public class SignatureGenerator {
                       final boolean signerInfoMustBeAdded)
     throws CertificateEncodingException, OperatorCreationException, IOException, CMSException {
     final CMSSignedDataGenerator signedDataGenerator = new CMSSignedDataGenerator();
-    if (certMustBeAdded) {
+    if (signerInfoMustBeAdded) {
       signedDataGenerator.addSignerInfoGenerator(createSignerInfo(cert));
     }
-    if (signerInfoMustBeAdded) {
+    if (certMustBeAdded) {
       signedDataGenerator.addCertificate(createCertificateHolder(cert));
     }
     CMSSignedData singedData = signedDataGenerator.generate(new CMSProcessableByteArray(data), false);
