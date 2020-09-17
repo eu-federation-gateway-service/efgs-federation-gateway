@@ -26,4 +26,7 @@ databaseChangeLog:
   - include:
       file: changelog/v001-add-diagnosis-key-entity-signingcertthumbprint.yml
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v001-add-diagnosis-key-entity-indexes.yml
+      relativeToChangelogFile: true      
 

@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-diagnosis-key-entity-table-indexes
+      author: dfischer-tech
+      changes:
+        - createIndex:
+            tableName: diagnosiskey
+            indexName: idx_diagnosiskey_uploader_information_batch_tag
+            columns:
+              - column:
+                  name: uploader_information_batch_tag
+                  type: varchar(64)
+        - createIndex:
+            tableName: diagnosiskey
+            indexName: idx_diagnosiskey_batch_tag
+            columns:
+              - column:
+                  name: batch_tag
+                  type: varchar(64)
