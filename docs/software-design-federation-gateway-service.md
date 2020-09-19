@@ -360,9 +360,10 @@ DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionR
 | 8			   | Seperator	(.)   | 31			   | 1 | bytes | UTF-8 encoding		 |
 | 9            | visitedCountries       | 32             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "." for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK).| 
 | 10           | origin       | 32 + (c * 3)             |3 | string | UTF-8 encoding. | 
-| 11           | reportType   | 32 + (c * 3)+3	             |4 | int32 |Big endian| 
-| 12		   | Seperator (.)	  | 32 + (c * 3)+7			   | 1 | bytes | UTF-8 encoding		 |
-| 13           | daysSinceOnsetOfSymptoms       |32 + (c * 3)+8            |4 | uint32 |Big endian| 
+| 11		   | Seperator (.)	  | 32 + (c * 3)+3			   | 1 | bytes | UTF-8 encoding		 |
+| 12           | reportType   | 32 + (c * 3)+4	             |4 | int32 |Big endian| 
+| 13		   | Seperator (.)	  | 32 + (c * 3)+8			   | 1 | bytes | UTF-8 encoding		 |
+| 14           | daysSinceOnsetOfSymptoms       |32 + (c * 3)+9            |4 | uint32 |Big endian| 
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
