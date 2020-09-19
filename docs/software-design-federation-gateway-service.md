@@ -350,20 +350,19 @@ DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionR
 
 | Order        | Fieldname     | Start at Pos. |  Bytes  |Type (protobuf)	| Notes  |
 | ------------ | ------------- | ------------- | ------- | -------------- | ------ |
-| 1            | keyData       | 0             | 15 | bytes | Plain bytes | 
-| 2			   | Seperator	   | 16			   | 1 | bytes | UTF-8 encoding		 | 
+| 1            | keyData       | 0             | 16 | bytes | Plain bytes | 
+| 2			   | Seperator (.)	   | 16			   | 1 | bytes | UTF-8 encoding		 | 
 | 3            | rollingStartIntervalNumber       | 17              |4 | uint32 |Big endian| 
-| 4			   | Seperator	   | 21			   | 1 | bytes | UTF-8 encoding		 |
+| 4			   | Seperator	(.)   | 21			   | 1 | bytes | UTF-8 encoding		 |
 | 5            | rollingPeriod       | 22             |4 | uint32 |Big endian| 
-| 6			   | Seperator	   | 26			   | 1 | bytes | UTF-8 encoding		 |
+| 6			   | Seperator	(.)   | 26			   | 1 | bytes | UTF-8 encoding		 |
 | 7            | transmissionRiskLevel       | 27             |4 | int32 |Big endian| 
-| 8			   | Seperator	   | 31			   | 1 | bytes | UTF-8 encoding		 |
+| 8			   | Seperator	(.)   | 31			   | 1 | bytes | UTF-8 encoding		 |
 | 9            | visitedCountries       | 32             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "." for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK).| 
 | 10           | origin       | 32 + (c * 3)             |3 | string | UTF-8 encoding. | 
-| 11		   | Seperator	  | 32 + (c * 3)+1			 | 1 | bytes | UTF-8 encoding		 |
-| 12           | reportType   | 32 + (c * 3)+5	             |4 | int32 |Big endian| 
-| 13		   | Seperator	  | 32 + (c * 3)+6			   | 1 | bytes | UTF-8 encoding		 |
-| 14           | daysSinceOnsetOfSymptoms       |32 + (c * 3)+7            |4 | uint32 |Big endian| 
+| 11           | reportType   | 32 + (c * 3)+3	             |4 | int32 |Big endian| 
+| 12		   | Seperator (.)	  | 32 + (c * 3)+7			   | 1 | bytes | UTF-8 encoding		 |
+| 13           | daysSinceOnsetOfSymptoms       |32 + (c * 3)+8            |4 | uint32 |Big endian| 
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
