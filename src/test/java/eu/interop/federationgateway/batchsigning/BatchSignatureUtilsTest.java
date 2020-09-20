@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -263,5 +264,63 @@ public class BatchSignatureUtilsTest {
     }
     
   }
+
+  @Test
+  public void testSignatureMalleability() {
+    // Create two key batches, each with a single key. They have different keydata and other parameters.
+    final DiagnosisKeyBatch batchOriginal = TestData.createDiagnosisKeyBatchDetails("1", 0x32330000,0,0x000000000, List.of("AA","DE","NL"));
+    final DiagnosisKeyBatch batchModified = TestData.createDiagnosisKeyBatchDetails("123", 0x00000000,0,0x000004141, List.of("DE","NL"));
+
+    // Create the corresponding bytes for signing/verifying the signatre
+    final byte[] bytesToVerifyOriginal = BatchSignatureUtils.generateBytesToVerify(batchOriginal);
+    final byte[] bytesToVerifyModified = BatchSignatureUtils.generateBytesToVerify(batchModified);
+
+    Assert.assertFalse(Arrays.equals(bytesToVerifyOriginal,bytesToVerifyModified));
+  }
+
+  @Test
+  public void testInvalidCodePoints()
+  {
+    // "\xDD\xC7,\xA7\xFE\xCC\xFE\x99姽\x80\xE3\xD3\xCBy"
+    byte[] k1 = new byte[]{-35, -57, 44, -89, -2, -52, -2, -103, -27, -89, -67, -128, -29, -45, -53, 121};
+    // "\xD0\xC9,\xF7\xFE\xCC\xFE\x99姽\x80\xE3\xD3\xCBy"
+    byte[] k2 = new byte[]{-48, -55, 44, -9, -2, -52, -2, -103, -27, -89, -67, -128, -29, -45, -53, 121};
+
+    byte[] k3 = new byte[]{41, 42, 43};
+
+    String k1s = new String(k1, 0, 16, StandardCharsets.UTF_8);
+    String k2s = new String(k2, 0, 16, StandardCharsets.UTF_8);
+
+    String k3s = new String(k3, 0, 3, StandardCharsets.UTF_8);
+
+    Arrays.equals(k1, k2);
+
+    Arrays.equals(k1s.getBytes(StandardCharsets.UTF_8), k2s.getBytes(StandardCharsets.UTF_8));
+
+    var key1 = TestData.createDiagnosisKeyDetails(k1s,233,2,2,List.of("DE"));
+    var key2 = TestData.createDiagnosisKeyDetails(k2s,233,2,2,List.of("DE"));
+    var key3 = TestData.createDiagnosisKeyDetails(k3s,233,2,2,List.of("DE"));
+
+    var key1b  =BatchSignatureUtils.generateBytesToVerify(key1);
+    var key2b = BatchSignatureUtils.generateBytesToVerify(key2);
+    var key3b = BatchSignatureUtils.generateBytesToVerify(key3);
+    
+    Assert.assertTrue(Arrays.equals(key1b,key2b));  //String Conversion with invalid codepoints to UTF8 returns the same
+
+    var key11 = TestData.createDiagnosisKeyDetails(k1,233,2,2,List.of("DE"));
+    var key22 = TestData.createDiagnosisKeyDetails(k2,233,2,2,List.of("DE"));
+    var key33 = TestData.createDiagnosisKeyDetails(k3,233,2,2,List.of("DE"));
+
+
+    var key11b  =BatchSignatureUtils.generateBytesToVerify(key11);
+    var key22b = BatchSignatureUtils.generateBytesToVerify(key22);
+    var key33b = BatchSignatureUtils.generateBytesToVerify(key33);
+
+    Assert.assertFalse(Arrays.equals(key11b,key22b)); //Without UTF8 everything correct
+    Assert.assertFalse(Arrays.equals(key11b,key1b));  
+    Assert.assertFalse(Arrays.equals(key22b,key2b)); 
+    Assert.assertTrue(Arrays.equals(key3b,key33b)); //Always the same with valid characters
+  }
+
 
 }
