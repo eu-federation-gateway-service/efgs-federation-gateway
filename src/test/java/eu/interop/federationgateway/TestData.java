@@ -83,7 +83,7 @@ public class TestData {
   public static final int ROLLING_PERIOD = 1;
   public static final int ROLLING_START_INTERVAL_NUMBER = 2;
   public static final int TRANSMISSION_RISK_LEVEL = 3;
-  public static final String PAYLOAD_HASH = "7ad4a1a8e075fe506d944e81f17e4e6c9fb06c9c0743c4c65f18a11685a6a201";
+  public static final String PAYLOAD_HASH = "ad599f709488387ec4a586049524f340d855ec7427ae5207c0b1d03d2a7daf23";
   public static final byte[] BYTES = new byte[]{14, 15, 11, 14, 12, 15, 15, 16};
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
@@ -286,6 +286,17 @@ public class TestData {
     CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
     TestData.manipulatedCertificate =
       (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
+  }
+
+  public static byte[] GetInvalidCodePointByteSequence()
+  {
+        //Randommize Bytes to non character byte sequences (invalid codepoints)
+        byte[] keydata = new byte[16];
+        Random r = new Random();
+        r.nextBytes(keydata);
+        while(ByteString.copyFrom(keydata).isValidUtf8())
+          r.nextBytes(keydata);
+        return keydata;
   }
 
   public static EfgsProto.DiagnosisKey getDiagnosisKeyProto() {

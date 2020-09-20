@@ -64,7 +64,7 @@ public class BatchSignatureUtilsTest {
       byteRandom.nextBytes(keyData);
       if(key=="INVALID") //Fill array with invalid UTF8 bytes
       {
-          while(!ByteString.copyFrom(keyData).isValidUtf8())
+          while(ByteString.copyFrom(keyData).isValidUtf8())
           {
             byteRandom.nextBytes(keyData);
           }
