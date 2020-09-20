@@ -20,6 +20,7 @@
 
 package eu.interop.federationgateway.batchsigning;
 
+import com.google.protobuf.ByteString;
 import com.google.protobuf.ProtocolStringList;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKey;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
@@ -69,14 +70,23 @@ public class BatchSignatureUtils {
    */
   public static byte[] generateBytesToVerify(final DiagnosisKey diagnosisKey) {
     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    writeStringInByteArray(diagnosisKey.getKeyData().toStringUtf8(), byteArrayOutputStream);
+    writeKeyDataInByteArray(diagnosisKey.getKeyData(),byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getRollingStartIntervalNumber(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getRollingPeriod(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getTransmissionRiskLevel(), byteArrayOutputStream);
-    writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
+    writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(),
+            byteArrayOutputStream); 
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeStringInByteArray(diagnosisKey.getOrigin(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getReportTypeValue(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getDaysSinceOnsetOfSymptoms(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
 
     return byteArrayOutputStream.toByteArray();
   }
@@ -96,10 +106,19 @@ public class BatchSignatureUtils {
     }
   }
 
+  static String bytesToBase64(byte[] bytes) {
+    try {
+      return Base64.getEncoder().encodeToString(bytes);
+    } catch (IllegalArgumentException e) {
+      log.error("Failed to convert byte array to b64");
+      return null;
+    }
+  }
+
   private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
     return batch.getKeysList()
       .stream()
-      .sorted(Comparator.comparing(diagnosisKey -> diagnosisKey.getKeyData().toStringUtf8()))
+      .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey))))
       .collect(Collectors.toList());
   }
 
@@ -111,6 +130,10 @@ public class BatchSignatureUtils {
     byteArray.writeBytes(ByteBuffer.allocate(4).putInt(batchInt).array());
   }
 
+  private static void writeKeyDataInByteArray(final ByteString bytes,ByteArrayOutputStream byteArray) {
+    byteArray.writeBytes(bytes.toByteArray());
+  }
+
   private static void writeVisitedCountriesInByteArray(final ProtocolStringList countries,
                                                        final ByteArrayOutputStream byteArray) {
     final List<String> countriesList = new ArrayList<>();
@@ -118,6 +141,7 @@ public class BatchSignatureUtils {
     countriesList.sort(String::compareTo);
     for (final String country : countriesList) {
       writeStringInByteArray(country, byteArray);
+      writeStringInByteArray(",", byteArray);
     }
   }
 
