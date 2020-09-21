@@ -51,3 +51,6 @@ efgs:
     timelimit: 1200000
     timeinterval: 300000
     doclimit: 5000
+springdoc:
+  api-docs:
+    enabled: false
