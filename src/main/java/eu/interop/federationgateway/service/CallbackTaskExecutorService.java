@@ -123,7 +123,8 @@ public class CallbackTaskExecutorService {
 
     URI requestUri = UriComponentsBuilder.fromHttpUrl(callbackSubscription.getUrl())
       .queryParam("batchTag", callbackTask.getBatch().getBatchName())
-      .queryParam("date", callbackTask.getBatch().getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE))
+      .queryParam("date", callbackTask.getBatch().getCreatedAt()
+        .withZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE))
       .build().toUri();
 
     ClientResponse callbackResponse;

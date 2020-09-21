@@ -189,7 +189,7 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     RecordedRequest request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
 
@@ -211,11 +211,11 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     RecordedRequest request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     Assert.assertEquals(0, callbackTaskRepository.count());
@@ -236,7 +236,7 @@ public class CallbackTaskExecutorServiceTest {
       callbackTaskExecutorService.execute();
 
       RecordedRequest request = mockWebServer.takeRequest();
-      Assert.assertEquals(batch1.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+      Assert.assertEquals(getDateString(batch1.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
       Assert.assertEquals(batch1.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
       final int finalI = i;
@@ -275,11 +275,12 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     RecordedRequest request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch1.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+
+    Assert.assertEquals(getDateString(batch1.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch1.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch2.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch2.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch2.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     // checking if last try property is set
@@ -304,15 +305,15 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch2.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch2.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch2.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch3.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch3.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch3.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(batch4.getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE), request.getRequestUrl().queryParameter("date"));
+    Assert.assertEquals(getDateString(batch4.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch4.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     Assert.assertEquals(0, callbackTaskRepository.count());
@@ -396,6 +397,10 @@ public class CallbackTaskExecutorServiceTest {
     );
 
     return callbackSubscriptionRepository.save(subscription);
+  }
+
+  private String getDateString(ZonedDateTime timestamp) {
+    return timestamp.withZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE);
   }
 
 }
