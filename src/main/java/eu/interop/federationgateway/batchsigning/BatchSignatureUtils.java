@@ -85,6 +85,7 @@ public class BatchSignatureUtils {
     writeIntInByteArray(diagnosisKey.getReportTypeValue(), byteArrayOutputStream);
     writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getDaysSinceOnsetOfSymptoms(), byteArrayOutputStream);
+    writeStringInByteArray(".", byteArrayOutputStream);
 
     return byteArrayOutputStream.toByteArray();
   }
@@ -116,7 +117,7 @@ public class BatchSignatureUtils {
   private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
     return batch.getKeysList()
       .stream()
-      .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(diagnosisKey.getKeyData().toByteArray())))
+      .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey))))
       .collect(Collectors.toList());
   }
 

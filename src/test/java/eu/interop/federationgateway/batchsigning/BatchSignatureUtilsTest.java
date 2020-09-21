@@ -106,6 +106,7 @@ public class BatchSignatureUtilsTest {
     batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getReportTypeValue()).array());
     batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
     batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getDaysSinceOnsetOfSymptoms()).array());
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
 
     return batchBytes.toByteArray();
   }
@@ -144,6 +145,7 @@ public class BatchSignatureUtilsTest {
       batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array()); // 7 - ReportType
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.DAYS_SINCE_ONSET_OF_SYMPTOMS).array());
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
     }
     return batchBytes.toByteArray();
   }
@@ -151,7 +153,7 @@ public class BatchSignatureUtilsTest {
   private static List<DiagnosisKey> sortBatchByKeyData(final DiagnosisKeyBatch batch) {
     return batch.getKeysList()
       .stream()
-      .sorted(Comparator.comparing(diagnosisKey -> java.util.Base64.getEncoder().encodeToString(diagnosisKey.getKeyData().toByteArray())))
+      .sorted(Comparator.comparing(diagnosisKey -> java.util.Base64.getEncoder().encodeToString(BatchSignatureUtils.generateBytesToVerify(diagnosisKey))))
       .collect(Collectors.toList());
   }
 
