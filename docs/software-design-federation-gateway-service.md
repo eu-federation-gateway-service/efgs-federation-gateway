@@ -316,7 +316,7 @@ These keys need to be stored seperate from the database. They are stored in two 
 
 ### 3.1. PKCS#7
 
-**SecReq-016**  The batch signature MUTS be generate based on the [RFC 5652](https://tools.ietf.org/html/rfc5652) standard.
+**SecReq-016**  The batch signature MUST be generate based on the [RFC 5652](https://tools.ietf.org/html/rfc5652) standard.
 
 **SecReq-017**  The PKCS#7 object MUST contain the Signing Certificate. 
 
@@ -332,11 +332,11 @@ These keys need to be stored seperate from the database. They are stored in two 
 
 ### 3.2. Signature Verification
 
-The uploaded diagnostic keys must be signed at a abstract content level, which means 
+The uploaded diagnostic keys must be signed at an abstract content level, which means 
 not the content transferred via wire is signed but instead a constructed abstract 
 content based on the transferred data.
 
-**SecReq-022**  To create the signature and/or to verify it the diagnosis key data has be transformed 
+**SecReq-022**  To create the signature and/or to verify it the diagnosis key data has been transformed 
 into a byte stream with the structure defined below.  
 
 The definition uses extended Backus–Naur form (ISO/IEC 14977)
