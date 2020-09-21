@@ -28,6 +28,8 @@ import eu.interop.federationgateway.entity.DiagnosisKeyPayload;
 import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.entity.UploaderInformation;
 import eu.interop.federationgateway.model.EfgsProto;
+import eu.interop.federationgateway.model.EfgsProto.DiagnosisKey;
+import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.utils.CertificateUtils;
 import java.io.ByteArrayInputStream;
@@ -83,7 +85,7 @@ public class TestData {
   public static final int ROLLING_PERIOD = 1;
   public static final int ROLLING_START_INTERVAL_NUMBER = 2;
   public static final int TRANSMISSION_RISK_LEVEL = 3;
-  public static final String PAYLOAD_HASH = "7ad4a1a8e075fe506d944e81f17e4e6c9fb06c9c0743c4c65f18a11685a6a201";
+  public static final String PAYLOAD_HASH = "5eadd9e23c8bba81fd0a523fd3da117e2dd3e4cf35336004b9238695055758ba";
   public static final byte[] BYTES = new byte[]{14, 15, 11, 14, 12, 15, 15, 16};
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
@@ -288,6 +290,17 @@ public class TestData {
       (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
   }
 
+  public static byte[] GetInvalidCodePointByteSequence()
+  {
+        //Randommize Bytes to non character byte sequences (invalid codepoints)
+        byte[] keydata = new byte[16];
+        Random r = new Random();
+        r.nextBytes(keydata);
+        while(ByteString.copyFrom(keydata).isValidUtf8())
+          r.nextBytes(keydata);
+        return keydata;
+  }
+
   public static EfgsProto.DiagnosisKey getDiagnosisKeyProto() {
     return EfgsProto.DiagnosisKey.newBuilder()
       .setRollingPeriod(TestData.ROLLING_PERIOD)
@@ -490,5 +503,39 @@ public class TestData {
     callbackSubscriptionEntity.setCountry(country);
     callbackSubscriptionEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
     return callbackSubscriptionEntity;
+  }
+
+  public static DiagnosisKey createDiagnosisKeyDetails(final String keyData,int rollingStartIntervalNumber, int rollingPeriod, int TRL, final List<String> visitedCountries) {
+    DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
+    diagnosisKey.setKeyData(ByteString.copyFrom(keyData.getBytes()));
+    diagnosisKey.setRollingStartIntervalNumber(rollingStartIntervalNumber);
+    diagnosisKey.setRollingPeriod(rollingPeriod);
+    diagnosisKey.setTransmissionRiskLevel(TRL);
+    diagnosisKey.addAllVisitedCountries(visitedCountries);
+    diagnosisKey.setOrigin(TestData.AUTH_CERT_COUNTRY);
+    diagnosisKey.setReportTypeValue(1);
+    diagnosisKey.setDaysSinceOnsetOfSymptoms(TestData.DAYS_SINCE_ONSET_OF_SYMPTOMS);
+    return diagnosisKey.build();
+  }
+
+  public static DiagnosisKey createDiagnosisKeyDetails(final byte[] keyData,int rollingStartIntervalNumber, int rollingPeriod, int TRL, final List<String> visitedCountries) {
+    DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
+    diagnosisKey.setKeyData(ByteString.copyFrom(keyData));
+    diagnosisKey.setRollingStartIntervalNumber(rollingStartIntervalNumber);
+    diagnosisKey.setRollingPeriod(rollingPeriod);
+    diagnosisKey.setTransmissionRiskLevel(TRL);
+    diagnosisKey.addAllVisitedCountries(visitedCountries);
+    diagnosisKey.setOrigin(TestData.AUTH_CERT_COUNTRY);
+    diagnosisKey.setReportTypeValue(1);
+    diagnosisKey.setDaysSinceOnsetOfSymptoms(TestData.DAYS_SINCE_ONSET_OF_SYMPTOMS);
+    return diagnosisKey.build();
+  }
+
+  // Generate a batch with a single specified test diagnosis key
+  // We follow the conventions of the previous createDiagnosiskeyDetails method, and produce a single-key batch with it.
+  public static DiagnosisKeyBatch createDiagnosisKeyBatchDetails(final String keyData, final int rollingStartIntervalNumber, final int rollingPeriod, final int TRL, final List<String> countries) {
+    final DiagnosisKeyBatch.Builder diagnosisKeyBatch = DiagnosisKeyBatch.newBuilder();
+    diagnosisKeyBatch.addKeys(createDiagnosisKeyDetails(keyData, rollingStartIntervalNumber,rollingPeriod,TRL,countries));
+    return diagnosisKeyBatch.build();
   }
 }

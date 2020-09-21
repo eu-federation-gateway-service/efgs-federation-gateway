@@ -316,7 +316,7 @@ These keys need to be stored seperate from the database. They are stored in two 
 
 ### 3.1. PKCS#7
 
-**SecReq-016**  The batch signature MUTS be generate based on the [RFC 5652](https://tools.ietf.org/html/rfc5652) standard.
+**SecReq-016**  The batch signature MUST be generate based on the [RFC 5652](https://tools.ietf.org/html/rfc5652) standard.
 
 **SecReq-017**  The PKCS#7 object MUST contain the Signing Certificate. 
 
@@ -332,11 +332,11 @@ These keys need to be stored seperate from the database. They are stored in two 
 
 ### 3.2. Signature Verification
 
-The uploaded diagnostic keys must be signed at a abstract content level, which means 
+The uploaded diagnostic keys must be signed at an abstract content level, which means 
 not the content transferred via wire is signed but instead a constructed abstract 
 content based on the transferred data.
 
-**SecReq-022**  To create the signature and/or to verify it the diagnosis key data has be transformed 
+**SecReq-022**  To create the signature and/or to verify it the diagnosis key data has been transformed 
 into a byte stream with the structure defined below.  
 
 The definition uses extended Backus–Naur form (ISO/IEC 14977)
@@ -350,18 +350,26 @@ DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionR
 
 | Order        | Fieldname     | Start at Pos. |  Bytes  |Type (protobuf)	| Notes  |
 | ------------ | ------------- | ------------- | ------- | -------------- | ------ |
-| 1            | keyData       | 0             | k | bytes | UTF-8 encoding | 
-| 2            | rollingStartIntervalNumber       | k + 1             |4 | uint32 |Big endian| 
-| 3            | rollingPeriod       | k + 5             |4 | uint32 |Big endian| 
-| 4            | transmissionRiskLevel       | k + 9             |4 | int32 |Big endian| 
-| 5            | visitedCountries       | k + 13             |c \* 2 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK).| 
-| 6            | origin       | (k + 13) + (c * 2)             |2 | string | UTF-8 encoding. | 
-| 7            | reportType       |(k + 13) + (c * 2) + 2             |4 | int32 |Big endian| 
-| 8            | daysSinceOnsetOfSymptoms       |(k + 13) + (c * 2) + 6             |4 | uint32 |Big endian| 
+| 1            | keyData       | 0             | k | bytes | Plain bytes | 
+| 2			       | Seperator (.)	   | k			   | 1 | string | UTF-8 encoding		 | 
+| 3            | rollingStartIntervalNumber       | k+1              |4 | uint32 |Big endian| 
+| 4			       | Seperator	(.)   | k+5			   | 1 | string | UTF-8 encoding		 |
+| 5            | rollingPeriod       | k+6             |4 | uint32 |Big endian| 
+| 6			       | Seperator	(.)   | k+10			   | 1 | string | UTF-8 encoding		 |
+| 7            | transmissionRiskLevel       | k+11             |4 | int32 |Big endian| 
+| 8			       | Seperator	(.)   | k+15			   | 1 | string | UTF-8 encoding		 |
+| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "," for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK). |
+| 10		       | Seperator (.)	  | (k+16) + (c * 3)			   | 1 | string | UTF-8 encoding		 |
+| 11           | origin       | (k+16) + (c * 3)+1         |2 | string | UTF-8 encoding. | 
+| 12		       | Seperator (.)	  | (k+16) + (c * 3)+3			   | 1 | string | UTF-8 encoding		 |
+| 13           | reportType   | (k+16) + (c * 3)+4	       |4 | int32 |Big endian| 
+| 14		       | Seperator (.)	  | (k+16) + (c * 3)+8			   | 1 | string | UTF-8 encoding		 |
+| 15           | daysSinceOnsetOfSymptoms       |(k+16) + (c * 3)+9            |4 | sint32 |Big endian| 
+| 16		       | Seperator (.)	  | (k+16) + (c * 3)+13			   | 1 | string | UTF-8 encoding		 |
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
-sorted by KeyData (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
+sorted by Diagnosis Key encoded in Base64 Encoding (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
 
 ### 3.3. Certificate Verification during OnBoarding
 
