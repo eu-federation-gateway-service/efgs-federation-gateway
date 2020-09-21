@@ -9,6 +9,7 @@ spring:
 springdoc:
   api-docs:
     path: /api/docs
+    enabled: true
   swagger-ui:
     path: /swagger
 efgs:
