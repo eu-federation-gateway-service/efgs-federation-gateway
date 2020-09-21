@@ -38,6 +38,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -159,7 +160,7 @@ public class DownloadController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find batch with given BatchTag");
     }
 
-    if (!date.isEqual(batchEntity.get().getCreatedAt().toLocalDate())) {
+    if (!date.isEqual(batchEntity.get().getCreatedAt().withZoneSameInstant(ZoneId.of("UTC")).toLocalDate())) {
       log.info("Given date does not match the requested batchTag");
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Given date does not match the requested batch");
     }
