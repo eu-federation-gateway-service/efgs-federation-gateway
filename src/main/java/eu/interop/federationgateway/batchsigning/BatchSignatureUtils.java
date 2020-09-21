@@ -78,7 +78,8 @@ public class BatchSignatureUtils {
     writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getTransmissionRiskLevel(), byteArrayOutputStream);
     writeStringInByteArray(".", byteArrayOutputStream);
-    writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(), byteArrayOutputStream); //One dot more, because country list has . in the end
+    writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(),
+            byteArrayOutputStream); //One dot more, because country list has . in the end
     writeStringInByteArray(diagnosisKey.getOrigin(), byteArrayOutputStream);
     writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getReportTypeValue(), byteArrayOutputStream);
@@ -103,8 +104,7 @@ public class BatchSignatureUtils {
     }
   }
 
-  static String BytesTob64(byte[] bytes)
-  {
+  static String bytesToBase64(byte[] bytes) {
     try {
       return Base64.getEncoder().encodeToString(bytes);
     } catch (IllegalArgumentException e) {
@@ -116,7 +116,7 @@ public class BatchSignatureUtils {
   private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
     return batch.getKeysList()
       .stream()
-      .sorted(Comparator.comparing(diagnosisKey -> BytesTob64(diagnosisKey.getKeyData().toByteArray())))
+      .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(diagnosisKey.getKeyData().toByteArray())))
       .collect(Collectors.toList());
   }
 
@@ -128,8 +128,7 @@ public class BatchSignatureUtils {
     byteArray.writeBytes(ByteBuffer.allocate(4).putInt(batchInt).array());
   }
 
-  private static void writeKeyDataInByteArray(final ByteString bytes,ByteArrayOutputStream byteArray)
-  {
+  private static void writeKeyDataInByteArray(final ByteString bytes,ByteArrayOutputStream byteArray) {
     byteArray.writeBytes(bytes.toByteArray());
   }
 
