@@ -212,6 +212,6 @@ public class AuditControllerTest {
   }
 
   private static String getDateString(ZonedDateTime timestamp) {
-    return timestamp.format(DateTimeFormatter.ISO_DATE);
+    return timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE);
   }
 }
