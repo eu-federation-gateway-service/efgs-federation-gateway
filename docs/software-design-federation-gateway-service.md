@@ -368,7 +368,7 @@ DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionR
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
-sorted by KeyData in Base64 Encoding (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
+sorted by Diagnosis Key encoded in Base64 Encoding (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
 
 ### 3.3. Certificate Verification during OnBoarding
 
