@@ -21,6 +21,7 @@
 package eu.interop.federationgateway.batchsigning;
 
 import eu.interop.federationgateway.TestData;
+import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
@@ -182,6 +183,22 @@ public class BatchSignatureVerifierTest {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123456ABC"));
     Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, signatureGenerator.encryptData(new byte[]{41,
       52, 38})));
+  }
+
+  @Test
+  public void testSingatureMaximumForDatabase()
+  throws OperatorCreationException, CertificateEncodingException, CMSException, IOException
+  {
+    int maxBytes= 10*1024*1024;
+    EfgsProperties.Batching batching = new EfgsProperties.Batching();
+    List<String> keys = new ArrayList();
+    for(int x=0;x<batching.getDoclimit();x++)
+      keys.add(null);
+    var batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(keys);
+
+    var signature = createSignature(batch,  TestData.validCertificate);
+
+    Assert.assertTrue(signature.length()<maxBytes);
   }
 
   @Test
