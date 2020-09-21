@@ -85,7 +85,7 @@ public class TestData {
   public static final int ROLLING_PERIOD = 1;
   public static final int ROLLING_START_INTERVAL_NUMBER = 2;
   public static final int TRANSMISSION_RISK_LEVEL = 3;
-  public static final String PAYLOAD_HASH = "3c9089a9045ca7427ab13d258fcd909b7e397cca23e3116e0579d1a169a39130";
+  public static final String PAYLOAD_HASH = "5eadd9e23c8bba81fd0a523fd3da117e2dd3e4cf35336004b9238695055758ba";
   public static final byte[] BYTES = new byte[]{14, 15, 11, 14, 12, 15, 15, 16};
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";

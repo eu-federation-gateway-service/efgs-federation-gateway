@@ -79,7 +79,8 @@ public class BatchSignatureUtils {
     writeIntInByteArray(diagnosisKey.getTransmissionRiskLevel(), byteArrayOutputStream);
     writeStringInByteArray(".", byteArrayOutputStream);
     writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(),
-            byteArrayOutputStream); //One dot more, because country list has . in the end
+            byteArrayOutputStream); 
+    writeStringInByteArray(".", byteArrayOutputStream);
     writeStringInByteArray(diagnosisKey.getOrigin(), byteArrayOutputStream);
     writeStringInByteArray(".", byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getReportTypeValue(), byteArrayOutputStream);
@@ -140,7 +141,7 @@ public class BatchSignatureUtils {
     countriesList.sort(String::compareTo);
     for (final String country : countriesList) {
       writeStringInByteArray(country, byteArray);
-      writeStringInByteArray(".", byteArray);
+      writeStringInByteArray(",", byteArray);
     }
   }
 

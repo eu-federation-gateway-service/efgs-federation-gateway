@@ -98,9 +98,9 @@ public class BatchSignatureUtilsTest {
     batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
     diagnosisKey.getVisitedCountriesList().forEach(country -> {
       batchBytes.writeBytes(country.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
     });
-
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
     batchBytes.writeBytes(diagnosisKey.getOrigin().getBytes(StandardCharsets.UTF_8));
     batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
     batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getReportTypeValue()).array());
@@ -133,12 +133,13 @@ public class BatchSignatureUtilsTest {
       batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array()); // 4 - transmissionRiskLevel
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_A.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_B.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_C.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_D.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.UTF_8)); // 6 - origin
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
@@ -170,12 +171,13 @@ public class BatchSignatureUtilsTest {
       batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array());
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_A.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_B.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_C.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(TestData.COUNTRY_D.getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
       batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array());
       batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
