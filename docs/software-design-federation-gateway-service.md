@@ -364,6 +364,7 @@ DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionR
 | 12           | reportType   | (k+16) + (c * 3)+3	             |4 | int32 |Big endian| 
 | 13		   | Seperator (.)	  | (k+16) + (c * 3)+7			   | 1 | string | UTF-8 encoding		 |
 | 14           | daysSinceOnsetOfSymptoms       |(k+16) + (c * 3)+8            |4 | sint32 |Big endian| 
+| 15		   | Seperator (.)	  | (k+16) + (c * 3)+12			   | 1 | string | UTF-8 encoding		 |
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
