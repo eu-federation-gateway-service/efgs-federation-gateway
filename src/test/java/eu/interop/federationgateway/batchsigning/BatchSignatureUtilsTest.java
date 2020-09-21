@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import org.bouncycastle.pqc.math.linearalgebra.ByteUtils;
 import org.hibernate.loader.BatchLoadSizingStrategy;
 import org.junit.Assert;
 import org.junit.Test;
@@ -88,25 +89,22 @@ public class BatchSignatureUtilsTest {
   {
     final ByteArrayOutputStream batchBytes = new ByteArrayOutputStream();
 
-    batchBytes.writeBytes(diagnosisKey.getKeyData().toByteArray());
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getRollingStartIntervalNumber()).array());
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getRollingPeriod()).array());
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getTransmissionRiskLevel()).array());
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    diagnosisKey.getVisitedCountriesList().forEach(country -> {
-      batchBytes.writeBytes(country.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-    });
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(diagnosisKey.getOrigin().getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getReportTypeValue()).array());
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-    batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(diagnosisKey.getDaysSinceOnsetOfSymptoms()).array());
-    batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( diagnosisKey.getKeyData().toByteArray()).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(  ByteBuffer.allocate(4).putInt(diagnosisKey.getRollingStartIntervalNumber()).array()).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(diagnosisKey.getRollingPeriod()).array()).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(diagnosisKey.getTransmissionRiskLevel()).array()).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(String.join(",",  diagnosisKey.getVisitedCountriesList()).getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII)) ;
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(diagnosisKey.getOrigin().getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(diagnosisKey.getReportTypeValue()).array()).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(diagnosisKey.getDaysSinceOnsetOfSymptoms()).array()).getBytes(StandardCharsets.US_ASCII));
+    batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
 
     return batchBytes.toByteArray();
   }
@@ -124,29 +122,23 @@ public class BatchSignatureUtilsTest {
     final ByteArrayOutputStream batchBytes = new ByteArrayOutputStream();
     final List<DiagnosisKey> sortedBatch = sortBatchByKeyData(batch);
     for (DiagnosisKey diagnosisKey : sortedBatch) {
-      batchBytes.writeBytes(diagnosisKey.getKeyData().toByteArray()); // 1 - KeyData
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.ROLLING_START_INTERVAL_NUMBER).array()); // 2 - rollingStartIntervalNumber
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array()); // 3 - rollingPeriod
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array()); // 4 - transmissionRiskLevel
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_A.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_B.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_C.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_D.getBytes(StandardCharsets.UTF_8)); // 5 - visitedCountries
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.UTF_8)); // 6 - origin
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array()); // 7 - ReportType
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.DAYS_SINCE_ONSET_OF_SYMPTOMS).array());
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( diagnosisKey.getKeyData().toByteArray()).getBytes(StandardCharsets.US_ASCII)); // 1 - KeyData
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( ByteBuffer.allocate(4).putInt(TestData.ROLLING_START_INTERVAL_NUMBER).array()).getBytes(StandardCharsets.US_ASCII)); // 2 - rollingStartIntervalNumber
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array()).getBytes(StandardCharsets.US_ASCII));; // 3 - rollingPeriod
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array()).getBytes(StandardCharsets.US_ASCII));// 4 - transmissionRiskLevel
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));  
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(String.join(",",  List.of(TestData.COUNTRY_A,TestData.COUNTRY_B,TestData.COUNTRY_C,TestData.COUNTRY_D))
+                                                                                                .getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII)) ; //5 - Visited Countries
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII));; // 6 - origin
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array()).getBytes(StandardCharsets.US_ASCII)); // 7 - ReportType
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.DAYS_SINCE_ONSET_OF_SYMPTOMS).array()).getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
     }
     return batchBytes.toByteArray();
   }
@@ -162,27 +154,22 @@ public class BatchSignatureUtilsTest {
     final ByteArrayOutputStream batchBytes = new ByteArrayOutputStream();
     final List<DiagnosisKey> sortedBatch = sortBatchByKeyData(batch);
     for (DiagnosisKey diagnosisKey : sortedBatch) {
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.ROLLING_START_INTERVAL_NUMBER).array());
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(diagnosisKey.getKeyData().toByteArray());
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array());
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array());
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_A.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_B.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_C.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.COUNTRY_D.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(",".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array());
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.UTF_8));
-      batchBytes.writeBytes(".".getBytes(StandardCharsets.UTF_8));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( ByteBuffer.allocate(4).putInt(TestData.ROLLING_START_INTERVAL_NUMBER).array()).getBytes(StandardCharsets.US_ASCII));;
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( diagnosisKey.getKeyData().toByteArray()).getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array()).getBytes(StandardCharsets.US_ASCII));;
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64( ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array()).getBytes(StandardCharsets.US_ASCII));;
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(String.join(",",  List.of(TestData.COUNTRY_A,TestData.COUNTRY_B,TestData.COUNTRY_C,TestData.COUNTRY_D))
+                                                                                                .getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII)) ;
+
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array()).getBytes(StandardCharsets.US_ASCII));;
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
+      batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII));;
+      batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
     }
     return batchBytes.toByteArray();
   }
@@ -213,11 +200,12 @@ public class BatchSignatureUtilsTest {
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
     Assert.assertNotNull(bytesToVerify);
 
-    final byte[] rollingStartIntervalNumber = {bytesToVerify[4], bytesToVerify[5], bytesToVerify[6], bytesToVerify[7]};
-    Assert.assertEquals(ByteBuffer.wrap(rollingStartIntervalNumber).getInt() & 0xffffffffL, MAX_UINT_VALUE);
+    final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
+    
+    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt() & 0xffffffffL, MAX_UINT_VALUE);
 
-    final byte[] rollingPeriod = {bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(ByteBuffer.wrap(rollingPeriod).getInt() & 0xffffffffL, MAX_UINT_VALUE);
+    final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20] , bytesToVerify[21]};
+    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt() & 0xffffffffL, MAX_UINT_VALUE);
   }
 
   @Test
@@ -226,11 +214,11 @@ public class BatchSignatureUtilsTest {
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
     Assert.assertNotNull(bytesToVerify);
 
-    final byte[] rollingStartIntervalNumber = {bytesToVerify[4], bytesToVerify[5], bytesToVerify[6], bytesToVerify[7]};
-    Assert.assertEquals(ByteBuffer.wrap(rollingStartIntervalNumber).getInt(), Integer.MAX_VALUE);
+    final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
+    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt(), Integer.MAX_VALUE);
 
-    final byte[] rollingPeriod = {bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(ByteBuffer.wrap(rollingPeriod).getInt(), Integer.MAX_VALUE);
+    final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20] , bytesToVerify[21]};
+    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt(), Integer.MAX_VALUE);
   }
 
   @Test
@@ -239,11 +227,11 @@ public class BatchSignatureUtilsTest {
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
     Assert.assertNotNull(bytesToVerify);
 
-    final byte[] rollingStartIntervalNumber = {bytesToVerify[4], bytesToVerify[5], bytesToVerify[6], bytesToVerify[7]};
-    Assert.assertEquals(ByteBuffer.wrap(rollingStartIntervalNumber).getInt(), 5);
+    final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
+    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt(), 5);
 
-    final byte[] rollingPeriod = {bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(ByteBuffer.wrap(rollingPeriod).getInt(), 5);
+    final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20] , bytesToVerify[21]};
+    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt(), 5);
   }
 
   private InputStream readBatchFile(final String filename) {

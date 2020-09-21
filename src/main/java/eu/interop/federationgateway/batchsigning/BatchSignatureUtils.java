@@ -70,24 +70,23 @@ public class BatchSignatureUtils {
    */
   public static byte[] generateBytesToVerify(final DiagnosisKey diagnosisKey) {
     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    writeKeyDataInByteArray(diagnosisKey.getKeyData(),byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
+    writeBytesInByteArray(diagnosisKey.getKeyData(),byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getRollingStartIntervalNumber(), byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getRollingPeriod(), byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getTransmissionRiskLevel(), byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
     writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(),
             byteArrayOutputStream); 
-    writeStringInByteArray(".", byteArrayOutputStream);
-    writeStringInByteArray(diagnosisKey.getOrigin(), byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
+    writeB64StringInByteArray(diagnosisKey.getOrigin(), byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getReportTypeValue(), byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
+    writeSeperatorInArray(byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getDaysSinceOnsetOfSymptoms(), byteArrayOutputStream);
-    writeStringInByteArray(".", byteArrayOutputStream);
-
+    writeSeperatorInArray(byteArrayOutputStream);
     return byteArrayOutputStream.toByteArray();
   }
 
@@ -98,8 +97,12 @@ public class BatchSignatureUtils {
    * @return the batch signature decoded as byte array. Returns an empty array if conversion failed.
    */
   static byte[] b64ToBytes(final String batchSignatureBase64) {
+    return b64ToBytes(batchSignatureBase64.getBytes());
+  }
+
+  static byte[] b64ToBytes(final byte[] bytes) {
     try {
-      return Base64.getDecoder().decode(batchSignatureBase64.getBytes());
+      return Base64.getDecoder().decode(bytes);
     } catch (IllegalArgumentException e) {
       log.error("Failed to convert base64 to byte array");
       return new byte[0];
@@ -110,7 +113,7 @@ public class BatchSignatureUtils {
     try {
       return Base64.getEncoder().encodeToString(bytes);
     } catch (IllegalArgumentException e) {
-      log.error("Failed to convert byte array to b64");
+      log.error("Failed to convert byte array to string");
       return null;
     }
   }
@@ -122,27 +125,29 @@ public class BatchSignatureUtils {
       .collect(Collectors.toList());
   }
 
-  private static void writeStringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
-    byteArray.writeBytes(batchString.getBytes(StandardCharsets.UTF_8));
+  private static void writeSeperatorInArray(final ByteArrayOutputStream byteArray) {
+    byteArray.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
   }
+
+  private static void writeStringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
+     byteArray.writeBytes(batchString.getBytes(StandardCharsets.US_ASCII));
+  }
+
+  private static void writeB64StringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
+     writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)),byteArray);
+   }
 
   private static void writeIntInByteArray(final int batchInt, final ByteArrayOutputStream byteArray) {
-    byteArray.writeBytes(ByteBuffer.allocate(4).putInt(batchInt).array());
+    writeStringInByteArray(bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array()),byteArray);
   }
 
-  private static void writeKeyDataInByteArray(final ByteString bytes,ByteArrayOutputStream byteArray) {
-    byteArray.writeBytes(bytes.toByteArray());
+  private static void writeBytesInByteArray(final ByteString bytes,ByteArrayOutputStream byteArray) {
+    writeStringInByteArray(bytesToBase64(bytes.toByteArray()),byteArray);
   }
 
   private static void writeVisitedCountriesInByteArray(final ProtocolStringList countries,
                                                        final ByteArrayOutputStream byteArray) {
-    final List<String> countriesList = new ArrayList<>();
-    countries.iterator().forEachRemaining(countriesList::add);
-    countriesList.sort(String::compareTo);
-    for (final String country : countriesList) {
-      writeStringInByteArray(country, byteArray);
-      writeStringInByteArray(",", byteArray);
-    }
+    writeB64StringInByteArray(String.join(",", countries),byteArray);
   }
 
 }
