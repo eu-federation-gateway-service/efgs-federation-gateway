@@ -118,7 +118,7 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Batch Signature verification failed, unknown signing cert | ERROR | unknown signing certificate | certThumbprint | 
 | Batch Signature verification failed, batch was signed with revoked certificate | ERROR | certificate is revoked | certThumbprint | 
 | Batch Signature verification failed, signature does not match to batch | ERROR | wrong signature | n/a | 
-| Successful Batch Signature verification | INFO | verified batch signature | batchTag, numKeys | 
+| Successful Batch Signature verification | INFO | verified batch signature | batchTag, numKeys, certThumbprint | 
 | Batch Upload failed, uploader has provided too many diagnosis keys at once | ERROR | too many diagnosis keys | batchTag, numKeys, maxKeys | 
 | Batch Upload failed, uploader has provided an already existing BatchTag | ERROR | batchtag already exists | batchTag, numKeys | 
 | Batch Upload failed, uploader has provided one ore more keys which have a different country then uploader cert | ERROR | invalid uploader country | batchTag, numKeys | 
