@@ -22,17 +22,22 @@ package eu.interop.federationgateway.batchsigning;
 
 import com.google.protobuf.ByteString;
 import eu.interop.federationgateway.TestData;
+import eu.interop.federationgateway.entity.DiagnosisKeyPayload.ReportType;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKey;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
-import io.netty.handler.codec.base64.Base64;
-import javassist.bytecode.ByteArray;
-
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -314,5 +319,116 @@ public class BatchSignatureUtilsTest {
     Assert.assertTrue(Arrays.equals(key3b,key33b)); //Always the same with valid characters
   }
 
+
+  private byte[] ConvertArrayToByteArray(String[] list)
+  {
+    byte[] tmp = new byte[list.length];
+    for(int x=0;x<list.length;x++)
+    {
+      tmp[x] = (byte)Integer.parseInt(list[x]);
+    }
+    return tmp;
+  }
+
+  @Test
+  public void testCSharpCrossLanguageCalculation()
+  throws FileNotFoundException,IOException
+  {
+    ClassLoader classLoader = this.getClass().getClassLoader();
+    File file = new File(classLoader.getResource("CSharpTestdata.txt").getFile());
+    var path = file.getAbsolutePath().replace("%20", " ");
+    BufferedReader br = new BufferedReader(new FileReader(path));
+   
+    List<DiagnosisKey> keys = new ArrayList<DiagnosisKey>();
+
+    while (br.ready() ) {
+      String line = br.readLine();
+      var parts = line.split("\\|");
+
+      var diagnosiskeydata = parts[0].substring(1);
+      diagnosiskeydata = diagnosiskeydata.substring(0, diagnosiskeydata.length() - 1);
+      var diagnosiskeybytes = ConvertArrayToByteArray(diagnosiskeydata.split(","));
+      var javadiagnosiskeyb64Result = BatchSignatureUtils.bytesToBase64(diagnosiskeybytes);
+      var diagnosiskeyb64 = parts[1];
+
+      Assert.assertTrue(javadiagnosiskeyb64Result.equals(diagnosiskeyb64));
+
+      var rollingStartIntervalNumber = parts[2].substring(1);
+      rollingStartIntervalNumber = rollingStartIntervalNumber.substring(0, rollingStartIntervalNumber.length() - 1);
+      var rollingStartIntervalNumberbytes = ConvertArrayToByteArray(rollingStartIntervalNumber.split(","));
+      var javaRSIb64Result = BatchSignatureUtils.bytesToBase64(rollingStartIntervalNumberbytes);
+      var rollingStartIntervalNumberb64=parts[3];
+
+      Assert.assertTrue(javaRSIb64Result.equals(rollingStartIntervalNumberb64));
+
+      var rollingPeriod = parts[4].substring(1);
+      rollingPeriod = rollingPeriod.substring(0, rollingPeriod.length() - 1);
+      var rollingPeriodbytes = ConvertArrayToByteArray(rollingPeriod.split(","));
+      var javaRPb64Result = BatchSignatureUtils.bytesToBase64(rollingPeriodbytes);
+      var rollingPeriodb64=parts[5];
+
+      Assert.assertTrue(javaRPb64Result.equals(rollingPeriodb64));
+      
+      var transmissionRiskLevel = parts[6].substring(1);
+      transmissionRiskLevel = transmissionRiskLevel.substring(0, transmissionRiskLevel.length() - 1);
+      var transmissionRiskLevelbytes = ConvertArrayToByteArray(transmissionRiskLevel.split(","));
+      var javaTRLb64Result = BatchSignatureUtils.bytesToBase64(transmissionRiskLevelbytes);
+      var transmissionRiskLevelb64=parts[7];
+
+      Assert.assertTrue(javaTRLb64Result.equals(transmissionRiskLevelb64));
+
+      var visitedCountries = parts[8].substring(1);
+      visitedCountries = visitedCountries.substring(0, visitedCountries.length() - 1);
+      var visitedCountriesbytes = visitedCountries.getBytes(StandardCharsets.US_ASCII);
+      var javaVCb64Result = BatchSignatureUtils.bytesToBase64(visitedCountriesbytes);
+      var visitedCountriesb64=parts[9];
+
+      
+      Assert.assertTrue(javaVCb64Result.equals(visitedCountriesb64));
+
+      var origin = parts[10].substring(1);
+      origin = origin.substring(0, origin.length() - 1);
+      var originbytes = origin.getBytes(StandardCharsets.US_ASCII);
+      var javaORb64Result = BatchSignatureUtils.bytesToBase64(originbytes);
+      var originb64=parts[11];
+
+      Assert.assertTrue("Origin Encoding wrong.",  javaORb64Result.equals(originb64));
+
+      var reportType = parts[12].substring(1);
+      reportType = reportType.substring(0, reportType.length() - 1);
+      var reportTypebytes = ConvertArrayToByteArray(reportType.split(","));
+      var javaRTb64Result = BatchSignatureUtils.bytesToBase64(reportTypebytes);
+      var reportTypeb64=parts[13];
+
+      Assert.assertTrue(javaRTb64Result.equals(reportTypeb64));
+    
+      var dsosType = parts[14].substring(1);
+      dsosType = dsosType.substring(0, dsosType.length() - 1);
+      var dsosbytes = ConvertArrayToByteArray(dsosType.split(","));
+      var dsosb64Result = BatchSignatureUtils.bytesToBase64(dsosbytes);
+      var dsosTypeb64=parts[15];
+
+      Assert.assertTrue(dsosb64Result.equals(dsosTypeb64));
+ 
+
+      DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
+
+      diagnosisKey.setKeyData(ByteString.copyFrom(diagnosiskeybytes));
+      diagnosisKey.setRollingStartIntervalNumber(ByteBuffer.wrap(rollingStartIntervalNumberbytes).getInt());
+      diagnosisKey.setRollingPeriod(ByteBuffer.wrap(rollingPeriodbytes).getInt());
+      diagnosisKey.setTransmissionRiskLevel(ByteBuffer.wrap(transmissionRiskLevelbytes).getInt());
+      diagnosisKey.addAllVisitedCountries(List.of(visitedCountries.split(",")));
+      diagnosisKey.setReportType(eu.interop.federationgateway.model.EfgsProto.ReportType.values()[ByteBuffer.wrap(reportTypebytes).getInt()]);
+      diagnosisKey.setDaysSinceOnsetOfSymptoms(ByteBuffer.wrap(dsosbytes).getInt());
+      diagnosisKey.setDaysSinceOnsetOfSymptoms(ByteBuffer.wrap(dsosbytes).getInt());
+      diagnosisKey.setOrigin(new String(originbytes));
+
+      var overallb64=  BatchSignatureUtils.bytesToBase64(BatchSignatureUtils.generateBytesToVerify(diagnosisKey.build()));
+      var overallCSharp64=parts[16];
+
+      Assert.assertTrue(overallb64.equals(overallCSharp64));
+ 
+    }
+  }
 
 }

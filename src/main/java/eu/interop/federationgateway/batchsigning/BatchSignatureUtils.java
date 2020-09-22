@@ -130,12 +130,12 @@ public class BatchSignatureUtils {
   }
 
   private static void writeStringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
-     byteArray.writeBytes(batchString.getBytes(StandardCharsets.US_ASCII));
+    byteArray.writeBytes(batchString.getBytes(StandardCharsets.US_ASCII));
   }
 
   private static void writeB64StringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
-     writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)),byteArray);
-   }
+    writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)),byteArray);
+  }
 
   private static void writeIntInByteArray(final int batchInt, final ByteArrayOutputStream byteArray) {
     writeStringInByteArray(bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array()),byteArray);
