@@ -85,7 +85,7 @@ public class TestData {
   public static final int ROLLING_PERIOD = 1;
   public static final int ROLLING_START_INTERVAL_NUMBER = 2;
   public static final int TRANSMISSION_RISK_LEVEL = 3;
-  public static final String PAYLOAD_HASH = "5eadd9e23c8bba81fd0a523fd3da117e2dd3e4cf35336004b9238695055758ba";
+  public static final String PAYLOAD_HASH = "13251f41adc9f8723dedf450ba9e1506e851742afdfb0cd39a38cee8d21eccf0";
   public static final byte[] BYTES = new byte[]{14, 15, 11, 14, 12, 15, 15, 16};
   public static final String DN_STRING_DE = "C=DE";
   public static final String AUTH_CERT_COUNTRY = "DE";
@@ -290,15 +290,14 @@ public class TestData {
       (X509Certificate) certificateFactory.generateCertificate(new ByteArrayInputStream(certBytes));
   }
 
-  public static byte[] GetInvalidCodePointByteSequence()
-  {
-        //Randommize Bytes to non character byte sequences (invalid codepoints)
-        byte[] keydata = new byte[16];
-        Random r = new Random();
-        r.nextBytes(keydata);
-        while(ByteString.copyFrom(keydata).isValidUtf8())
-          r.nextBytes(keydata);
-        return keydata;
+  public static byte[] GetInvalidCodePointByteSequence() {
+    //Randommize Bytes to non character byte sequences (invalid codepoints)
+    byte[] keydata = new byte[16];
+    Random r = new Random();
+    r.nextBytes(keydata);
+    while (ByteString.copyFrom(keydata).isValidUtf8())
+      r.nextBytes(keydata);
+    return keydata;
   }
 
   public static EfgsProto.DiagnosisKey getDiagnosisKeyProto() {
@@ -505,7 +504,7 @@ public class TestData {
     return callbackSubscriptionEntity;
   }
 
-  public static DiagnosisKey createDiagnosisKeyDetails(final String keyData,int rollingStartIntervalNumber, int rollingPeriod, int TRL, final List<String> visitedCountries) {
+  public static DiagnosisKey createDiagnosisKeyDetails(final String keyData, int rollingStartIntervalNumber, int rollingPeriod, int TRL, final List<String> visitedCountries) {
     DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
     diagnosisKey.setKeyData(ByteString.copyFrom(keyData.getBytes()));
     diagnosisKey.setRollingStartIntervalNumber(rollingStartIntervalNumber);
@@ -518,7 +517,7 @@ public class TestData {
     return diagnosisKey.build();
   }
 
-  public static DiagnosisKey createDiagnosisKeyDetails(final byte[] keyData,int rollingStartIntervalNumber, int rollingPeriod, int TRL, final List<String> visitedCountries) {
+  public static DiagnosisKey createDiagnosisKeyDetails(final byte[] keyData, int rollingStartIntervalNumber, int rollingPeriod, int TRL, final List<String> visitedCountries) {
     DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
     diagnosisKey.setKeyData(ByteString.copyFrom(keyData));
     diagnosisKey.setRollingStartIntervalNumber(rollingStartIntervalNumber);
@@ -535,7 +534,7 @@ public class TestData {
   // We follow the conventions of the previous createDiagnosiskeyDetails method, and produce a single-key batch with it.
   public static DiagnosisKeyBatch createDiagnosisKeyBatchDetails(final String keyData, final int rollingStartIntervalNumber, final int rollingPeriod, final int TRL, final List<String> countries) {
     final DiagnosisKeyBatch.Builder diagnosisKeyBatch = DiagnosisKeyBatch.newBuilder();
-    diagnosisKeyBatch.addKeys(createDiagnosisKeyDetails(keyData, rollingStartIntervalNumber,rollingPeriod,TRL,countries));
+    diagnosisKeyBatch.addKeys(createDiagnosisKeyDetails(keyData, rollingStartIntervalNumber, rollingPeriod, TRL, countries));
     return diagnosisKeyBatch.build();
   }
 }

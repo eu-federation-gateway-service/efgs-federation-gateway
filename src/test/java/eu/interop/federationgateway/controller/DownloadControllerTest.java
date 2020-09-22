@@ -90,7 +90,7 @@ public class DownloadControllerTest {
   private MockMvc mockMvc;
 
   private static String getDateString(ZonedDateTime timestamp) {
-    return timestamp.format(DateTimeFormatter.ISO_DATE);
+    return timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE);
   }
 
   @Before

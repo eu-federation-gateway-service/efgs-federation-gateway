@@ -135,7 +135,7 @@ public class DownloadController {
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String downloaderCountry
   ) {
 
-    EfgsMdc.put("requestedDate", date.format(DateTimeFormatter.ISO_DATE));
+    EfgsMdc.put("requestedDate", date.format(DateTimeFormatter.ISO_LOCAL_DATE));
     EfgsMdc.put("batchTag", batchTag);
 
     ZonedDateTime thresholdDate = ZonedDateTime.now(ZoneOffset.UTC)
