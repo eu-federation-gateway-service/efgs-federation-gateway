@@ -48,20 +48,22 @@ public class DiagnosisKeyCleanupServiceTest {
   public void cleanUpServiceShouldDeleteAllDiagnosisKeys() {
     final int retentionDays = efgsProperties.getDownloadSettings().getMaxAgeInDays();
 
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
+    ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).withHour(14);
 
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays));
+    createDiagnosisKey(timestamp.minusDays(1));
+    createDiagnosisKey(timestamp.minusDays(1));
+    createDiagnosisKey(timestamp.minusDays(1));
+    createDiagnosisKey(timestamp.minusDays(1));
 
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKey(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
+    createDiagnosisKey(timestamp.minusDays(retentionDays));
+    createDiagnosisKey(timestamp.minusDays(retentionDays));
+    createDiagnosisKey(timestamp.minusDays(retentionDays));
+
+    createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
 
     Assert.assertEquals(12, diagnosisKeyEntityRepository.count());
 
@@ -74,20 +76,22 @@ public class DiagnosisKeyCleanupServiceTest {
   public void cleanUpServiceShouldDeleteAllDiagnosisKeysBatches() {
     final int retentionDays = efgsProperties.getDownloadSettings().getMaxAgeInDays();
 
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(1));
+    ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).withHour(14);
 
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays));
+    createDiagnosisKeyBatch(timestamp.minusDays(1));
+    createDiagnosisKeyBatch(timestamp.minusDays(1));
+    createDiagnosisKeyBatch(timestamp.minusDays(1));
+    createDiagnosisKeyBatch(timestamp.minusDays(1));
 
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
-    createDiagnosisKeyBatch(ZonedDateTime.now(ZoneOffset.UTC).minusDays(retentionDays + 1));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays));
+
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
+    createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
 
     Assert.assertEquals(12, diagnosisKeyBatchRepository.count());
 

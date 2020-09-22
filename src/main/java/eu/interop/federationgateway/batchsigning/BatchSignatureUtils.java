@@ -27,7 +27,6 @@ import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
@@ -70,7 +69,7 @@ public class BatchSignatureUtils {
    */
   public static byte[] generateBytesToVerify(final DiagnosisKey diagnosisKey) {
     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-    writeBytesInByteArray(diagnosisKey.getKeyData(),byteArrayOutputStream);
+    writeBytesInByteArray(diagnosisKey.getKeyData(), byteArrayOutputStream);
     writeSeperatorInArray(byteArrayOutputStream);
     writeIntInByteArray(diagnosisKey.getRollingStartIntervalNumber(), byteArrayOutputStream);
     writeSeperatorInArray(byteArrayOutputStream);
@@ -79,7 +78,7 @@ public class BatchSignatureUtils {
     writeIntInByteArray(diagnosisKey.getTransmissionRiskLevel(), byteArrayOutputStream);
     writeSeperatorInArray(byteArrayOutputStream);
     writeVisitedCountriesInByteArray(diagnosisKey.getVisitedCountriesList(),
-            byteArrayOutputStream); 
+      byteArrayOutputStream);
     writeSeperatorInArray(byteArrayOutputStream);
     writeB64StringInByteArray(diagnosisKey.getOrigin(), byteArrayOutputStream);
     writeSeperatorInArray(byteArrayOutputStream);
@@ -134,20 +133,20 @@ public class BatchSignatureUtils {
   }
 
   private static void writeB64StringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)),byteArray);
+    writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)), byteArray);
   }
 
   private static void writeIntInByteArray(final int batchInt, final ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array()),byteArray);
+    writeStringInByteArray(bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array()), byteArray);
   }
 
-  private static void writeBytesInByteArray(final ByteString bytes,ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(bytes.toByteArray()),byteArray);
+  private static void writeBytesInByteArray(final ByteString bytes, ByteArrayOutputStream byteArray) {
+    writeStringInByteArray(bytesToBase64(bytes.toByteArray()), byteArray);
   }
 
   private static void writeVisitedCountriesInByteArray(final ProtocolStringList countries,
                                                        final ByteArrayOutputStream byteArray) {
-    writeB64StringInByteArray(String.join(",", countries),byteArray);
+    writeB64StringInByteArray(String.join(",", countries), byteArray);
   }
 
 }
