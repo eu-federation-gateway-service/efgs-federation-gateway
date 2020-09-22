@@ -345,27 +345,28 @@ ByteStream = DiagnosisKeyBatch ;
 
 DiagnosisKeyBatch = { DiagnosisKey } ;
 
-DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionRiskLevel, visitedCountries, origin, verificationType ;
+DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionRiskLevel, visitedCountries, origin, reporttype and daysonsetofsymptoms ;
 
+All fields, excluded the seperators, have to be converted to a **BASE64** string with US_ASCII encoding. 
 
-| Order        | Fieldname     | Start at Pos. |  Bytes  |Type (protobuf)	| Notes  |
-| ------------ | ------------- | ------------- | ------- | -------------- | ------ |
-| 1            | keyData       | 0             | k | bytes | Plain bytes | 
-| 2			       | Seperator (.)	   | k			   | 1 | string | UTF-8 encoding		 | 
-| 3            | rollingStartIntervalNumber       | k+1              |4 | uint32 |Big endian| 
-| 4			       | Seperator	(.)   | k+5			   | 1 | string | UTF-8 encoding		 |
-| 5            | rollingPeriod       | k+6             |4 | uint32 |Big endian| 
-| 6			       | Seperator	(.)   | k+10			   | 1 | string | UTF-8 encoding		 |
-| 7            | transmissionRiskLevel       | k+11             |4 | int32 |Big endian| 
-| 8			       | Seperator	(.)   | k+15			   | 1 | string | UTF-8 encoding		 |
-| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "," for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK). |
-| 10		       | Seperator (.)	  | (k+16) + (c * 3)			   | 1 | string | UTF-8 encoding		 |
-| 11           | origin       | (k+16) + (c * 3)+1         |2 | string | UTF-8 encoding. | 
-| 12		       | Seperator (.)	  | (k+16) + (c * 3)+3			   | 1 | string | UTF-8 encoding		 |
-| 13           | reportType   | (k+16) + (c * 3)+4	       |4 | int32 |Big endian| 
-| 14		       | Seperator (.)	  | (k+16) + (c * 3)+8			   | 1 | string | UTF-8 encoding		 |
-| 15           | daysSinceOnsetOfSymptoms       |(k+16) + (c * 3)+9            |4 | sint32 |Big endian| 
-| 16		       | Seperator (.)	  | (k+16) + (c * 3)+13			   | 1 | string | UTF-8 encoding		 |
+| Order        | Fieldname     | Start at Pos. |  Bytes  |Type (protobuf)	| Notes  | BASE64|
+| ------------ | ------------- | ------------- | ------- | -------------- | ------ | -------- |
+| 1            | keyData       | 0             | k | bytes | Plain bytes | Yes|
+| 2			       | Seperator (.)	   | k			   | 1 | string | US_ASCII encoding		 | No|
+| 3            | rollingStartIntervalNumber       | k+1              |4 | uint32 |Big endian| Yes|
+| 4			       | Seperator	(.)   | k+5			   | 1 | string | US_ASCII encoding		 |No|
+| 5            | rollingPeriod       | k+6             |4 | uint32 |Big endian| Yes|
+| 6			       | Seperator	(.)   | k+10			   | 1 | string | US_ASCII encoding		 |No|
+| 7            | transmissionRiskLevel       | k+11             |4 | int32 |Big endian| Yes|
+| 8			       | Seperator	(.)   | k+15			   | 1 | string | US_ASCII encoding		 |No|
+| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "," for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK). |Yes|
+| 10		       | Seperator (.)	  | (k+16) + (c * 3)			   | 1 | string | US_ASCII encoding		 |No|
+| 11           | origin       | (k+16) + (c * 3)+1         |2 | string | US_ASCII encoding. | Yes|
+| 12		       | Seperator (.)	  | (k+16) + (c * 3)+3			   | 1 | string | US_ASCII encoding		 |No|
+| 13           | reportType   | (k+16) + (c * 3)+4	       |4 | int32 |Big endian| Yes|
+| 14		       | Seperator (.)	  | (k+16) + (c * 3)+8			   | 1 | string | US_ASCII encoding		 |No|
+| 15           | daysSinceOnsetOfSymptoms       |(k+16) + (c * 3)+9            |4 | sint32 |Big endian| Yes|
+| 16		       | Seperator (.)	  | (k+16) + (c * 3)+13			   | 1 | string |US_ASCII encoding		 |No|
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 

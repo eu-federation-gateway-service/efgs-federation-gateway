@@ -392,7 +392,7 @@ public class BatchSignatureUtilsTest {
       var javaORb64Result = BatchSignatureUtils.bytesToBase64(originbytes);
       var originb64=parts[11];
 
-      Assert.assertTrue("Origin Encoding wrong.",  javaORb64Result.equals(originb64));
+      Assert.assertTrue(javaORb64Result.equals(originb64));
 
       var reportType = parts[12].substring(1);
       reportType = reportType.substring(0, reportType.length() - 1);
