@@ -1,17 +1,13 @@
 package eu.interop.federationgateway.dbencryption;
 
 import javax.persistence.AttributeConverter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class DbEncryptionIntConverter implements AttributeConverter<Integer, String> {
-
-  private final DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(Integer s) {
     try {
-      return dbEncryptionService.encryptInteger(s);
+      return DbEncryptionService.getInstance().encryptInteger(s);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -20,7 +16,7 @@ public class DbEncryptionIntConverter implements AttributeConverter<Integer, Str
   @Override
   public Integer convertToEntityAttribute(String s) {
     try {
-      return dbEncryptionService.decryptInteger(s);
+      return DbEncryptionService.getInstance().decryptInteger(s);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

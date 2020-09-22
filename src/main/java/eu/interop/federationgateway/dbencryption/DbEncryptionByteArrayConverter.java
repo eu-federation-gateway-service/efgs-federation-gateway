@@ -1,17 +1,13 @@
 package eu.interop.federationgateway.dbencryption;
 
 import javax.persistence.AttributeConverter;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 public class DbEncryptionByteArrayConverter implements AttributeConverter<byte[], String> {
-
-  private final DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(byte[] s) {
     try {
-      return dbEncryptionService.encryptByteArray(s);
+      return DbEncryptionService.getInstance().encryptByteArray(s);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -20,7 +16,7 @@ public class DbEncryptionByteArrayConverter implements AttributeConverter<byte[]
   @Override
   public byte[] convertToEntityAttribute(String s) {
     try {
-      return dbEncryptionService.decryptByteArray(s);
+      return DbEncryptionService.getInstance().decryptByteArray(s);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
