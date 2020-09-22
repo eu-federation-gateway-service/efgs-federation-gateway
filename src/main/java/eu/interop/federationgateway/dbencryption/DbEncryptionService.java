@@ -6,7 +6,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.util.Base64;
-import java.util.Random;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -32,7 +31,9 @@ public class DbEncryptionService {
   private DbEncryptionService() {
     cipher = AesBytesEncryptor.CipherAlgorithm.CBC.createCipher();
 
-    String dbEncryptionPassword = System.getenv().get(PASSWORD_PROPERTY_NAME);
+    String dbEncryptionPassword = System.getenv().containsKey(PASSWORD_PROPERTY_NAME)
+      ? System.getenv(PASSWORD_PROPERTY_NAME)
+      : System.getProperty(PASSWORD_PROPERTY_NAME);
 
     if (dbEncryptionPassword != null) {
       int passwordLength = dbEncryptionPassword.length();
@@ -43,12 +44,13 @@ public class DbEncryptionService {
 
       key = new SecretKeySpec(dbEncryptionPassword.getBytes(), "AES");
     } else {
-      log.info("No DB encryption password found. Generating random password.");
-      Random random = new Random();
-      byte[] password = new byte[16];
-      random.nextBytes(password);
+      System.out.println("getenv()");
+      System.getenv().forEach((x, y) -> System.out.println(x + " --> " + y));
 
-      key = new SecretKeySpec(password, "AES");
+      System.out.println("getProperties()");
+      System.getProperties().forEach((o, o2) -> System.out.println(o + " --> " + o2));
+
+      throw new ValidationException("DB encryption password must be set!");
     }
   }
 
