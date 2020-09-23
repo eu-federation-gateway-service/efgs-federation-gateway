@@ -359,7 +359,7 @@ All fields, excluded the seperators, have to be converted to a **BASE64** string
 | 6			       | Seperator	(.)   | k+10			   | 1 | string | US_ASCII encoding		 |No|
 | 7            | transmissionRiskLevel       | k+11             |4 | int32 |Big endian| Yes|
 | 8			       | Seperator	(.)   | k+15			   | 1 | string | US_ASCII encoding		 |No|
-| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "," for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK). |Yes|
+| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries, each country (e.g., DE) has 2 bytes plus "," for seperation. US_ASCII encoding. |Yes|
 | 10		       | Seperator (.)	  | (k+16) + (c * 3)			   | 1 | string | US_ASCII encoding		 |No|
 | 11           | origin       | (k+16) + (c * 3)+1         |2 | string | US_ASCII encoding. | Yes|
 | 12		       | Seperator (.)	  | (k+16) + (c * 3)+3			   | 1 | string | US_ASCII encoding		 |No|
