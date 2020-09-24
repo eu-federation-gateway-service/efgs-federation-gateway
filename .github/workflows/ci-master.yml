@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    - fix-bug
 jobs:
   build:
     runs-on: ubuntu-latest
