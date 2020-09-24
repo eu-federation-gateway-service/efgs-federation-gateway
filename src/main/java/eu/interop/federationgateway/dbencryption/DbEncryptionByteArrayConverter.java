@@ -1,6 +1,7 @@
 package eu.interop.federationgateway.dbencryption;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.PersistenceException;
 
 public class DbEncryptionByteArrayConverter implements AttributeConverter<byte[], String> {
 
@@ -9,7 +10,7 @@ public class DbEncryptionByteArrayConverter implements AttributeConverter<byte[]
     try {
       return DbEncryptionService.getInstance().encryptByteArray(s);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 
@@ -18,7 +19,7 @@ public class DbEncryptionByteArrayConverter implements AttributeConverter<byte[]
     try {
       return DbEncryptionService.getInstance().decryptByteArray(s);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 

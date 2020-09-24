@@ -27,7 +27,6 @@ import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -205,10 +204,10 @@ public class BatchSignatureUtilsTest {
 
     final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
 
-    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt() & 0xffffffffL, MAX_UINT_VALUE);
+    Assert.assertEquals(MAX_UINT_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt() & 0xffffffffL);
 
     final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20], bytesToVerify[21]};
-    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt() & 0xffffffffL, MAX_UINT_VALUE);
+    Assert.assertEquals(MAX_UINT_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt() & 0xffffffffL);
   }
 
   @Test
@@ -218,10 +217,10 @@ public class BatchSignatureUtilsTest {
     Assert.assertNotNull(bytesToVerify);
 
     final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt(), Integer.MAX_VALUE);
+    Assert.assertEquals(Integer.MAX_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt());
 
     final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20], bytesToVerify[21]};
-    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt(), Integer.MAX_VALUE);
+    Assert.assertEquals(Integer.MAX_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt());
   }
 
   @Test
@@ -231,10 +230,10 @@ public class BatchSignatureUtilsTest {
     Assert.assertNotNull(bytesToVerify);
 
     final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt(), 5);
+    Assert.assertEquals(5, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt());
 
     final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20], bytesToVerify[21]};
-    Assert.assertEquals(ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt(), 5);
+    Assert.assertEquals(5, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt());
   }
 
   private InputStream readBatchFile(final String filename) {
@@ -322,7 +321,7 @@ public class BatchSignatureUtilsTest {
 
   @Test
   public void testCSharpCrossLanguageCalculation()
-    throws FileNotFoundException, IOException {
+    throws IOException {
     ClassLoader classLoader = this.getClass().getClassLoader();
     File file = new File(classLoader.getResource("CSharpTestdata.txt").getFile());
     var path = file.getAbsolutePath().replace("%20", " ");
@@ -340,7 +339,7 @@ public class BatchSignatureUtilsTest {
       var javadiagnosiskeyb64Result = BatchSignatureUtils.bytesToBase64(diagnosiskeybytes);
       var diagnosiskeyb64 = parts[1];
 
-      Assert.assertTrue(javadiagnosiskeyb64Result.equals(diagnosiskeyb64));
+      Assert.assertEquals(javadiagnosiskeyb64Result, diagnosiskeyb64);
 
       var rollingStartIntervalNumber = parts[2].substring(1);
       rollingStartIntervalNumber = rollingStartIntervalNumber.substring(0, rollingStartIntervalNumber.length() - 1);
@@ -348,7 +347,7 @@ public class BatchSignatureUtilsTest {
       var javaRSIb64Result = BatchSignatureUtils.bytesToBase64(rollingStartIntervalNumberbytes);
       var rollingStartIntervalNumberb64 = parts[3];
 
-      Assert.assertTrue(javaRSIb64Result.equals(rollingStartIntervalNumberb64));
+      Assert.assertEquals(javaRSIb64Result, rollingStartIntervalNumberb64);
 
       var rollingPeriod = parts[4].substring(1);
       rollingPeriod = rollingPeriod.substring(0, rollingPeriod.length() - 1);
@@ -356,7 +355,7 @@ public class BatchSignatureUtilsTest {
       var javaRPb64Result = BatchSignatureUtils.bytesToBase64(rollingPeriodbytes);
       var rollingPeriodb64 = parts[5];
 
-      Assert.assertTrue(javaRPb64Result.equals(rollingPeriodb64));
+      Assert.assertEquals(javaRPb64Result, rollingPeriodb64);
 
       var transmissionRiskLevel = parts[6].substring(1);
       transmissionRiskLevel = transmissionRiskLevel.substring(0, transmissionRiskLevel.length() - 1);
@@ -364,7 +363,7 @@ public class BatchSignatureUtilsTest {
       var javaTRLb64Result = BatchSignatureUtils.bytesToBase64(transmissionRiskLevelbytes);
       var transmissionRiskLevelb64 = parts[7];
 
-      Assert.assertTrue(javaTRLb64Result.equals(transmissionRiskLevelb64));
+      Assert.assertEquals(javaTRLb64Result, transmissionRiskLevelb64);
 
       var visitedCountries = parts[8].substring(1);
       visitedCountries = visitedCountries.substring(0, visitedCountries.length() - 1);
@@ -373,7 +372,7 @@ public class BatchSignatureUtilsTest {
       var visitedCountriesb64 = parts[9];
 
 
-      Assert.assertTrue(javaVCb64Result.equals(visitedCountriesb64));
+      Assert.assertEquals(javaVCb64Result, visitedCountriesb64);
 
       var origin = parts[10].substring(1);
       origin = origin.substring(0, origin.length() - 1);
@@ -381,7 +380,7 @@ public class BatchSignatureUtilsTest {
       var javaORb64Result = BatchSignatureUtils.bytesToBase64(originbytes);
       var originb64 = parts[11];
 
-      Assert.assertTrue(javaORb64Result.equals(originb64));
+      Assert.assertEquals(javaORb64Result, originb64);
 
       var reportType = parts[12].substring(1);
       reportType = reportType.substring(0, reportType.length() - 1);
@@ -389,7 +388,7 @@ public class BatchSignatureUtilsTest {
       var javaRTb64Result = BatchSignatureUtils.bytesToBase64(reportTypebytes);
       var reportTypeb64 = parts[13];
 
-      Assert.assertTrue(javaRTb64Result.equals(reportTypeb64));
+      Assert.assertEquals(javaRTb64Result, reportTypeb64);
 
       var dsosType = parts[14].substring(1);
       dsosType = dsosType.substring(0, dsosType.length() - 1);
@@ -397,7 +396,7 @@ public class BatchSignatureUtilsTest {
       var dsosb64Result = BatchSignatureUtils.bytesToBase64(dsosbytes);
       var dsosTypeb64 = parts[15];
 
-      Assert.assertTrue(dsosb64Result.equals(dsosTypeb64));
+      Assert.assertEquals(dsosb64Result, dsosTypeb64);
 
 
       DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
@@ -415,7 +414,7 @@ public class BatchSignatureUtilsTest {
       var overallb64 = BatchSignatureUtils.bytesToBase64(BatchSignatureUtils.generateBytesToVerify(diagnosisKey.build()));
       var overallCSharp64 = parts[16];
 
-      Assert.assertTrue(overallb64.equals(overallCSharp64));
+      Assert.assertEquals(overallb64, overallCSharp64);
 
     }
   }

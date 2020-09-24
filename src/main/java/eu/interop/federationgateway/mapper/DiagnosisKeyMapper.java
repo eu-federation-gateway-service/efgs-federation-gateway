@@ -31,7 +31,6 @@ import eu.interop.federationgateway.utils.SemVerUtils;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ValueMapping;
-import org.mapstruct.ValueMappings;
 import org.springframework.http.MediaType;
 
 @Slf4j
@@ -138,7 +136,6 @@ public abstract class DiagnosisKeyMapper {
 
   /**
    * Converts JPA DiagnosisKeyEntity to an Efgs Protobuf entity.
-   * TODO: Use some fancy built-in features from mapstruct.
    *
    * @param entity the JPA entity
    * @return the converted protobuf entity
@@ -156,7 +153,7 @@ public abstract class DiagnosisKeyMapper {
       .build();
   }
 
-  public abstract ArrayList<EfgsProto.DiagnosisKey> entityToProto(List<DiagnosisKeyEntity> entity);
+  public abstract List<EfgsProto.DiagnosisKey> entityToProto(List<DiagnosisKeyEntity> entity);
 
   public byte[] byteStringToByteArray(ByteString byteString) {
     return byteString.toByteArray();
@@ -170,9 +167,7 @@ public abstract class DiagnosisKeyMapper {
     DiagnosisKeyPayload.ReportType verificationType
   );
 
-  @ValueMappings({
-    @ValueMapping(source = "UNRECOGNIZED", target = MappingConstants.NULL)
-  })
+  @ValueMapping(source = "UNRECOGNIZED", target = MappingConstants.NULL)
   public abstract DiagnosisKeyPayload.ReportType mapReportType(
     EfgsProto.ReportType reportType
   );

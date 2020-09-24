@@ -52,10 +52,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CertificateService {
 
+  private static final String MDC_PROP_CERT_THUMBPRINT = "certVerifyThumbprint";
   private final CertificateRepository certificateRepository;
-
   private final KeyStore trustAnchorKeyStore;
-
   private final EfgsProperties efgsProperties;
 
   /**
@@ -126,7 +125,7 @@ public class CertificateService {
 
   private boolean validateCertificateIntegrity(CertificateEntity certificateEntity) {
 
-    EfgsMdc.put("certVerifyThumbprint", certificateEntity.getThumbprint());
+    EfgsMdc.put(MDC_PROP_CERT_THUMBPRINT, certificateEntity.getThumbprint());
 
     // check if entity has signature and certificate information
     if (certificateEntity.getSignature() == null || certificateEntity.getSignature().isEmpty()
@@ -167,11 +166,11 @@ public class CertificateService {
       verifier.update(certificateEntity.getRawData().getBytes());
 
       if (verifier.verify(signatureBytes)) {
-        EfgsMdc.remove("certVerifyThumbprint");
+        EfgsMdc.remove(MDC_PROP_CERT_THUMBPRINT);
         return true;
       } else {
         log.error("Verification of certificate signature failed!");
-        EfgsMdc.remove("certVerifyThumbprint");
+        EfgsMdc.remove(MDC_PROP_CERT_THUMBPRINT);
         return false;
       }
     } catch (InvalidKeyException e) {

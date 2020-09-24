@@ -99,18 +99,30 @@ public class BatchSignatureUtils {
     return b64ToBytes(batchSignatureBase64.getBytes());
   }
 
-  static byte[] b64ToBytes(final byte[] bytes) throws IllegalArgumentException {
-    return Base64.getDecoder().decode(bytes);
+  static byte[] b64ToBytes(final byte[] bytes) {
+    try {
+      return Base64.getDecoder().decode(bytes);
+    } catch (IllegalArgumentException e) {
+      log.error("Failed to convert base64 to byte array");
+      return new byte[0];
+    }
   }
 
-  static String bytesToBase64(byte[] bytes) throws IllegalArgumentException {
-    return Base64.getEncoder().encodeToString(bytes);
+  static String bytesToBase64(byte[] bytes) {
+    try {
+      return Base64.getEncoder().encodeToString(bytes);
+    } catch (IllegalArgumentException e) {
+      log.error("Failed to convert byte array to string");
+      return null;
+    }
   }
 
   private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
     return batch.getKeysList()
       .stream()
-      .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey))))
+      .sorted(Comparator.nullsLast(
+        Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey)))
+      ))
       .collect(Collectors.toList());
   }
 
@@ -123,15 +135,27 @@ public class BatchSignatureUtils {
   }
 
   private static void writeB64StringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)), byteArray);
+    String base64String = bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII));
+
+    if (base64String != null) {
+      writeStringInByteArray(base64String, byteArray);
+    }
   }
 
   private static void writeIntInByteArray(final int batchInt, final ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array()), byteArray);
+    String base64String = bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array());
+
+    if (base64String != null) {
+      writeStringInByteArray(base64String, byteArray);
+    }
   }
 
   private static void writeBytesInByteArray(final ByteString bytes, ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(bytes.toByteArray()), byteArray);
+    String base64String = bytesToBase64(bytes.toByteArray());
+
+    if (base64String != null) {
+      writeStringInByteArray(base64String, byteArray);
+    }
   }
 
   private static void writeVisitedCountriesInByteArray(final ProtocolStringList countries,
