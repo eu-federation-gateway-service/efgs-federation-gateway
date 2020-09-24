@@ -59,6 +59,7 @@
     <sonar.coverage.exclusions>
       **/FederationGatewayApplication.java,
       **/model/*,
+      **/mapper/*,  
       **/entity/*
     </sonar.coverage.exclusions>     
   </properties>
