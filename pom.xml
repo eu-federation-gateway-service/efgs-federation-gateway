@@ -60,6 +60,7 @@
       **/FederationGatewayApplication.java,
       **/model/*,
       **/mapper/*,
+      **/dbencryption/*,
       **/entity/*
     </sonar.coverage.exclusions>     
   </properties>
