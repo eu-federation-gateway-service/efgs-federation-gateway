@@ -66,7 +66,7 @@ public class EfgsKeyStore {
       fileStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
     } else {
       File file = new File(path);
-      fileStream = file.exists() ? new FileInputStream(file) : null;
+      fileStream = file.exists() ? getStream(path) : null;
     }
 
     if (fileStream != null && fileStream.available() > 0) {
@@ -76,5 +76,15 @@ public class EfgsKeyStore {
       keyStore.load(null);
       log.info("Could not find Keystore {}", path);
     }
+
+  }
+
+  private InputStream getStream(String path) {
+    try (InputStream fileStream = new FileInputStream(path)) {
+      return fileStream;
+    } catch (IOException e) {
+      log.info("Could not find Keystore {}", path);
+    }
+    return null;
   }
 }
