@@ -163,7 +163,7 @@ public class BatchSignatureVerifier {
     }
   }
 
-  private CMSProcessableByteArray getBatchBytes(DiagnosisKeyBatch batch) throws IllegalArgumentException {
+  private CMSProcessableByteArray getBatchBytes(DiagnosisKeyBatch batch) {
     return new CMSProcessableByteArray(BatchSignatureUtils.generateBytesToVerify(batch));
   }
 

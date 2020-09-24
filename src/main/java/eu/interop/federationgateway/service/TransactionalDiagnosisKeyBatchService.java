@@ -127,35 +127,33 @@ public class TransactionalDiagnosisKeyBatchService {
     int newBatchSize = 0;
     FormatInformation batchFormat = null;
 
-    boolean continueLoop = true;
-
-    while (continueLoop) {
+    while (true) {
       Optional<DiagnosisKeyEntity> unbatchedDiagnosisKey = uploaderBatchTags.isEmpty()
         ? diagnosisKeyEntityRepository.findFirstByBatchTagIsNull()
         : diagnosisKeyEntityRepository.findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(uploaderBatchTags);
 
       if (unbatchedDiagnosisKey.isEmpty()) {
         // no more unprocessed keys
-        continueLoop = false;
+        break;
+      }
+
+      if (batchFormat == null) {
+        batchFormat = unbatchedDiagnosisKey.get().getFormat();
       } else {
-        if (batchFormat == null) {
-          batchFormat = unbatchedDiagnosisKey.get().getFormat();
-        }
-
+        // stop batch tag collecting when next upload batch has different format
         if (!batchFormat.equals(unbatchedDiagnosisKey.get().getFormat())) {
-          // stop batch tag collecting when next upload batch has different format
-          continueLoop = false;
-        } else {
-          String uploaderBatchTag = unbatchedDiagnosisKey.get().getUploader().getBatchTag();
-          int uploadBatchSize = diagnosisKeyEntityRepository.countAllByUploader_BatchTag(uploaderBatchTag);
-
-          if (newBatchSize + uploadBatchSize <= properties.getBatching().getDoclimit()) {
-            newBatchSize += uploadBatchSize;
-            uploaderBatchTags.add(uploaderBatchTag);
-          } else {
-            continueLoop = false;
-          }
+          break;
         }
+      }
+
+      String uploaderBatchTag = unbatchedDiagnosisKey.get().getUploader().getBatchTag();
+      int uploadBatchSize = diagnosisKeyEntityRepository.countAllByUploader_BatchTag(uploaderBatchTag);
+
+      if (newBatchSize + uploadBatchSize <= properties.getBatching().getDoclimit()) {
+        newBatchSize += uploadBatchSize;
+        uploaderBatchTags.add(uploaderBatchTag);
+      } else {
+        break;
       }
     }
 
