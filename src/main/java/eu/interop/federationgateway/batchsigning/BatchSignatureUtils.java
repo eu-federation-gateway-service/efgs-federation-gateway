@@ -99,22 +99,12 @@ public class BatchSignatureUtils {
     return b64ToBytes(batchSignatureBase64.getBytes());
   }
 
-  static byte[] b64ToBytes(final byte[] bytes) {
-    try {
-      return Base64.getDecoder().decode(bytes);
-    } catch (IllegalArgumentException e) {
-      log.error("Failed to convert base64 to byte array");
-      return new byte[0];
-    }
+  static byte[] b64ToBytes(final byte[] bytes) throws IllegalArgumentException {
+    return Base64.getDecoder().decode(bytes);
   }
 
-  static String bytesToBase64(byte[] bytes) {
-    try {
-      return Base64.getEncoder().encodeToString(bytes);
-    } catch (IllegalArgumentException e) {
-      log.error("Failed to convert byte array to string");
-      return null;
-    }
+  static String bytesToBase64(byte[] bytes) throws IllegalArgumentException {
+    return Base64.getEncoder().encodeToString(bytes);
   }
 
   private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
