@@ -44,12 +44,6 @@ public class DbEncryptionService {
 
       key = new SecretKeySpec(dbEncryptionPassword.getBytes(), "AES");
     } else {
-      log.error("getenv()");
-      System.getenv().forEach((x, y) -> log.error("{} --> {}", x, y));
-
-      log.error("getProperties()");
-      System.getProperties().forEach((x, y) -> log.error("{} --> {}", x, y));
-
       throw new ValidationException("DB encryption password must be set!");
     }
   }
