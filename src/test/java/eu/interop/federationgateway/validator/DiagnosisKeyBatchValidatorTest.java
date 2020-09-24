@@ -16,6 +16,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Before;
@@ -70,27 +72,37 @@ public class DiagnosisKeyBatchValidatorTest {
 
   @Test
   public void testInvalidTransmissionRiskLevel() throws Exception {
-    EfgsProto.DiagnosisKey diagnosisKey =
-      TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(100).build();
+    int[] invalidTRisk = {-1, 9, 100};
 
-    EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-      .addAllKeys(Arrays.asList(diagnosisKey)).build();
+    for (int transmissionRisk : invalidTRisk) {
+      EfgsProto.DiagnosisKey diagnosisKey =
+        TestData.getDiagnosisKeyProto().toBuilder()
+            .setKeyData(ByteString.copyFromUtf8("abcd1234abcd1234")) // Without valid key data, that validator trips first.
+            .setTransmissionRiskLevel(transmissionRisk)
+            .setRollingPeriod(144)
+            .build();
 
-    mockMvc.perform(post("/diagnosiskeys/upload")
-      .contentType("application/protobuf; version=1.0")
-      .header("batchTag", TestData.FIRST_BATCHTAG)
-      .header("batchSignature", "signature")
-      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
-      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
-      .content(batch.toByteArray())
-    )
-      .andExpect(status().isBadRequest());
+      EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
+        .addAllKeys(Arrays.asList(diagnosisKey)).build();
+
+      mockMvc.perform(post("/diagnosiskeys/upload")
+        .contentType("application/protobuf; version=1.0")
+        .header("batchTag", TestData.FIRST_BATCHTAG)
+        .header("batchSignature", "signature")
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
+        .content(batch.toByteArray())
+      )
+        .andExpect(status().isBadRequest());
+    }
   }
 
   @Test
-  public void testInvalidReportType() throws Exception {
+  public void testInvalidKeyDataEmpty() throws Exception {
     EfgsProto.DiagnosisKey diagnosisKey =
-      TestData.getDiagnosisKeyProto().toBuilder().setReportType(EfgsProto.ReportType.UNKNOWN).build();
+      TestData.getDiagnosisKeyProto().toBuilder()
+        .setKeyData(ByteString.EMPTY)
+        .build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(diagnosisKey)).build();
@@ -109,7 +121,9 @@ public class DiagnosisKeyBatchValidatorTest {
   @Test
   public void testInvalidKeyData() throws Exception {
     EfgsProto.DiagnosisKey diagnosisKey =
-      TestData.getDiagnosisKeyProto().toBuilder().setKeyData(ByteString.EMPTY).build();
+      TestData.getDiagnosisKeyProto().toBuilder()
+        .setKeyData(ByteString.copyFromUtf8("1234")) // Invalid key length.
+        .build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(diagnosisKey)).build();
@@ -147,7 +161,11 @@ public class DiagnosisKeyBatchValidatorTest {
   @Test
   public void testInvalidRollingPeriod() throws Exception {
     EfgsProto.DiagnosisKey diagnosisKey =
-      TestData.getDiagnosisKeyProto().toBuilder().setRollingPeriod(0).build();
+      TestData.getDiagnosisKeyProto().toBuilder()
+        .setKeyData(ByteString.copyFromUtf8("abcd1234abcd1234"))
+        .setRollingPeriod(145)
+        .setTransmissionRiskLevel(6)
+        .build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(diagnosisKey)).build();

@@ -17,16 +17,16 @@ public class DiagnosisKeyBatchValidator implements
 
     List<EfgsProto.DiagnosisKey> diagnosisKeys = diagnosisKeyBatch.getKeysList();
     for (EfgsProto.DiagnosisKey diagnosisKey : diagnosisKeys) {
-      if (diagnosisKey.getReportType() == EfgsProto.ReportType.UNKNOWN) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid report-type.");
-        return false;
-      } else if (diagnosisKey.getKeyData() == null || diagnosisKey.getKeyData().isEmpty()) {
+      if (diagnosisKey.getKeyData() == null || diagnosisKey.getKeyData().isEmpty()) {
         log.error(VALIDATION_FAILED_MESSAGE + "The keydata is empty or null.");
         return false;
-      } else if (diagnosisKey.getRollingPeriod() == 0) {
+      } else if (diagnosisKey.getKeyData().size() != 16) {
+        log.error(VALIDATION_FAILED_MESSAGE + "The keydata is not 16 bytes.");
+        return false;
+      } else if (diagnosisKey.getRollingPeriod() == 0 || diagnosisKey.getRollingPeriod() > 144) {
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid rolling period.");
         return false;
-      } else if (diagnosisKey.getTransmissionRiskLevel() == 0 || diagnosisKey.getTransmissionRiskLevel() > 8) {
+      } else if (diagnosisKey.getTransmissionRiskLevel() < 0 || diagnosisKey.getTransmissionRiskLevel() > 8) {
         log.error(VALIDATION_FAILED_MESSAGE + "Invalid transmission risk level.");
         return false;
       }
