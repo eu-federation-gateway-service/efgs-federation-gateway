@@ -93,7 +93,7 @@ public class DiagnosisKeyEntityService {
       }
     });
 
-    if (resultMap.get(409).size() > 0 || resultMap.get(500).size() > 0) {
+    if (!resultMap.get(409).isEmpty() || !resultMap.get(500).isEmpty()) {
 
       EfgsMdc.put("insertedKeyCount", resultMap.get(201).size());
       EfgsMdc.put("conflictKeysCount", resultMap.get(409).size());

@@ -44,11 +44,11 @@ public class DbEncryptionService {
 
       key = new SecretKeySpec(dbEncryptionPassword.getBytes(), "AES");
     } else {
-      System.out.println("getenv()");
-      System.getenv().forEach((x, y) -> System.out.println(x + " --> " + y));
+      log.error("getenv()");
+      System.getenv().forEach((x, y) -> log.error("{} --> {}", x, y));
 
-      System.out.println("getProperties()");
-      System.getProperties().forEach((o, o2) -> System.out.println(o + " --> " + o2));
+      log.error("getProperties()");
+      System.getProperties().forEach((x, y) -> log.error("{} --> {}", x, y));
 
       throw new ValidationException("DB encryption password must be set!");
     }
