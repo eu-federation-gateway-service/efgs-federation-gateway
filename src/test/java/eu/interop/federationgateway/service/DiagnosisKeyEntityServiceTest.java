@@ -37,6 +37,9 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import org.mockito.internal.stubbing.answers.AnswersWithDelay;
+import org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValues;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.QueryTimeoutException;
 
@@ -141,11 +144,10 @@ public class DiagnosisKeyEntityServiceTest {
 
   @Test
   public void assertThatAllEntitiesHaveTheSameUploadTimestamp() throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
+
+
     when(diagnosisKeyEntityRepositoryMock.save(any()))
-      .thenAnswer(invocationOnMock -> {
-        Thread.sleep(100);
-        return null;
-      });
+      .thenAnswer(new AnswersWithDelay(100, new ReturnsEmptyValues()));
 
     DiagnosisKeyEntity testEntity = TestData.getDiagnosisKeyTestEntityforCreation();
     DiagnosisKeyEntity testEntity2 = TestData.getDiagnosisKeyTestEntityforCreation();

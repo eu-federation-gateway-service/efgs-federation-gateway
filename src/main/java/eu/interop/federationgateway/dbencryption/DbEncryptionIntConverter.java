@@ -1,6 +1,7 @@
 package eu.interop.federationgateway.dbencryption;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.PersistenceException;
 
 public class DbEncryptionIntConverter implements AttributeConverter<Integer, String> {
 
@@ -9,7 +10,7 @@ public class DbEncryptionIntConverter implements AttributeConverter<Integer, Str
     try {
       return DbEncryptionService.getInstance().encryptInteger(s);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 
@@ -18,7 +19,7 @@ public class DbEncryptionIntConverter implements AttributeConverter<Integer, Str
     try {
       return DbEncryptionService.getInstance().decryptInteger(s);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 

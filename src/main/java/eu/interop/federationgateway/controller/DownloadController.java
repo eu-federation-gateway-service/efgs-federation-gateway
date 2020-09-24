@@ -39,7 +39,6 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -71,6 +70,7 @@ public class DownloadController {
   private static final String DOWNLOAD_ROUTE = "/download/{date}";
   private static final String BATCHTAG_HEADER = "batchTag";
   private static final String NEXT_BATCHTAG_HEADER = "nextBatchTag";
+  private static final String MDC_PROP_BATCHTAG = "batchTag";
 
   private final EfgsProperties properties;
 
@@ -131,12 +131,12 @@ public class DownloadController {
   @CertificateAuthentificationRequired
   public ResponseEntity<EfgsProto.DiagnosisKeyBatch> downloadDiagnosisKeys(
     @PathVariable("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-    @RequestHeader(name = "batchTag", required = false) String batchTag,
+    @RequestHeader(name = BATCHTAG_HEADER, required = false) String batchTag,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String downloaderCountry
   ) {
 
     EfgsMdc.put("requestedDate", date.format(DateTimeFormatter.ISO_LOCAL_DATE));
-    EfgsMdc.put("batchTag", batchTag);
+    EfgsMdc.put(MDC_PROP_BATCHTAG, batchTag);
 
     ZonedDateTime thresholdDate = ZonedDateTime.now(ZoneOffset.UTC)
       .minusDays(properties.getDownloadSettings().getMaxAgeInDays());

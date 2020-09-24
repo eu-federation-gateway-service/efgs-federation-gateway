@@ -56,6 +56,13 @@
     <!-- sonar -->
     <sonar.organization>eu-federation-gateway-service</sonar.organization>
     <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
+    <sonar.coverage.exclusions>
+      **/FederationGatewayApplication.java,
+      **/model/*,
+      **/mapper/*,
+      **/dbencryption/*,
+      **/entity/*
+    </sonar.coverage.exclusions>     
   </properties>
 
   <url>https://github.com/eu-federation-gateway-service/efgs-federation-gateway/</url>
@@ -375,6 +382,23 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>      
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>

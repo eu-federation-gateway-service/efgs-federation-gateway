@@ -120,7 +120,9 @@ public class BatchSignatureUtils {
   private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
     return batch.getKeysList()
       .stream()
-      .sorted(Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey))))
+      .sorted(Comparator.nullsLast(
+        Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey)))
+      ))
       .collect(Collectors.toList());
   }
 
@@ -133,15 +135,27 @@ public class BatchSignatureUtils {
   }
 
   private static void writeB64StringInByteArray(final String batchString, final ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII)), byteArray);
+    String base64String = bytesToBase64(batchString.getBytes(StandardCharsets.US_ASCII));
+
+    if (base64String != null) {
+      writeStringInByteArray(base64String, byteArray);
+    }
   }
 
   private static void writeIntInByteArray(final int batchInt, final ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array()), byteArray);
+    String base64String = bytesToBase64(ByteBuffer.allocate(4).putInt(batchInt).array());
+
+    if (base64String != null) {
+      writeStringInByteArray(base64String, byteArray);
+    }
   }
 
   private static void writeBytesInByteArray(final ByteString bytes, ByteArrayOutputStream byteArray) {
-    writeStringInByteArray(bytesToBase64(bytes.toByteArray()), byteArray);
+    String base64String = bytesToBase64(bytes.toByteArray());
+
+    if (base64String != null) {
+      writeStringInByteArray(base64String, byteArray);
+    }
   }
 
   private static void writeVisitedCountriesInByteArray(final ProtocolStringList countries,
