@@ -80,7 +80,7 @@ public class EfgsKeyStore {
     } catch (IOException e) {
       log.error("Could not find Keystore {}", path);
       throw e;
-    }finally {
+    } finally {
       fileStream.close();
     }
   }
