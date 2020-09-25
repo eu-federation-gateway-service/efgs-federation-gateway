@@ -35,6 +35,11 @@
       <outputDirectory>webapps</outputDirectory>
       <destName>efgs.war</destName>
     </file>
+    <file>
+      <source>${project.basedir}/target/${artifactId}-${version}.${packaging}.sha1</source>
+      <outputDirectory>webapps</outputDirectory>
+      <destName>efgs.war.sha1</destName>
+    </file>
   </files>
   <includeBaseDirectory>false</includeBaseDirectory>
 

@@ -497,6 +497,30 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>net.ju-n.maven.plugins</groupId>
+        <artifactId>checksum-maven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>generate-artifact-checksum</id>
+            <phase>install</phase>
+            <goals>
+              <goal>files</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <fileSets>
+            <fileSet>
+              <directory>${project.build.directory}</directory>
+              <includes>
+                <include>efgs*</include>
+              </includes>
+            </fileSet>
+          </fileSets>
+        </configuration>
+      </plugin>
 
     </plugins>
   </build>
