@@ -21,6 +21,7 @@
 package eu.interop.federationgateway.batchsigning;
 
 import eu.interop.federationgateway.TestData;
+import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.model.EfgsProto.DiagnosisKeyBatch;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
@@ -32,6 +33,7 @@ import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.List;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -181,6 +183,45 @@ public class BatchSignatureVerifierTest {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123456ABC"));
     Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, signatureGenerator.encryptData(new byte[]{41,
       52, 38})));
+  }
+
+  @Test
+  public void testSingatureMaximumForDatabase()
+  throws OperatorCreationException, CertificateEncodingException, CMSException, IOException
+  {
+    int maxBytes= 10*1024*1024;
+    EfgsProperties.Batching batching = new EfgsProperties.Batching();
+    List<String> keys = new ArrayList();
+    for(int x=0;x<batching.getDoclimit();x++)
+      keys.add(null);
+    var batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(keys);
+
+    var signature = createSignature(batch,  TestData.validCertificate);
+
+    Assert.assertTrue(signature.length()<maxBytes);
+  }
+
+  @Test
+  public void testVerifyWorksWithRandomKeyDataContent()
+    throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
+
+      int max=100;
+
+      List<String> keyList = new ArrayList<String>();
+
+      for(int x=0;x<max;x++)
+        keyList.add(null);
+
+     DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(keyList);
+      Assert.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+        TestData.validCertificate)));
+
+      for(int x=0;x<max;x++)
+        keyList.add("INVALID");
+
+      batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(keyList);
+      Assert.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+        TestData.validCertificate)));
   }
 
   private String createSignature(final DiagnosisKeyBatch batch, X509Certificate cert)

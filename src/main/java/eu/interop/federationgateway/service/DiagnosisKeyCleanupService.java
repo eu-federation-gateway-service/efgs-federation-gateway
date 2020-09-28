@@ -26,7 +26,7 @@ public class DiagnosisKeyCleanupService {
    */
   @Scheduled(cron = "0 0 0 * * *")
   public void cleanupDiagnosisKeys() {
-    ZonedDateTime deleteTimestamp = LocalDate.now()
+    ZonedDateTime deleteTimestamp = LocalDate.ofInstant(ZonedDateTime.now(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC)
       .atStartOfDay(ZoneOffset.UTC)
       .minusDays(efgsProperties.getDownloadSettings().getMaxAgeInDays());
 

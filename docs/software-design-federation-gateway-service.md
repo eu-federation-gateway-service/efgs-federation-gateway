@@ -40,13 +40,14 @@ National Health Authorities acting the the certificate management process.
 ## Database Design
 
 Entities
-| Entity     | Content                                          | Delete Strategy                        |
-| ---------- | ------------------------------------------------ | -------------------------------------- |
-| callback_subscription | stores details about the callback                | no automatic deletion                |
+| Table Name     | Content                                          | Delete Strategy                        |
+| -------------- | ------------------------------------------------ | -------------------------------------- |
+| callback_subscription | stores details about the callback subscriptions  | no automatic deletion                |
 | callback_task         | stores details about a specific callback task    | no automatic deletion |
 | certificate           | stores the certificate for the countries         | no automatic deletion |
 | diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
 | diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
+| shedlock              | task synchronization infrastructure              | no automatic deletion |
 
 ### Data Deletion
 The semantic scope for automated deletion are all data that is related to human individuals. This data should only be available for 14 days.
@@ -118,7 +119,7 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Batch Signature verification failed, unknown signing cert | ERROR | unknown signing certificate | certThumbprint | 
 | Batch Signature verification failed, batch was signed with revoked certificate | ERROR | certificate is revoked | certThumbprint | 
 | Batch Signature verification failed, signature does not match to batch | ERROR | wrong signature | n/a | 
-| Successful Batch Signature verification | INFO | verified batch signature | batchTag, numKeys | 
+| Successful Batch Signature verification | INFO | verified batch signature | batchTag, numKeys, certThumbprint | 
 | Batch Upload failed, uploader has provided too many diagnosis keys at once | ERROR | too many diagnosis keys | batchTag, numKeys, maxKeys | 
 | Batch Upload failed, uploader has provided an already existing BatchTag | ERROR | batchtag already exists | batchTag, numKeys | 
 | Batch Upload failed, uploader has provided one ore more keys which have a different country then uploader cert | ERROR | invalid uploader country | batchTag, numKeys | 
@@ -316,7 +317,7 @@ These keys need to be stored seperate from the database. They are stored in two 
 
 ### 3.1. PKCS#7
 
-**SecReq-016**  The batch signature MUTS be generate based on the [RFC 5652](https://tools.ietf.org/html/rfc5652) standard.
+**SecReq-016**  The batch signature MUST be generate based on the [RFC 5652](https://tools.ietf.org/html/rfc5652) standard.
 
 **SecReq-017**  The PKCS#7 object MUST contain the Signing Certificate. 
 
@@ -332,11 +333,11 @@ These keys need to be stored seperate from the database. They are stored in two 
 
 ### 3.2. Signature Verification
 
-The uploaded diagnostic keys must be signed at a abstract content level, which means 
+The uploaded diagnostic keys must be signed at an abstract content level, which means 
 not the content transferred via wire is signed but instead a constructed abstract 
 content based on the transferred data.
 
-**SecReq-022**  To create the signature and/or to verify it the diagnosis key data has be transformed 
+**SecReq-022**  To create the signature and/or to verify it the diagnosis key data has been transformed 
 into a byte stream with the structure defined below.  
 
 The definition uses extended Backus–Naur form (ISO/IEC 14977)
@@ -345,23 +346,32 @@ ByteStream = DiagnosisKeyBatch ;
 
 DiagnosisKeyBatch = { DiagnosisKey } ;
 
-DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionRiskLevel, visitedCountries, origin, verificationType ;
+DiagnosisKey = keyData, rollingStartIntervalNumber, rollingPeriod, transmissionRiskLevel, visitedCountries, origin, reporttype and daysonsetofsymptoms ;
 
+All fields, excluded the seperators, have to be converted to a **BASE64** string with US_ASCII encoding. 
 
-| Order        | Fieldname     | Start at Pos. |  Bytes  |Type (protobuf)	| Notes  |
-| ------------ | ------------- | ------------- | ------- | -------------- | ------ |
-| 1            | keyData       | 0             | k | bytes | UTF-8 encoding | 
-| 2            | rollingStartIntervalNumber       | k + 1             |4 | uint32 |Big endian| 
-| 3            | rollingPeriod       | k + 5             |4 | uint32 |Big endian| 
-| 4            | transmissionRiskLevel       | k + 9             |4 | int32 |Big endian| 
-| 5            | visitedCountries       | k + 13             |c \* 2 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK).| 
-| 6            | origin       | (k + 13) + (c * 2)             |2 | string | UTF-8 encoding. | 
-| 7            | reportType       |(k + 13) + (c * 2) + 2             |4 | int32 |Big endian| 
-| 8            | daysSinceOnsetOfSymptoms       |(k + 13) + (c * 2) + 6             |4 | uint32 |Big endian| 
+| Order        | Fieldname     | Start at Pos. |  Bytes  |Type (protobuf)	| Notes  | BASE64|
+| ------------ | ------------- | ------------- | ------- | -------------- | ------ | -------- |
+| 1            | keyData       | 0             | k | bytes | Plain bytes | Yes|
+| 2			       | Seperator (.)	   | k			   | 1 | string | US_ASCII encoding		 | No|
+| 3            | rollingStartIntervalNumber       | k+1              |4 | uint32 |Big endian| Yes|
+| 4			       | Seperator	(.)   | k+5			   | 1 | string | US_ASCII encoding		 |No|
+| 5            | rollingPeriod       | k+6             |4 | uint32 |Big endian| Yes|
+| 6			       | Seperator	(.)   | k+10			   | 1 | string | US_ASCII encoding		 |No|
+| 7            | transmissionRiskLevel       | k+11             |4 | int32 |Big endian| Yes|
+| 8			       | Seperator	(.)   | k+15			   | 1 | string | US_ASCII encoding		 |No|
+| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries, each country (e.g., DE) has 2 bytes plus "," for seperation. US_ASCII encoding. |Yes|
+| 10		       | Seperator (.)	  | (k+16) + (c * 3)			   | 1 | string | US_ASCII encoding		 |No|
+| 11           | origin       | (k+16) + (c * 3)+1         |2 | string | US_ASCII encoding. | Yes|
+| 12		       | Seperator (.)	  | (k+16) + (c * 3)+3			   | 1 | string | US_ASCII encoding		 |No|
+| 13           | reportType   | (k+16) + (c * 3)+4	       |4 | int32 |Big endian| Yes|
+| 14		       | Seperator (.)	  | (k+16) + (c * 3)+8			   | 1 | string | US_ASCII encoding		 |No|
+| 15           | daysSinceOnsetOfSymptoms       |(k+16) + (c * 3)+9            |4 | sint32 |Big endian| Yes|
+| 16		       | Seperator (.)	  | (k+16) + (c * 3)+13			   | 1 | string |US_ASCII encoding		 |No|
 
 A DiagnosisKeyBatch can contain more than one DiagnosisKey. To make sure that the signer (National Backends) and 
 verifier (Federation Gateway) process the same byte stream, the DiagnosisKey objects in the DiagnosisKeyBatch must be 
-sorted by KeyData (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
+sorted by Diagnosis Key encoded in Base64 Encoding (see method **sortBatchByKeyData** in [BatchSignatureUtils.java](https://github.com/eu-federation-gateway-service/efgs-federation-gateway/blob/master/src/main/java/app/coronawarn/interop/federationgateway/utils/BatchSignatureUtils.java)).   
 
 ### 3.3. Certificate Verification during OnBoarding
 

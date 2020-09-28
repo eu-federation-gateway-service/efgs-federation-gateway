@@ -45,12 +45,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class CallbackTaskExecutorService {
 
+  private static final String MDC_PROP_TASK_ID = "taskId";
+  private static final String MDC_PROP_COUNTRY = "country";
+  private static final String MDC_PROP_CALLBACK_ID = "callbackId";
+
   private final EfgsProperties efgsProperties;
-
   private final WebClient webClient;
-
   private final CallbackService callbackService;
-
   private final CallbackTaskRepository callbackTaskRepository;
 
   /**
@@ -66,8 +67,8 @@ public class CallbackTaskExecutorService {
       setExecutionLock(currentTask);
       CallbackSubscriptionEntity subscription = currentTask.getCallbackSubscription();
 
-      EfgsMdc.put("callbackId", subscription.getCallbackId());
-      EfgsMdc.put("country", subscription.getCountry());
+      EfgsMdc.put(MDC_PROP_CALLBACK_ID, subscription.getCallbackId());
+      EfgsMdc.put(MDC_PROP_COUNTRY, subscription.getCountry());
       EfgsMdc.put("url", subscription.getUrl());
 
       if (!callbackService.checkUrl(subscription.getUrl(), subscription.getCountry())) {
@@ -105,8 +106,8 @@ public class CallbackTaskExecutorService {
 
   private void removeNotBeforeForNextTask(CallbackTaskEntity currentTask) {
     callbackTaskRepository.findFirstByNotBeforeIs(currentTask).ifPresent(task -> {
-      EfgsMdc.put("callbackId", currentTask.getCallbackSubscription().getCallbackId());
-      EfgsMdc.put("country", currentTask.getCallbackSubscription().getCountry());
+      EfgsMdc.put(MDC_PROP_CALLBACK_ID, currentTask.getCallbackSubscription().getCallbackId());
+      EfgsMdc.put(MDC_PROP_COUNTRY, currentTask.getCallbackSubscription().getCountry());
 
       log.info("Removing notBefore restriction from CallbackTask.");
 
@@ -118,12 +119,13 @@ public class CallbackTaskExecutorService {
   boolean sendCallback(CallbackTaskEntity callbackTask) {
     CallbackSubscriptionEntity callbackSubscription = callbackTask.getCallbackSubscription();
 
-    EfgsMdc.put("callbackId", callbackSubscription.getCallbackId());
-    EfgsMdc.put("country", callbackSubscription.getCountry());
+    EfgsMdc.put(MDC_PROP_CALLBACK_ID, callbackSubscription.getCallbackId());
+    EfgsMdc.put(MDC_PROP_COUNTRY, callbackSubscription.getCountry());
 
     URI requestUri = UriComponentsBuilder.fromHttpUrl(callbackSubscription.getUrl())
       .queryParam("batchTag", callbackTask.getBatch().getBatchName())
-      .queryParam("date", callbackTask.getBatch().getCreatedAt().toLocalDate().format(DateTimeFormatter.ISO_DATE))
+      .queryParam("date", callbackTask.getBatch().getCreatedAt()
+        .withZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE))
       .build().toUri();
 
     ClientResponse callbackResponse;
@@ -138,7 +140,7 @@ public class CallbackTaskExecutorService {
       return false;
     }
 
-    if (callbackResponse != null && callbackResponse.statusCode().is2xxSuccessful()) {
+    if (callbackResponse.statusCode().is2xxSuccessful()) {
       log.info("Got 2xx response for callback.");
 
       return true;
@@ -161,7 +163,7 @@ public class CallbackTaskExecutorService {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   void deleteTask(CallbackTaskEntity task) {
-    EfgsMdc.put("taskId", task.getId());
+    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
     log.info("Deleting CallbackTask from db");
     callbackTaskRepository.delete(task);
   }
@@ -173,7 +175,7 @@ public class CallbackTaskExecutorService {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   void setExecutionLock(CallbackTaskEntity task) {
-    EfgsMdc.put("taskId", task.getId());
+    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
     log.info("Setting execution lock for CallbackTask");
     task.setExecutionLock(ZonedDateTime.now(ZoneOffset.UTC));
     callbackTaskRepository.save(task);
@@ -186,7 +188,7 @@ public class CallbackTaskExecutorService {
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
   void removeExecutionLock(CallbackTaskEntity task) {
-    EfgsMdc.put("taskId", task.getId());
+    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
     log.info("Removing execution lock for CallbackTask.");
     task.setExecutionLock(null);
     callbackTaskRepository.save(task);

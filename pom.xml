@@ -6,7 +6,7 @@
 
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0-RC5</version>
   <packaging>${packaging.format}</packaging>
 
   <name>efgs-federation-gateway</name>
@@ -56,6 +56,13 @@
     <!-- sonar -->
     <sonar.organization>eu-federation-gateway-service</sonar.organization>
     <sonar.projectKey>${sonar.organization}_${project.artifactId}</sonar.projectKey>
+    <sonar.coverage.exclusions>
+      **/FederationGatewayApplication.java,
+      **/model/*,
+      **/mapper/*,
+      **/dbencryption/*,
+      **/entity/*
+    </sonar.coverage.exclusions>     
   </properties>
 
   <url>https://github.com/eu-federation-gateway-service/efgs-federation-gateway/</url>
@@ -331,6 +338,15 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <environmentVariables>
+            <efgs_dbencryption_password>abcdefghjklmnopq</efgs_dbencryption_password>
+          </environmentVariables>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>${spring.boot.version}</version>
@@ -366,6 +382,23 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>      
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>

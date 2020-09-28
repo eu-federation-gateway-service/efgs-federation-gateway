@@ -13,9 +13,6 @@ spring:
     enabled: true
     change-log: classpath:db/changelog.yml
 efgs:
-  dbencryption:
-    initVector: WnU2IQhlAAN@bK~L
-    password: ${efgs_dbencryption_password:}
   trustAnchor:
     keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
     keyStorePass: 3fgs-p4ssw0rd
@@ -51,3 +48,6 @@ efgs:
     timelimit: 1200000
     timeinterval: 300000
     doclimit: 5000
+springdoc:
+  api-docs:
+    enabled: false

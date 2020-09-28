@@ -1,28 +1,25 @@
 package eu.interop.federationgateway.dbencryption;
 
 import javax.persistence.AttributeConverter;
-import lombok.RequiredArgsConstructor;
+import javax.persistence.PersistenceException;
 
-@RequiredArgsConstructor
 public class DbEncryptionStringConverter implements AttributeConverter<String, String> {
-
-  private final DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(String s) {
     try {
-      return dbEncryptionService.encryptString(s);
+      return DbEncryptionService.getInstance().encryptString(s);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 
   @Override
   public String convertToEntityAttribute(String s) {
     try {
-      return dbEncryptionService.decryptString(s);
+      return DbEncryptionService.getInstance().decryptString(s);
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 

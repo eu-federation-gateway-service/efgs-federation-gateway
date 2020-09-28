@@ -2,28 +2,25 @@ package eu.interop.federationgateway.dbencryption;
 
 import eu.interop.federationgateway.entity.DiagnosisKeyPayload;
 import javax.persistence.AttributeConverter;
-import lombok.RequiredArgsConstructor;
+import javax.persistence.PersistenceException;
 
-@RequiredArgsConstructor
 public class DbEncryptionReportTypeConverter implements AttributeConverter<DiagnosisKeyPayload.ReportType, String> {
-
-  private final DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(DiagnosisKeyPayload.ReportType s) {
     try {
-      return dbEncryptionService.encryptString(s.name());
+      return DbEncryptionService.getInstance().encryptString(s.name());
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 
   @Override
   public DiagnosisKeyPayload.ReportType convertToEntityAttribute(String s) {
     try {
-      return DiagnosisKeyPayload.ReportType.valueOf(dbEncryptionService.decryptString(s));
+      return DiagnosisKeyPayload.ReportType.valueOf(DbEncryptionService.getInstance().decryptString(s));
     } catch (Exception e) {
-      throw new RuntimeException(e);
+      throw new PersistenceException(e);
     }
   }
 

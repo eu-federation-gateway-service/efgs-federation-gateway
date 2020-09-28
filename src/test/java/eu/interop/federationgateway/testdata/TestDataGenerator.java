@@ -20,6 +20,7 @@ import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.OperatorCreationException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -51,7 +52,7 @@ public class TestDataGenerator {
    * This Testcase is ignored by default. To create testdata remove the @Ignore annotation temporary.
    */
   @Test
-  @Ignore
+  @Ignore("see description above")
   public void createTestDataForManualTesting() throws IOException, CertificateEncodingException,
     OperatorCreationException, CMSException {
     if (Files.isDirectory(Path.of("testdata"))) {
@@ -71,6 +72,8 @@ public class TestDataGenerator {
     FileOutputStream outputStreamCertificate = new FileOutputStream("testdata/cert.pem", false);
 
     FileOutputStream outputStreamCertData = new FileOutputStream("testdata/signatures.txt");
+
+    Assert.assertTrue(outputStreamBatch1.getFD().valid());
 
     EfgsProto.DiagnosisKeyBatch batch1 = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addKeys(TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(10).build())

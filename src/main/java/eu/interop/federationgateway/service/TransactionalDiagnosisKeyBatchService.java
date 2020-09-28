@@ -96,7 +96,7 @@ public class TransactionalDiagnosisKeyBatchService {
     DiagnosisKeyBatchEntity newBatchEntity = new DiagnosisKeyBatchEntity();
     newBatchEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
 
-    String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String formattedDate = ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
     Optional<DiagnosisKeyBatchEntity> lastBatchEntity = diagnosisKeyBatchRepository.findTopByOrderByCreatedAtDesc();
 
