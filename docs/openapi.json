@@ -42,14 +42,14 @@
             "name": "Accept",
             "in": "header",
             "required": true,
-            "example": "application/json;version=1.0"
+            "example": "application/json"
           }
         ],
         "responses": {
           "200": {
             "description": "OK. Returns the audit information to the selected batch.",
             "content": {
-              "application/json; version=1.0": {
+              "application/json": {
                 "schema": {
                   "type": "array",
                   "items": {
@@ -191,7 +191,7 @@
               }
             },
             "content": {
-              "application/json; version=1.0": {
+              "application/json": {
                 "schema": {
                   "type": "object"
                 }
@@ -250,7 +250,7 @@
               }
             },
             "content": {
-              "application/json;version=1.0": {
+              "application/json+v1.0": {
                 "example": "diagnosisKeyBatch"
               }
             }
@@ -341,7 +341,7 @@
               }
             },
             "content": {
-              "application/json; version=1.0": {
+              "application/json+v1.0": {
                 "example": "{\n  '201': [1,2,5,8,9],\n  '409': [3,4,6,7],\n  '500': [10]\n}"
               }
             }
