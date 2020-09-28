@@ -116,7 +116,7 @@ public class UploadController {
           @Header(name = "batchTag", required = true, description = "Tag of the batch.")
         },
         content = @Content(
-          mediaType = MediaType.APPLICATION_JSON_VALUE + "+v1.0",
+          mediaType = MediaType.APPLICATION_JSON_VALUE + ";version=1.0",
           examples = @ExampleObject("{\n  '201': [1,2,5,8,9],\n  '409': [3,4,6,7],\n  '500': [10]\n}"))
       ),
       @ApiResponse(responseCode = "400", description = "Signature not valid. Bad request.", content = @Content),
@@ -124,7 +124,7 @@ public class UploadController {
         description = "Forbidden call in cause of missing or invalid client certificate.", content = @Content),
       @ApiResponse(responseCode = "406", description = "Data format or content is not valid.", content = @Content),
       @ApiResponse(responseCode = "413", description = "Payload to large.", content = @Content),
-      @ApiResponse(responseCode = "413", description = "Data already exist.", content = @Content),
+      @ApiResponse(responseCode = "409", description = "Data already exist.", content = @Content),
       @ApiResponse(responseCode = "500", description = "Not able to write data. Retry please.", content = @Content),
     })
   @PostMapping(value = UPLOAD_ROUTE,
