@@ -20,10 +20,6 @@
 
 package eu.interop.federationgateway.controller;
 
-import eu.interop.federationgateway.batchsigning.BatchSignatureVerifier;
-import eu.interop.federationgateway.config.EfgsProperties;
-import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
-import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -32,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,14 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @Validated
 public class DiagnosisKeyController {
-
-  private final BatchSignatureVerifier signatureVerifier;
-
-  private final DiagnosisKeyMapper diagnosisKeyMapper;
-
-  private final EfgsProperties properties;
-
-  private final DiagnosisKeyEntityService diagnosisKeyEntityService;
 
   private static final String OPTIONS_ROUTE = "/diagnosiskeys";
 
@@ -73,10 +60,8 @@ public class DiagnosisKeyController {
             schema = @Schema(example = "POST,GET,OPTIONS"))
         })
     })
-  @RequestMapping(value = OPTIONS_ROUTE,
-    method = RequestMethod.OPTIONS,
-    produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> getOptions() {
+  @RequestMapping(value = OPTIONS_ROUTE, method = RequestMethod.OPTIONS)
+  public ResponseEntity<Void> getOptions() {
     return ResponseEntity
       .ok()
       .allow(HttpMethod.POST, HttpMethod.GET, HttpMethod.OPTIONS)

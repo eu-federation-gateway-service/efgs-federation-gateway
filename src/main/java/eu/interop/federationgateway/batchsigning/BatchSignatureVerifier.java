@@ -105,7 +105,7 @@ public class BatchSignatureVerifier {
           return null;
         }
         return signingCertThumbprint;
-      } catch (CertificateException | OperatorCreationException | CMSException e) {
+      } catch (CertificateException | OperatorCreationException | CMSException | IllegalArgumentException e) {
         log.error("error verifying batch signature", e);
       }
     }
