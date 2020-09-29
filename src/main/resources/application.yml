@@ -14,7 +14,9 @@ spring:
     change-log: classpath:db/changelog.yml
 management:
   endpoints:
-    enabled-by-default: false
+    web:
+      exposure:
+        exclude: "*"    
 efgs:
   trustAnchor:
     keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
