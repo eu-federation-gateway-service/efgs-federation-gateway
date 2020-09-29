@@ -30,8 +30,9 @@ This repository contains the **federation gateway service**.
 SonarCloud supports the EU Federation Gateway Service project! SonarCloud (www.sonarcloud.io) catches Bugs and Vulnerabilities in your repositories, and provides clear resolution guidance for any Code Quality or Security issue it detects. SonarCloud makes applications maintainable, reliable and safe!
 
 ### Prerequisites
- - [Open JDK 11](https://openjdk.java.net)  
+ - [Open JDK 11](https://openjdk.java.net) (with installed ```keytool``` CLI)
  - [Maven](https://maven.apache.org)
+ - [OpenSSL](https://www.openssl.org) (with installed CLI)
 
 ### Build
 Whether you cloned or downloaded the 'zipped' sources you will either find the sources in the chosen checkout-directory or get a zip file with the source code, which you can expand to a folder of your choice.
@@ -47,13 +48,20 @@ Please check, whether following prerequisites are installed on your machine:
 #### Build Docker Image
 This project also supports building a Docker image for local testing (Docker image should not be used for productive environments).
 
+In order to run EFGS locally two certificates (in addition to your personal authentication and signing certificate) need to be created:
+TrustAnchor Certificate and Outbound Callback Certificate. To create them just execute the create_trustanchor and create_callback_client_certificate script from tools directory.
+These scripts will generate certifcates and pack them into a Java Key Store.
+
+For testing purpose it is advised to not change the default parameters and answer all question of the script the the default value (just press enter) 
+As a result you will have two files: efgs-ta.jks and efgs-cb-client.jks. We need these keystores later.
+
 To build the Docker image enable the maven profile ```docker``` and build the project:
 
 ```shell script
 mvn clean install -P docker
 ```
 
-A directory ```docker``` will be created in ```target``` directory.
+A directory ```docker``` will be created in ```target``` directory. Create a directory ```certs``` within this directory and put the previously created keystores inside.
 Now open a shell with working directory within the created directory and execute
 
 ```shell script
@@ -61,6 +69,12 @@ docker-compose up --build
 ```
 
 The EFGS Docker image will be built. Also a MySQL database will be created. After that both start up and EFGS service is available on localhost port 8080.
+
+To access your local EFGS instance you need to whitelist your personal authentication certificate.
+To do this execute the create_certificate_signature script from tools directory. The script will ask four your certificate (defaults to client.pem). Provide the full path to your certificate here. Please pay attention that your certificate does not contain a private key and has unix line endings. Otherwise the generated signature would not match.
+As an result the script will generate a ```insert.sql``` file. This file contains one prepared SQL insert statement. Execute this statement with a MySQL CLient of your choice sinside your Docker MySql database.
+
+To also be able to upload keys repeat this step with your signing certificate.
 
 #### API documentation  
 Along with the application there comes a [swagger2](https://swagger.io) API documentation, which you can access in your web browser when the efgs-gateway-service applications runs:
