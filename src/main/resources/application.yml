@@ -16,7 +16,9 @@ management:
   endpoints:
     web:
       exposure:
-        exclude: "*"    
+        exclude: "*"
+  server:
+    port: -1
 efgs:
   trustAnchor:
     keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
