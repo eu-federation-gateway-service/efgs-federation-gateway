@@ -59,7 +59,7 @@ public class CallbackService {
 
   private CallbackTaskEntity getNotBeforeCallbackTask(CallbackSubscriptionEntity subscriptionEntity) {
     return callbackTaskRepository
-      .findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(subscriptionEntity, null);
+      .findFirstByCallbackSubscriptionIsOrderByCreatedAtDesc(subscriptionEntity);
   }
 
   /**
