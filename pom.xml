@@ -6,7 +6,7 @@
 
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
-  <version>1.0.0-RC5</version>
+  <version>1.0.1.SNAPSHOT</version>
   <packaging>${packaging.format}</packaging>
 
   <name>efgs-federation-gateway</name>
@@ -25,7 +25,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
+    <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
     <spring.cloud.version>Hoxton.SR7</spring.cloud.version>
     <spring.test.version>5.2.8.RELEASE</spring.test.version>
     <spring.security.version>5.3.3.RELEASE</spring.security.version>
