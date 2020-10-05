@@ -86,6 +86,9 @@ The following channels are available for discussions, feedback, and support requ
 Contribution and feedback is encouraged and always welcome. For more information about how to contribute, the project structure, as well as additional contribution information, see our [Contribution Guidelines](./CONTRIBUTING.md). By participating in this project, you agree to abide by its [Code of Conduct](./CODE_OF_CONDUCT.md) at all times.
 
 ## Contributors  
+
+  - [CISPA Helmholtz Center for Information Security](https://www.cispa.de/) (Contact: [Cas Cremers](https://cispa.saarland/group/cremers/index.html))
+
 Our commitment to open source means that we are enabling -in fact encouraging- all interested parties to contribute and become part of its developer community.
 
 ## Licensing
