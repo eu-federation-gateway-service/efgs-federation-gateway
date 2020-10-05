@@ -39,8 +39,7 @@ public interface CallbackTaskRepository extends JpaRepository<CallbackTaskEntity
   @Transactional(Transactional.TxType.REQUIRED)
   int removeTaskLocksOlderThan(@Param("timestamp") ZonedDateTime timestamp);
 
-  CallbackTaskEntity findFirstByCallbackSubscriptionIsAndNotBeforeIsOrderByCreatedAtDesc(
-    CallbackSubscriptionEntity subscription, CallbackTaskEntity notBefore);
+  CallbackTaskEntity findFirstByCallbackSubscriptionIsOrderByCreatedAtDesc(CallbackSubscriptionEntity subscription);
 
   @Modifying
   @Transactional(Transactional.TxType.REQUIRED)
