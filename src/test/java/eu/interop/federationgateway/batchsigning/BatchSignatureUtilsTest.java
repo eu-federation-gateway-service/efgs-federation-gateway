@@ -253,7 +253,26 @@ public class BatchSignatureUtilsTest {
       Assert.assertArrayEquals(expectedBytes, bytesToVerify);
     }
   }
-
+  
+  // CC 24/08/2020:
+  // A test to show that currently, data uploaded to the EFGS can be manipulated without invalidating
+  // the corresponding signature of the uploader. This means that signature verification currently does not
+  // provide integrity.
+  //
+  // The underlying problem is that `generateBytesToVerify` does not provide an unambiguous encoding, and
+  // glues arbitrary-length strings together without length indication. There are at least three variable-length aspects:
+  //   - the length of the diagnosis key string after encoding,
+  //   - the number of visited countries, and
+  //   - the length of each country string.
+  // Because lengths are not encoded and separations unclear, given a key batch, it is possible to construct a second
+  // key batch that will have lead to the same output of `generateBytesToVerify` and will therefore also verify using
+  // the signature of the original batch. 
+  //
+  // The test is only a very specific instance -- it is easy to change `generateBytesToVerify` such that this test 
+  // passes, but without solving the underlying problem.
+  //
+  // Issue identified by Johannes Krupp @ CISPA,
+  // Proof-of-concept/test by Cas Cremers @ CISPA.
   @Test
   public void testSignatureMalleability() {
     // Create two key batches, each with a single key. They have different keydata and other parameters.
@@ -267,6 +286,8 @@ public class BatchSignatureUtilsTest {
     Assert.assertFalse(Arrays.equals(bytesToVerifyOriginal, bytesToVerifyModified));
   }
 
+  //Issue/test by by ebeigarts
+  //https://gist.github.com/ebeigarts/c868ae6ccbd51cc8d99bd456c4f8c61f
   @Test
   public void testInvalidCodePoints() {
     // "\xDD\xC7,\xA7\xFE\xCC\xFE\x99姽\x80\xE3\xD3\xCBy"
