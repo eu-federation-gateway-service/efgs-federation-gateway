@@ -80,7 +80,8 @@ public class EfgsKeyStore {
   }
 
   private InputStream getStream(String path) {
-    try (InputStream fileStream = new FileInputStream(path)) {
+    try {
+      InputStream fileStream = new FileInputStream(path);
       return fileStream;
     } catch (IOException e) {
       log.info("Could not find Keystore {}", path);
