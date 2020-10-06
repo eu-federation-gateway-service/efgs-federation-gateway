@@ -1,6 +1,8 @@
 package eu.interop.federationgateway.validator;
 
 import eu.interop.federationgateway.model.EfgsProto;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -15,24 +17,59 @@ public class DiagnosisKeyBatchValidator implements
   @Override
   public boolean isValid(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch, ConstraintValidatorContext context) {
 
+    /*
+     see
+       - https://github.com/google/exposure-notifications-server/blob/5a77e6982b16c7282c77dea39772491cc7b7dc8b/internal/publish/model/exposure_model.go#L338
+       - https://github.com/google/exposure-notifications-server/blob/5a77e6982b16c7282c77dea39772491cc7b7dc8b/tools/export-analyzer/main.go#L123
+     */
+
+    long minimumRollingStart = Instant
+      .now()
+      .truncatedTo(ChronoUnit.DAYS)
+      .minus(15, ChronoUnit.DAYS)
+      .getEpochSecond() / 600;
+
+    long maximumRollingStart = Instant
+      .now()
+      .getEpochSecond() / 600;
+    maximumRollingStart += 1;
+
     List<EfgsProto.DiagnosisKey> diagnosisKeys = diagnosisKeyBatch.getKeysList();
     for (EfgsProto.DiagnosisKey diagnosisKey : diagnosisKeys) {
       if (diagnosisKey.getKeyData() == null || diagnosisKey.getKeyData().isEmpty()) {
-        log.error(VALIDATION_FAILED_MESSAGE + "The keydata is empty or null.");
-        return false;
+        return fail("The keydata is empty or null.", context);
+
       } else if (diagnosisKey.getKeyData().size() != 16) {
-        log.error(VALIDATION_FAILED_MESSAGE + "The keydata is not 16 bytes.");
-        return false;
-      } else if (diagnosisKey.getRollingPeriod() == 0 || diagnosisKey.getRollingPeriod() > 144) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid rolling period.");
-        return false;
-      } else if (diagnosisKey.getTransmissionRiskLevel() < 0 || diagnosisKey.getTransmissionRiskLevel() > 8) {
-        log.error(VALIDATION_FAILED_MESSAGE + "Invalid transmission risk level.");
-        return false;
-      }
+        return fail("The keydata is not 16 bytes.", context);
+
+      } else if (diagnosisKey.getRollingStartIntervalNumber() < minimumRollingStart
+        || diagnosisKey.getRollingStartIntervalNumber() > maximumRollingStart) {
+        return fail("Invalid rolling start interval number.", context);
+      } else if (diagnosisKey.getRollingPeriod() < 1 || diagnosisKey.getRollingPeriod() > 144) {
+        return fail("Invalid rolling period.", context);
+
+      } else if ((diagnosisKey.getTransmissionRiskLevel() < 0 || diagnosisKey.getTransmissionRiskLevel() > 8)
+        && diagnosisKey.getTransmissionRiskLevel() != 0x7fffffff) {
+        return fail("Invalid transmission risk level.", context);
+
+      } /*
+        This checks needs further investigation because of multiple
+        usage of DSOS during the exchange and epidemiological harmonization.
+
+        else if (diagnosisKey.getDaysSinceOnsetOfSymptoms() < -14 || diagnosisKey.getDaysSinceOnsetOfSymptoms() > 14) {
+        return fail("Invalid days since onset of symptoms.", context);
+
+      }*/
     }
 
     log.info("Successful validation of diagnosis keys");
     return true;
+  }
+
+  private boolean fail(String reason, ConstraintValidatorContext context) {
+    context.buildConstraintViolationWithTemplate(VALIDATION_FAILED_MESSAGE + reason)
+      .addConstraintViolation();
+
+    return false;
   }
 }

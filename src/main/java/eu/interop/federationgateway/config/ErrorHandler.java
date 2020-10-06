@@ -25,6 +25,7 @@ import javax.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +38,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class ErrorHandler extends ResponseEntityExceptionHandler {
 
   /**
@@ -63,6 +65,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    */
   @ExceptionHandler(ConstraintViolationException.class)
   public ResponseEntity<ErrorMessageBody> handleException(ConstraintViolationException e) {
+    log.error(e.getMessage());
     return ResponseEntity
       .status(HttpStatus.BAD_REQUEST)
       .contentType(MediaType.APPLICATION_JSON)
