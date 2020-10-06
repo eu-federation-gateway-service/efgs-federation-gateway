@@ -36,3 +36,7 @@ build/
 *.log
 
 /keystore
+
+/tools/*
+!/tools/*.bat
+!/tools/*.sh

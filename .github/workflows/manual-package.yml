@@ -1,0 +1,48 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Manual-Package
+
+on:
+ workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/cache@v1
+      env:
+        cache-name: m2
+      with:
+        path: ~/.m2/repository
+        key: ${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ env.cache-name }}-
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: environment
+      run: |
+        sudo apt-get install --yes --no-install-recommends libxml-xpath-perl
+        export VERSION=$(xpath -q -e "/project/version/text()" pom.xml)
+        export VERSION=${VERSION//-SNAPSHOT}-$(git rev-parse --short ${GITHUB_SHA})
+        echo "::set-env name=VERSION::${VERSION}"
+    - name: mvn version
+      run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}
+    - name: mvn deploy
+      run: mvn --batch-mode deploy
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: CORONA_TRACING_BACKEND001_TST-TEST
+        path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_TST*
+    - uses: actions/upload-artifact@v2
+      with:
+          name: CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE
+          path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_ACC*
+    - uses: actions/upload-artifact@v2
+      with:
+          name: CORONA_TRACING_BACKEND001_PRD-PROD
+          path: /home/runner/work/efgs-federation-gateway/efgs-federation-gateway/target/CORONA_TRACING_BACKEND001_PRD*

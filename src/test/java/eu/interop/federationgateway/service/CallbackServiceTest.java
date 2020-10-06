@@ -240,6 +240,35 @@ public class CallbackServiceTest {
   }
 
   @Test
+  public void notBeforePropertyShouldBeSetToPreviousCallbackTask2() {
+    CallbackSubscriptionEntity callbackSubscription1 = createCallbackSubscriptionEntity("r1");
+
+    DiagnosisKeyBatchEntity batch = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag", "batchTag2");
+    batch = diagnosisKeyBatchRepository.save(batch);
+
+    DiagnosisKeyBatchEntity batch2 = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag2", "batchTag3");
+    batch2 = diagnosisKeyBatchRepository.save(batch2);
+
+    DiagnosisKeyBatchEntity batch3 = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag3", null);
+    batch3 = diagnosisKeyBatchRepository.save(batch3);
+
+    callbackService.notifyAllCountriesForNewBatchTag(batch);
+    callbackService.notifyAllCountriesForNewBatchTag(batch2);
+    callbackService.notifyAllCountriesForNewBatchTag(batch3);
+
+    List<CallbackTaskEntity> callbackTasks = callbackTaskRepository.findAll();
+
+    Assert.assertEquals(3, callbackTasks.size());
+    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
+    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
+    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
+
+    Assert.assertNull(callbackTasks.get(0).getNotBefore());
+    Assert.assertEquals(callbackTasks.get(0), callbackTasks.get(1).getNotBefore());
+    Assert.assertEquals(callbackTasks.get(1), callbackTasks.get(2).getNotBefore());
+  }
+
+  @Test
   public void notifiyAllCallbackSubscribersMethodShouldCreateACallbackTaskForEachSubscriber() {
     CallbackSubscriptionEntity callbackSubscription1 = createCallbackSubscriptionEntity("r1");
     CallbackSubscriptionEntity callbackSubscription2 = createCallbackSubscriptionEntity("r2");

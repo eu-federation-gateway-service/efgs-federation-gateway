@@ -6,7 +6,7 @@
 
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
-  <version>1.0.0-RC5</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>${packaging.format}</packaging>
 
   <name>efgs-federation-gateway</name>
@@ -25,7 +25,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <spring.boot.version>2.3.3.RELEASE</spring.boot.version>
+    <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
     <spring.cloud.version>Hoxton.SR7</spring.cloud.version>
     <spring.test.version>5.2.8.RELEASE</spring.test.version>
     <spring.security.version>5.3.3.RELEASE</spring.security.version>
@@ -46,6 +46,7 @@
     <plugin.sonar.version>3.6.1.1688</plugin.sonar.version>
     <plugin.jacoco.version>0.8.5</plugin.jacoco.version>
     <plugin.os-maven.version>1.6.2</plugin.os-maven.version>
+    <plugin.surefire.version>3.0.0-M5</plugin.surefire.version>
     <!-- license -->
     <license.projectName>EU-Federation-Gateway-Service / efgs-federation-gateway</license.projectName>
     <license.inceptionYear>2020</license.inceptionYear>
@@ -333,7 +334,41 @@
           <artifactId>jacoco-maven-plugin</artifactId>
           <version>${plugin.jacoco.version}</version>
         </plugin>
-
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${plugin.surefire.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.xolstice.maven.plugins</groupId>
+          <artifactId>protobuf-maven-plugin</artifactId>
+          <version>0.6.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.8.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>2.0.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>3.2.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.6</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -402,7 +437,6 @@
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
-        <version>0.6.1</version>
         <executions>
           <execution>
             <goals>
@@ -417,7 +451,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
         <configuration>
           <annotationProcessorPaths>
             <path>
@@ -436,7 +469,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
-        <version>2.0.0</version>
         <configuration>
           <includes>**/*.java</includes>
           <copyrightOwners>${project.organization.name} and all other contributors</copyrightOwners>
@@ -451,7 +483,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.1</version>
         <configuration>
           <webXml>${project.basedir}/src/WEB-INF/web.xml</webXml>
         </configuration>
@@ -459,14 +490,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.2.0</version>
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
         <executions>
           <execution>
             <id>make-zip-package</id>

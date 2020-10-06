@@ -118,7 +118,6 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Batch Signature verification failed, signature of signing certificate could not be verified | ERROR | invalid signing certificate signature | n/a | 
 | Batch Signature verification failed, unknown signing cert | ERROR | unknown signing certificate | certThumbprint | 
 | Batch Signature verification failed, batch was signed with revoked certificate | ERROR | certificate is revoked | certThumbprint | 
-| Batch Signature verification failed, signature does not match to batch | ERROR | wrong signature | n/a | 
 | Successful Batch Signature verification | INFO | verified batch signature | batchTag, numKeys, certThumbprint | 
 | Batch Upload failed, uploader has provided too many diagnosis keys at once | ERROR | too many diagnosis keys | batchTag, numKeys, maxKeys | 
 | Batch Upload failed, uploader has provided an already existing BatchTag | ERROR | batchtag already exists | batchTag, numKeys | 
@@ -147,15 +146,12 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Callback URL verification: URL not parsable | ERROR | Could not parse URL | url |
 | Callback URL verification: URL doesn't use https | ERROR | Callback URL must use https | url |
 | Callback URL verification: URL contains query parameters | ERROR | URL must not contain any parameters | url |
-| Callback URL verification: No CallbackCertificate for URL's host | ERROR | Could not find a Callback Certificate for host | host |
-| Callback URL verification: CallbackCertificate for URL's host is revoked | ERROR | Found Callback Certificate, but it is revoked | thumbprint |
 | Callback URL verification: Address of callback host cannot resolved via system DNS | ERROR | Could not resolve host for callback | url, hostname |
 | Callback URL verification: Address of callback host is within a private address range | ERROR | IP Address of callback host is from private IP range. | url, hostname |
 | CallbackTask Cleanup: Start deleting abandoned TaskLocks | INFO | Deleting task locks of abandoned tasks | n/a |
 | CallbackTask Cleanup: Finished deleting abandoned TaskLocks | INFO | Removing of task locks of abandoned tasks finished. | taskCount |
 | Callback Processing: Starting executor | INFO | Callback processing started. | n/a |
 | Callback Processing: Preflight security check of URL has failed. CallbackSubscription will be deleted. | ERROR | Security check for callback url has failed. Deleting callback subscription. | callbackId, country, url |
-| Callback Processing: Could not find a certificate for callback url | ERROR | Could not find callback certificate. | callbackId, country |
 | Callback Processing: Callback request was successful | INFO | Successfully executed callback. Deleting callback task from database | retry, callbackId, country |
 | Callback Processing: CallbackTask reached max amount of retries. CallbackSubscription will be deleted. | ERROR | Callback reached max amount of retries. Deleting callback subscription. | callbackId, country |
 | Callback Processing: Got a response from callback url with positive status code (2xx) | INFO | Got 2xx response for callback. | callbackId, country |
