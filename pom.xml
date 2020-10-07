@@ -25,13 +25,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
+    <owasp.version>6.0.2</owasp.version>
     <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
     <spring.cloud.version>Hoxton.SR7</spring.cloud.version>
     <spring.test.version>5.2.8.RELEASE</spring.test.version>
     <spring.security.version>5.3.3.RELEASE</spring.security.version>
     <lombok.version>1.18.12</lombok.version>
     <liquibase.version>3.10.0</liquibase.version>
-    <springdoc.version>1.4.4</springdoc.version>
+    <springdoc.version>1.4.8</springdoc.version>
     <protobuf.version>3.12.2</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
     <junit.version>4.13</junit.version>
@@ -63,7 +64,7 @@
       **/mapper/*,
       **/dbencryption/*,
       **/entity/*
-    </sonar.coverage.exclusions>     
+    </sonar.coverage.exclusions>
   </properties>
 
   <url>https://github.com/eu-federation-gateway-service/efgs-federation-gateway/</url>
@@ -373,6 +374,24 @@
     </pluginManagement>
     <plugins>
       <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>${owasp.version}</version>
+        <configuration>
+          <suppressionFile>./owasp/suppressions.xml</suppressionFile>
+          <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
@@ -433,7 +452,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin>      
+      </plugin>
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
@@ -504,7 +523,7 @@
               <goal>single</goal>
             </goals>
             <configuration>
-                <finalName>CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE-${project.version}</finalName>
+              <finalName>CORONA_TRACING_BACKEND001_ACC-ACCEPTANCE-${project.version}</finalName>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
                 <descriptor>src/assembly/assembly.xml</descriptor>
