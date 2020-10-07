@@ -52,7 +52,7 @@ public class DiagnosisKeyEntityServiceTest {
   @Before
   public void setup() {
     diagnosisKeyEntityRepositoryMock = Mockito.mock(DiagnosisKeyEntityRepository.class);
-    this.diagnosisKeyEntityService = new DiagnosisKeyEntityService(diagnosisKeyEntityRepositoryMock);
+    this.diagnosisKeyEntityService = new DiagnosisKeyEntityService(diagnosisKeyEntityRepositoryMock, null);
   }
 
   @Test

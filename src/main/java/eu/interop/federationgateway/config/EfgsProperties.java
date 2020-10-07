@@ -76,6 +76,7 @@ public class EfgsProperties {
   public static class Batching {
     private int doclimit = 5000;
     private int timelimit = 1200000;
+    private int timeinterval = 300000;
     private int locklimit = 1800000;
   }
 
