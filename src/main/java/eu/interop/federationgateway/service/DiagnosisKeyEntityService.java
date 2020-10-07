@@ -20,7 +20,6 @@
 
 package eu.interop.federationgateway.service;
 
-import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
@@ -31,7 +30,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.transaction.Transactional;
 import lombok.Getter;
 import lombok.NonNull;
@@ -47,7 +45,6 @@ public class DiagnosisKeyEntityService {
 
   @NonNull
   private final DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
-  private final EfgsProperties properties;
 
   public boolean uploadBatchTagExists(String batchTag) {
     return diagnosisKeyEntityRepository.countAllByUploader_BatchTag(batchTag) != 0;
@@ -137,9 +134,7 @@ public class DiagnosisKeyEntityService {
    */
   public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTagAndDate(String batchTag, LocalDate date) {
     log.info("Requested all DiagnosisKeyEntities by a batchTag and date.");
-    // extend the time interval regarding the midnight upload and batch issue
-    long minutesBatchJobTimeInterval = TimeUnit.MILLISECONDS.toMinutes(properties.getBatching().getTimeinterval());
-    ZonedDateTime begin = date.atStartOfDay(ZoneOffset.UTC).minusMinutes(minutesBatchJobTimeInterval);
+    ZonedDateTime begin = date.atStartOfDay(ZoneOffset.UTC);
     ZonedDateTime end = begin.plusDays(1).minusNanos(1);
 
     return diagnosisKeyEntityRepository.findAllByBatchTag(batchTag, begin, end);
