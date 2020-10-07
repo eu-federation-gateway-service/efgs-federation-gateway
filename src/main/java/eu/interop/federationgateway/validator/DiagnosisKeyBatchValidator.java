@@ -13,6 +13,8 @@ public class DiagnosisKeyBatchValidator implements
   ConstraintValidator<DiagnosisKeyBatchConstraint, EfgsProto.DiagnosisKeyBatch> {
 
   private static final String VALIDATION_FAILED_MESSAGE = "Validation of diagnosis key failed: ";
+  private static final int ROLLING_START_INTERVAL_LENGTH = 600;
+  private static final int TRL_DEFAULT_VALUE = 0x7fffffff; // this value will be used if a correct TransmissionRiskLevel cannot be provided
 
   @Override
   public boolean isValid(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch, ConstraintValidatorContext context) {
@@ -27,11 +29,11 @@ public class DiagnosisKeyBatchValidator implements
       .now()
       .truncatedTo(ChronoUnit.DAYS)
       .minus(15, ChronoUnit.DAYS)
-      .getEpochSecond() / 600;
+      .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
 
     long maximumRollingStart = Instant
       .now()
-      .getEpochSecond() / 600;
+      .getEpochSecond() / ROLLING_START_INTERVAL_LENGTH;
     maximumRollingStart += 1;
 
     List<EfgsProto.DiagnosisKey> diagnosisKeys = diagnosisKeyBatch.getKeysList();
@@ -49,7 +51,7 @@ public class DiagnosisKeyBatchValidator implements
         return fail("Invalid rolling period.", context);
 
       } else if ((diagnosisKey.getTransmissionRiskLevel() < 0 || diagnosisKey.getTransmissionRiskLevel() > 8)
-        && diagnosisKey.getTransmissionRiskLevel() != 0x7fffffff) {
+        && diagnosisKey.getTransmissionRiskLevel() != TRL_DEFAULT_VALUE) {
         return fail("Invalid transmission risk level.", context);
 
       } /*
