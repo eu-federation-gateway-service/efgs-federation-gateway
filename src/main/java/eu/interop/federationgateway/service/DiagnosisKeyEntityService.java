@@ -79,8 +79,8 @@ public class DiagnosisKeyEntityService {
 
     ZonedDateTime uploadTimestamp = ZonedDateTime.now(ZoneOffset.UTC);
 
-    diagnosisKeyEntities.forEach(key -> {
-      int index = diagnosisKeyEntities.indexOf(key);
+    for (int index = 0; index < diagnosisKeyEntities.size(); index++) {
+      DiagnosisKeyEntity key = diagnosisKeyEntities.get(index);
       key.setCreatedAt(uploadTimestamp);
       try {
         saveDiagnosisKeyEntity(key);
@@ -91,7 +91,7 @@ public class DiagnosisKeyEntityService {
       } catch (Exception e) {
         resultMap.get(500).add(index);
       }
-    });
+    }
 
     if (!resultMap.get(409).isEmpty() || !resultMap.get(500).isEmpty()) {
 
