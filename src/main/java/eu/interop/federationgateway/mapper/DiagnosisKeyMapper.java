@@ -31,6 +31,7 @@ import eu.interop.federationgateway.utils.SemVerUtils;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -131,7 +132,7 @@ public abstract class DiagnosisKeyMapper {
         certificateCountry,
         format
       ))
-      .collect(Collectors.toList());
+      .collect(Collectors.toCollection(ArrayList::new));
   }
 
   /**
