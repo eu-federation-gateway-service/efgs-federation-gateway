@@ -14,7 +14,9 @@ public class DiagnosisKeyBatchValidator implements
 
   private static final String VALIDATION_FAILED_MESSAGE = "Validation of diagnosis key failed: ";
   private static final int ROLLING_START_INTERVAL_LENGTH = 600;
-  private static final int TRL_DEFAULT_VALUE = 0x7fffffff; // this value will be used if a correct TransmissionRiskLevel cannot be provided
+
+  // this value will be used if a correct TransmissionRiskLevel cannot be provided
+  private static final int TRL_DEFAULT_VALUE = 0x7fffffff;
 
   @Override
   public boolean isValid(EfgsProto.DiagnosisKeyBatch diagnosisKeyBatch, ConstraintValidatorContext context) {
