@@ -43,6 +43,8 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
+import java.time.LocalTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -138,7 +140,7 @@ public class AuditControllerTest {
     Assert.assertNotNull(auditEntry.getSigningCertificate());
     Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
   }
-  
+
   @Test
   public void testGetAuditInformationByYesterdayUpload() throws Exception {
     ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC);
@@ -177,7 +179,7 @@ public class AuditControllerTest {
     Assert.assertNotNull(auditEntry.getUploaderCertificate());
     Assert.assertNotNull(auditEntry.getSigningCertificate());
     Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
-  }  
+  }
 
   @Test
   public void testRequestShouldFailIfBatchTagDoesNotExists() throws Exception {
@@ -220,9 +222,9 @@ public class AuditControllerTest {
   }
 
   private String createDiagnosisKeysTestData() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(4).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(5).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(3);
+    EfgsProto.DiagnosisKey key2 = buildKey(4);
+    EfgsProto.DiagnosisKey key3 = buildKey(5);
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder().addAllKeys(Arrays.asList(key1,
       key2, key3)).build();
@@ -246,6 +248,15 @@ public class AuditControllerTest {
 
     diagnosisKeyBatchService.batchDocuments();
     return signature;
+  }
+
+  private EfgsProto.DiagnosisKey buildKey(int transmissionRiskLevel) {
+    return TestData.getDiagnosisKeyProto().toBuilder()
+      .setTransmissionRiskLevel(transmissionRiskLevel)
+      .setDaysSinceOnsetOfSymptoms(1)
+      .setRollingStartIntervalNumber(Math.toIntExact(Instant.now().getEpochSecond() / 600))
+      .setRollingPeriod(1)
+      .build();
   }
 
   private static String getDateString(ZonedDateTime timestamp) {
