@@ -20,12 +20,6 @@
 
 package eu.interop.federationgateway.filter;
 
-import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.KeyStoreException;
-import java.security.SignatureException;
-import org.springframework.test.context.ContextConfiguration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -34,12 +28,16 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
+import java.io.IOException;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.util.Base64;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.cert.CertIOException;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -196,6 +195,17 @@ public class CertAuthFilterTest {
       .accept("application/protobuf; version=1.0")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), "O=Test Firma GmbH,C=DE,U=,TR,TT=43")
+    ).andExpect(mvcResult -> {
+      Assert.assertEquals("DE", mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY));
+    });
+  }
+
+  @Test
+  public void testRequestShouldNotFailIfDnStringContainsDuplicatedKeys() throws Exception {
+    mockMvc.perform(get("/diagnosiskeys/download/s")
+      .accept("application/protobuf; version=1.0")
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), "O=Test Firma GmbH,O=XXX,C=DE,U=Abteilung XYZ,TR=test")
     ).andExpect(mvcResult -> {
       Assert.assertEquals("DE", mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY));
     });
