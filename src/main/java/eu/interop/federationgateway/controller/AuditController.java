@@ -74,7 +74,7 @@ public class AuditController {
    * This endpoint returns audit information for the interop gateway to inspect the exchanged data.
    *
    * @param date     A {@link String} containing an ISO-8601 date descriptor.
-   * @param batchTag A {@link String} containing
+   * @param batchTag A {@link String} containing the batchTag
    * @return List of {@link AuditEntry} with country codes and corresponding audit information.
    */
   @Operation(
