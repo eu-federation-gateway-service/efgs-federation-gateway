@@ -121,7 +121,7 @@ public class CallbackAdminController {
     })
   @PutMapping(value = CALLBACK_CHANGE_ROUTE)
   @CertificateAuthentificationRequired
-  public ResponseEntity<?> putOrUpdateCallbackSubscription(
+  public ResponseEntity<Void> putOrUpdateCallbackSubscription(
     @PathVariable("id") String callbackId,
     @RequestParam("url") String url,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
@@ -162,7 +162,7 @@ public class CallbackAdminController {
   )
   @DeleteMapping(value = CALLBACK_CHANGE_ROUTE)
   @CertificateAuthentificationRequired
-  public ResponseEntity<?> deleteCallbackSubscription(
+  public ResponseEntity<Void> deleteCallbackSubscription(
     @PathVariable("id") String callbackId,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String country
   ) {

@@ -40,13 +40,14 @@ National Health Authorities acting the the certificate management process.
 ## Database Design
 
 Entities
-| Entity     | Content                                          | Delete Strategy                        |
-| ---------- | ------------------------------------------------ | -------------------------------------- |
-| callback_subscription | stores details about the callback                | no automatic deletion                |
+| Table Name     | Content                                          | Delete Strategy                        |
+| -------------- | ------------------------------------------------ | -------------------------------------- |
+| callback_subscription | stores details about the callback subscriptions  | no automatic deletion                |
 | callback_task         | stores details about a specific callback task    | no automatic deletion |
 | certificate           | stores the certificate for the countries         | no automatic deletion |
 | diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
 | diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
+| shedlock              | task synchronization infrastructure              | no automatic deletion |
 
 ### Data Deletion
 The semantic scope for automated deletion are all data that is related to human individuals. This data should only be available for 14 days.
@@ -359,7 +360,7 @@ All fields, excluded the seperators, have to be converted to a **BASE64** string
 | 6			       | Seperator	(.)   | k+10			   | 1 | string | US_ASCII encoding		 |No|
 | 7            | transmissionRiskLevel       | k+11             |4 | int32 |Big endian| Yes|
 | 8			       | Seperator	(.)   | k+15			   | 1 | string | US_ASCII encoding		 |No|
-| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries Each country (e.g., DE) has 2 bytes plus "," for Seperation. UTF-8 encoding.Ascending alphabetic order (e.g., DE, NL, UK). |Yes|
+| 9            | visitedCountries       | k+16             |c \* 3 | repeated strings |c = number of countries, each country (e.g., DE) has 2 bytes plus "," for seperation. US_ASCII encoding. |Yes|
 | 10		       | Seperator (.)	  | (k+16) + (c * 3)			   | 1 | string | US_ASCII encoding		 |No|
 | 11           | origin       | (k+16) + (c * 3)+1         |2 | string | US_ASCII encoding. | Yes|
 | 12		       | Seperator (.)	  | (k+16) + (c * 3)+3			   | 1 | string | US_ASCII encoding		 |No|

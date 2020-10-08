@@ -1,6 +1,5 @@
 package eu.interop.federationgateway.dbencryption;
 
-import eu.interop.federationgateway.config.EfgsProperties;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -12,29 +11,52 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import javax.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
-import org.springframework.stereotype.Service;
 
-@Service
+@Slf4j
 public class DbEncryptionService {
 
-  private final EfgsProperties efgsProperties;
-
+  private static final String PASSWORD_PROPERTY_NAME = "efgs_dbencryption_password";
+  private static final Charset charset = StandardCharsets.UTF_8;
+  private static DbEncryptionService instance;
   private final Cipher cipher;
-
   private final Key key;
-
-  private final Charset charset = StandardCharsets.UTF_8;
 
   /**
    * Constructor for DbEncryptionService.
    * Initializes Cipher with ciphersuite configured in application properties.
    */
-  public DbEncryptionService(EfgsProperties efgsProperties) {
-    this.efgsProperties = efgsProperties;
-
+  private DbEncryptionService() {
     cipher = AesBytesEncryptor.CipherAlgorithm.CBC.createCipher();
-    key = new SecretKeySpec(efgsProperties.getDbencryption().getPassword().getBytes(), "AES");
+
+    String dbEncryptionPassword = System.getenv().containsKey(PASSWORD_PROPERTY_NAME)
+      ? System.getenv(PASSWORD_PROPERTY_NAME)
+      : System.getProperty(PASSWORD_PROPERTY_NAME);
+
+    if (dbEncryptionPassword != null) {
+      int passwordLength = dbEncryptionPassword.length();
+      if (passwordLength != 16 && passwordLength != 24 && passwordLength != 32) {
+        throw new ValidationException(
+          "Invalid Application Configuration: Database password must be a string with length of 16, 24 or 32");
+      }
+
+      key = new SecretKeySpec(dbEncryptionPassword.getBytes(), "AES");
+    } else {
+      throw new ValidationException("DB encryption password must be set!");
+    }
+  }
+
+  /**
+   * Returns an instance of Singleton-DbEncryptionService.
+   */
+  public static DbEncryptionService getInstance() {
+    if (DbEncryptionService.instance == null) {
+      DbEncryptionService.instance = new DbEncryptionService();
+    }
+
+    return instance;
   }
 
   /**
@@ -110,7 +132,6 @@ public class DbEncryptionService {
   }
 
   private IvParameterSpec getInitializationVector() {
-    return new IvParameterSpec(
-      efgsProperties.getDbencryption().getInitVector().getBytes(charset));
+    return new IvParameterSpec("WnU2IQhlAAN@bK~L".getBytes(charset));
   }
 }
