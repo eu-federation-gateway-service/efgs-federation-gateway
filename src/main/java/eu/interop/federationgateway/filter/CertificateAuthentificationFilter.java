@@ -185,6 +185,6 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
     return Arrays.stream(dnString.split(","))
       .map(part -> part.split("="))
       .filter(entry -> entry.length == 2)
-      .collect(Collectors.toMap(arr -> arr[0].toUpperCase().trim(), arr -> arr[1].trim()));
+      .collect(Collectors.toMap(arr -> arr[0].toUpperCase().trim(), arr -> arr[1].trim(), (s, s2) -> s));
   }
 }
