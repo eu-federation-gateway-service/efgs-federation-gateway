@@ -53,8 +53,12 @@ public class BatchSignatureUtils {
   static byte[] generateBytesToVerify(final DiagnosisKeyBatch batch) {
     final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
-    sortBatchByKeyData(batch)
-      .forEach(diagnosisKey -> byteArrayOutputStream.writeBytes(generateBytesToVerify(diagnosisKey)));
+    batch.getKeysList().stream()
+      .map(BatchSignatureUtils::generateBytesToVerify)
+      .sorted(Comparator.nullsLast(
+        Comparator.comparing(BatchSignatureUtils::bytesToBase64)
+      ))
+      .forEach(byteArrayOutputStream::writeBytes);
 
     return byteArrayOutputStream.toByteArray();
   }

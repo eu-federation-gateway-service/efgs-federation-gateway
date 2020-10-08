@@ -12,6 +12,13 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog.yml
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: "*"
+  server:
+    port: -1
 efgs:
   trustAnchor:
     keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
