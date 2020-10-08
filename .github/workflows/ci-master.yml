@@ -26,6 +26,7 @@ jobs:
         export VERSION=$(xpath -q -e "/project/version/text()" pom.xml)
         export VERSION=${VERSION//-SNAPSHOT}-$(git rev-parse --short ${GITHUB_SHA})
         echo "::set-env name=VERSION::${VERSION}"
+        echo ${GITHUB_SHA} > github_sha256
     - name: mvn version
       run: mvn --batch-mode versions:set -DgenerateBackupPoms=false -DnewVersion=${VERSION}
     - name: mvn deploy
