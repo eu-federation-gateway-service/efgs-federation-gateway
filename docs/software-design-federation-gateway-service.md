@@ -648,4 +648,3 @@ The federated gateway technical contact will then verify
 and then confirm the fingerprint of the certificate with the countries designated technical contact.
 
 It is then added to the relevant whitelist.
-
