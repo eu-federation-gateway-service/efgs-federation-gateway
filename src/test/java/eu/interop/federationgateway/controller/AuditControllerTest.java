@@ -43,7 +43,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -141,15 +140,15 @@ public class AuditControllerTest {
   }
   
   @Test
-  public void testGetAuditInformationByMidnightUpload() throws Exception {
+  public void testGetAuditInformationByYesterdayUpload() throws Exception {
     ZonedDateTime currentDateTime = ZonedDateTime.now(ZoneOffset.UTC);
     String formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     String batchTag = formattedDate + "-1";
 
     String batchSignature = createDiagnosisKeysTestData();
     
-    // change the key creation date to yesterday shortly before midnight
-    ZonedDateTime newCreationTime = ZonedDateTime.now(ZoneOffset.UTC).with(LocalTime.of(23, 59, 59)).minusDays(1);
+    // change the key creation date to yesterday
+    ZonedDateTime newCreationTime = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
     diagnosisKeyEntityRepository.findAll().forEach(key -> {
       key.setCreatedAt(newCreationTime);
         diagnosisKeyEntityRepository.save(key);

@@ -159,6 +159,7 @@ public class CallbackService {
    * Returns a {@link CallbackSubscriptionEntity} by a specific callback id.
    *
    * @param callbackId the id of the callback.
+   * @param country the country of the callback.
    * @return the {@link CallbackSubscriptionEntity} with the given id and thumbprint.
    */
   public Optional<CallbackSubscriptionEntity> getCallbackSubscription(String callbackId, String country) {
