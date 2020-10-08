@@ -137,7 +137,7 @@ public class AuditController {
       log.info("Could not find batch with given batchTag");
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find batch with given BatchTag");
     }
-    
+
     Instant batchDate = batchEntity.get().getCreatedAt().toInstant().truncatedTo(ChronoUnit.DAYS);
     Instant dateAsInstant = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 
