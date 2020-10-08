@@ -20,6 +20,7 @@
 
 package eu.interop.federationgateway.controller;
 
+import com.google.protobuf.ByteString;
 import com.googlecode.protobuf.format.ProtobufFormatter;
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.batchsigning.BatchSignatureUtilsTest;
@@ -34,10 +35,12 @@ import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateException;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
@@ -114,9 +117,9 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestShouldFailOnInvalidBatchSignature() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
+    EfgsProto.DiagnosisKey key3 = buildKey(3);
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1, key2, key3)).build();
@@ -133,9 +136,9 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestUploadKeysInProtobufFormat() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
+    EfgsProto.DiagnosisKey key3 = buildKey(3);
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1, key2, key3)).build();
@@ -157,12 +160,9 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestUploadKeysInProtobufFormatWithModifiedCertDatabase() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder()
-      .setTransmissionRiskLevel(1).setOrigin(TestData.COUNTRY_A).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().
-      setTransmissionRiskLevel(2).setOrigin(TestData.COUNTRY_A).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder()
-      .setTransmissionRiskLevel(3).setOrigin(TestData.COUNTRY_A).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1, TestData.COUNTRY_A);
+    EfgsProto.DiagnosisKey key2 = buildKey(2, TestData.COUNTRY_A);
+    EfgsProto.DiagnosisKey key3 = buildKey(3, TestData.COUNTRY_A);
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1, key2, key3)).build();
@@ -192,8 +192,8 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestUploadKeysExistingHashInProtobufFormat() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
 
     EfgsProto.DiagnosisKeyBatch batch1 = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1)).build();
@@ -244,8 +244,8 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestUploadKeysExistingBatchTag() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
 
     EfgsProto.DiagnosisKeyBatch batch1 = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Collections.singletonList(key1)).build();
@@ -285,7 +285,7 @@ public class UploadControllerTest {
     EfgsProto.DiagnosisKeyBatch.Builder batchBuilder = EfgsProto.DiagnosisKeyBatch.newBuilder();
 
     for (int i = 0; i < properties.getUploadSettings().getMaximumUploadBatchSize(); i++) {
-      batchBuilder.addKeys(TestData.getDiagnosisKeyProto().toBuilder().setDaysSinceOnsetOfSymptoms(i).build());
+      batchBuilder.addKeys(buildKey(ByteBuffer.allocate(16).putInt(i).array()));
     }
 
     EfgsProto.DiagnosisKeyBatch batch = batchBuilder.build();
@@ -308,7 +308,7 @@ public class UploadControllerTest {
     EfgsProto.DiagnosisKeyBatch.Builder batchBuilder = EfgsProto.DiagnosisKeyBatch.newBuilder();
 
     for (int i = 0; i < properties.getUploadSettings().getMaximumUploadBatchSize() + 1; i++) {
-      batchBuilder.addKeys(TestData.getDiagnosisKeyProto().toBuilder().setDaysSinceOnsetOfSymptoms(i).build());
+      batchBuilder.addKeys(buildKey(ByteBuffer.allocate(16).putInt(i).array()));
     }
 
     EfgsProto.DiagnosisKeyBatch batch = batchBuilder.build();
@@ -328,9 +328,9 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestUploadKeysInJsonFormat() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
+    EfgsProto.DiagnosisKey key3 = buildKey(3);
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1, key2, key3)).build();
@@ -363,9 +363,9 @@ public class UploadControllerTest {
 
   @Test
   public void testRequestUploadKeysInProtobufFormatFailedByTrustedAnchor() throws Exception {
-    EfgsProto.DiagnosisKey key1 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(1).build();
-    EfgsProto.DiagnosisKey key2 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(2).build();
-    EfgsProto.DiagnosisKey key3 = TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(3).build();
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
+    EfgsProto.DiagnosisKey key3 = buildKey(3);
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1, key2, key3)).build();
@@ -382,5 +382,34 @@ public class UploadControllerTest {
       .content(batch.toByteArray())
     )
       .andExpect(status().isForbidden());
+  }
+
+  private EfgsProto.DiagnosisKey buildKey(int transmissionRiskLevel, String origin) {
+    return TestData.getDiagnosisKeyProto().toBuilder()
+      .setTransmissionRiskLevel(transmissionRiskLevel)
+      .setOrigin(origin)
+      .setDaysSinceOnsetOfSymptoms(1)
+      .setRollingStartIntervalNumber(Math.toIntExact(Instant.now().getEpochSecond() / 600))
+      .setRollingPeriod(1)
+      .build();
+  }
+
+  private EfgsProto.DiagnosisKey buildKey(byte[] keyData) {
+    return TestData.getDiagnosisKeyProto().toBuilder()
+      .setTransmissionRiskLevel(1)
+      .setKeyData(ByteString.copyFrom(keyData))
+      .setDaysSinceOnsetOfSymptoms(1)
+      .setRollingStartIntervalNumber(Math.toIntExact(Instant.now().getEpochSecond() / 600))
+      .setRollingPeriod(1)
+      .build();
+  }
+
+  private EfgsProto.DiagnosisKey buildKey(int transmissionRiskLevel) {
+    return TestData.getDiagnosisKeyProto().toBuilder()
+      .setTransmissionRiskLevel(transmissionRiskLevel)
+      .setDaysSinceOnsetOfSymptoms(1)
+      .setRollingStartIntervalNumber(Math.toIntExact(Instant.now().getEpochSecond() / 600))
+      .setRollingPeriod(1)
+      .build();
   }
 }
