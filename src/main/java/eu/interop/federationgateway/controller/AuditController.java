@@ -21,9 +21,11 @@
 package eu.interop.federationgateway.controller;
 
 import eu.interop.federationgateway.config.EfgsProperties;
+import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.service.CertificateService;
+import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,10 +33,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -60,13 +65,16 @@ public class AuditController {
   private final EfgsProperties properties;
 
   private final DiagnosisKeyEntityService diagnosisKeyEntityService;
+  
+  private final DiagnosisKeyBatchService diagnosisKeyBatchService;
 
   private final CertificateService certificateService;
 
   /**
    * This endpoint returns audit information for the interop gateway to inspect the exchanged data.
    *
-   * @param batchTag {@link String}
+   * @param date     A {@link String} containing an ISO-8601 date descriptor.
+   * @param batchTag A {@link String} containing the batchTag
    * @return List of {@link AuditEntry} with country codes and corresponding audit information.
    */
   @Operation(
@@ -116,12 +124,27 @@ public class AuditController {
       .minusDays(properties.getDownloadSettings().getMaxAgeInDays());
 
     if (date.isBefore(thresholdDate.toLocalDate())) {
-      log.info("Requested date is too old");
+      log.warn("Requested date is too old");
       throw new ResponseStatusException(HttpStatus.GONE, "Requested date is too old!");
     }
 
     List<AuditEntry> auditResponse
-      = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTagAndDate(batchTag, date);
+      = diagnosisKeyEntityService.getAllDiagnosisKeyEntityByBatchTag(batchTag);
+
+    Optional<DiagnosisKeyBatchEntity> batchEntity = diagnosisKeyBatchService.getBatchEntity(batchTag);
+
+    if (batchEntity.isEmpty()) {
+      log.info("Could not find batch with given batchTag");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find batch with given BatchTag");
+    }
+
+    Instant batchDate = batchEntity.get().getCreatedAt().toInstant().truncatedTo(ChronoUnit.DAYS);
+    Instant dateAsInstant = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+
+    if (!batchDate.equals(dateAsInstant)) {
+      log.info("Requested date does not match the BatchTag creation date");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Given date does not match the requested batch");
+    }
 
     auditResponse = certificateService.addOperatorSignatures(auditResponse);
 
