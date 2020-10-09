@@ -1,3 +1,23 @@
+/*-
+ * ---license-start
+ * EU-Federation-Gateway-Service / efgs-federation-gateway
+ * ---
+ * Copyright (C) 2020 T-Systems International GmbH and all other contributors
+ * ---
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ---license-end
+ */
+
 package eu.interop.federationgateway.dbencryption;
 
 import java.nio.charset.Charset;
@@ -19,7 +39,7 @@ import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 public class DbEncryptionService {
 
   private static final String PASSWORD_PROPERTY_NAME = "efgs_dbencryption_password";
-  private static final Charset charset = StandardCharsets.UTF_8;
+  private static final Charset CHARSET = StandardCharsets.UTF_8;
   private static DbEncryptionService instance;
   private final Cipher cipher;
   private final Key key;
@@ -50,6 +70,7 @@ public class DbEncryptionService {
 
   /**
    * Returns an instance of Singleton-DbEncryptionService.
+   * @return The DbEncryptionService instance
    */
   public static DbEncryptionService getInstance() {
     if (DbEncryptionService.instance == null) {
@@ -64,10 +85,17 @@ public class DbEncryptionService {
    *
    * @param encrypted the encrypted string
    * @return decrypted string
+   * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher
+   * @throws BadPaddingException if this cipher is in decryption mode, and (un)padding has been requested, 
+   *     but the decrypted data is not bounded by the appropriate padding bytes
+   * @throws IllegalBlockSizeException if this cipher is a block cipher, 
+   *     no padding has been requested (only in encryption mode), and the total input length 
+   *     of the data processed by this cipher is not a multiple of block size; 
+   * @throws InvalidAlgorithmParameterException if the given algorithm parameters are inappropriate for this cipher
    */
   public String decryptString(String encrypted)
     throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
-    return new String(decrypt(Base64.getDecoder().decode(encrypted)), charset);
+    return new String(decrypt(Base64.getDecoder().decode(encrypted)), CHARSET);
   }
 
   /**
@@ -75,10 +103,17 @@ public class DbEncryptionService {
    *
    * @param plain the plain string
    * @return encrypted string
+   * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher
+   * @throws BadPaddingException if this cipher is in decryption mode, and (un)padding has been requested, 
+   *     but the decrypted data is not bounded by the appropriate padding bytes
+   * @throws IllegalBlockSizeException if this cipher is a block cipher, 
+   *     no padding has been requested (only in encryption mode), and the total input length 
+   *     of the data processed by this cipher is not a multiple of block size; 
+   * @throws InvalidAlgorithmParameterException if the given algorithm parameters are inappropriate for this cipher
    */
   public String encryptString(String plain)
     throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
-    return Base64.getEncoder().encodeToString(encrypt(plain.getBytes(charset)));
+    return Base64.getEncoder().encodeToString(encrypt(plain.getBytes(CHARSET)));
   }
 
   /**
@@ -86,6 +121,13 @@ public class DbEncryptionService {
    *
    * @param encrypted the encrypted string
    * @return decrypted integer
+   * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher
+   * @throws BadPaddingException if this cipher is in decryption mode, and (un)padding has been requested, 
+   *     but the decrypted data is not bounded by the appropriate padding bytes
+   * @throws IllegalBlockSizeException if this cipher is a block cipher, 
+   *     no padding has been requested (only in encryption mode), and the total input length 
+   *     of the data processed by this cipher is not a multiple of block size; 
+   * @throws InvalidAlgorithmParameterException if the given algorithm parameters are inappropriate for this cipher
    */
   public Integer decryptInteger(String encrypted)
     throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
@@ -97,6 +139,13 @@ public class DbEncryptionService {
    *
    * @param plain the plain Integer
    * @return encrypted string
+   * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher
+   * @throws BadPaddingException if this cipher is in decryption mode, and (un)padding has been requested, 
+   *     but the decrypted data is not bounded by the appropriate padding bytes
+   * @throws IllegalBlockSizeException if this cipher is a block cipher, 
+   *     no padding has been requested (only in encryption mode), and the total input length 
+   *     of the data processed by this cipher is not a multiple of block size; 
+   * @throws InvalidAlgorithmParameterException if the given algorithm parameters are inappropriate for this cipher
    */
   public String encryptInteger(Integer plain)
     throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
@@ -113,6 +162,13 @@ public class DbEncryptionService {
    *
    * @param plain the plain ByteArray.
    * @return encrypted string
+   * @throws InvalidKeyException if the given key is inappropriate for initializing this cipher
+   * @throws BadPaddingException if this cipher is in decryption mode, and (un)padding has been requested, 
+   *     but the decrypted data is not bounded by the appropriate padding bytes
+   * @throws IllegalBlockSizeException if this cipher is a block cipher, 
+   *     no padding has been requested (only in encryption mode), and the total input length 
+   *     of the data processed by this cipher is not a multiple of block size; 
+   * @throws InvalidAlgorithmParameterException if the given algorithm parameters are inappropriate for this cipher
    */
   public String encryptByteArray(byte[] plain)
     throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
@@ -132,6 +188,6 @@ public class DbEncryptionService {
   }
 
   private IvParameterSpec getInitializationVector() {
-    return new IvParameterSpec("WnU2IQhlAAN@bK~L".getBytes(charset));
+    return new IvParameterSpec("WnU2IQhlAAN@bK~L".getBytes(CHARSET));
   }
 }

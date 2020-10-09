@@ -51,6 +51,11 @@ public abstract class DiagnosisKeyMapper {
    *
    * @param proto          the protobuf entity
    * @param uploadBatchTag the uploadBatchTag which will be set for all entities
+   * @param uploadBatchSignature the signature of the uploaded batch
+   * @param certificateThumbprint the thumbprint of the certificate
+   * @param signingThumbprint the signing thumbprint
+   * @param certificateCountry the certificates country
+   * @param format the media type format
    * @return the converted JPA entity
    */
   public DiagnosisKeyEntity protoToEntity(
@@ -111,6 +116,11 @@ public abstract class DiagnosisKeyMapper {
    *
    * @param proto          set of protobuf messages
    * @param uploadBatchTag the batch tag for all messages
+   * @param uploadBatchSignature the signature of the uploaded batch
+   * @param certificateThumbprint the thumbprint of the certificate
+   * @param signingThumbprint the signing thumbprint
+   * @param certificateCountry the certificates country
+   * @param format the media type format
    * @return set of converted entities
    */
   public List<DiagnosisKeyEntity> protoToEntity(

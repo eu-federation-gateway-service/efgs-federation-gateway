@@ -127,6 +127,7 @@ public class CallbackService {
   /**
    * Returns all entries of {@link CallbackSubscriptionEntity} for specified country.
    *
+   * @param country the country for requested CallbackSubscriptions
    * @return a list of {@link CallbackSubscriptionEntity}
    */
   public List<CallbackSubscriptionEntity> getAllCallbackSubscriptionsForCountry(String country) {

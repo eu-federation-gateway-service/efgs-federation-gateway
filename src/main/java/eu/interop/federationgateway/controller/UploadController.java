@@ -38,7 +38,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +71,14 @@ public class UploadController {
 
   /**
    * This endpoint enables the upload of diagnosis keys.
+   * @param batchTag A {@link String} containing batchTag.
+   * @param batchSignature A {@link String} containing batchSignature.
+   * @param contentType A {@link String} containing Content-Type.
+   * @param body The Requestbody with payload.
+   * @param uploaderCountry A {@link String} containing uploaderCountry.
+   * @param uploaderCertThumbprint A {@link String} containing uploaderCertThumbprint.
+   * @return The successfull batch upload batchTag.
+   * @throws DiagnosisKeyEntityService.DiagnosisKeyInsertException will be thrown if an error occurred during insertion.
    */
   @Operation(
     summary = "Uploads diagnosis key datasets.",
@@ -140,7 +147,7 @@ public class UploadController {
     @DiagnosisKeyBatchConstraint EfgsProto.DiagnosisKeyBatch body,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY) String uploaderCountry,
     @RequestAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT) String uploaderCertThumbprint
-  ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException, NoSuchAlgorithmException {
+  ) throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
     int maximumUploadBatchSize = properties.getUploadSettings().getMaximumUploadBatchSize();
 
     EfgsMdc.put("batchTag", batchTag);
