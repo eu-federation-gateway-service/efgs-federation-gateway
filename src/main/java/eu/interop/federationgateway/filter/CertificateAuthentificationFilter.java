@@ -102,7 +102,13 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
       return inputString;
     } else {
       try {
-        return new BigInteger(1, Base64.getDecoder().decode(inputString)).toString(16);
+        String hexString = new BigInteger(1, Base64.getDecoder().decode(inputString)).toString(16);
+
+        if (hexString.length() == 63) {
+          hexString = "0" + hexString;
+        }
+
+        return hexString;
       } catch (IllegalArgumentException ignored) {
         log.error("Could not normalize certificate hash.");
         return null;
