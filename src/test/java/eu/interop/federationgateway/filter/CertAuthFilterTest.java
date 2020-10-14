@@ -31,6 +31,8 @@ import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -145,6 +147,32 @@ public class CertAuthFilterTest {
       .accept("application/protobuf; version=1.0")
       .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
       .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), encodedDnString)
+    ).andExpect(mvcResult -> {
+      Assert.assertEquals("DE", mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY));
+      Assert.assertEquals(
+        TestData.AUTH_CERT_HASH,
+        mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_THUMBPRINT)
+      );
+    });
+  }
+
+  @Test
+  public void testFilterShouldDecodeBase64AndUrlEncodedCertThumbprint() throws Exception {
+    byte[] certHashBytes = new BigInteger(TestData.AUTH_CERT_HASH, 16).toByteArray();
+
+    if (certHashBytes[0] == 0) {
+      byte[] truncatedCertHashBytes = new byte[certHashBytes.length - 1];
+      System.arraycopy(certHashBytes, 1, truncatedCertHashBytes, 0, truncatedCertHashBytes.length);
+      certHashBytes = truncatedCertHashBytes;
+    }
+
+    String encodedThumbprint =
+      URLEncoder.encode(Base64.getEncoder().encodeToString(certHashBytes), StandardCharsets.UTF_8);
+
+    mockMvc.perform(get("/diagnosiskeys/download/s")
+      .accept("application/protobuf; version=1.0")
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), encodedThumbprint)
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), "O=Test Firma GmbH,C=DE,U=,TR,TT=43")
     ).andExpect(mvcResult -> {
       Assert.assertEquals("DE", mvcResult.getRequest().getAttribute(CertificateAuthentificationFilter.REQUEST_PROP_COUNTRY));
       Assert.assertEquals(

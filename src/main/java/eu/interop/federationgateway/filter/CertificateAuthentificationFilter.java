@@ -102,7 +102,12 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
       return inputString;
     } else {
       try {
-        String hexString = new BigInteger(1, Base64.getDecoder().decode(inputString)).toString(16);
+        String hexString;
+        if (inputString.contains("%")) { // only url decode input string if it contains none base64 characters
+          inputString = URLDecoder.decode(inputString, StandardCharsets.UTF_8);
+        }
+
+        hexString = new BigInteger(1, Base64.getDecoder().decode(inputString)).toString(16);
 
         if (hexString.length() == 63) {
           hexString = "0" + hexString;
