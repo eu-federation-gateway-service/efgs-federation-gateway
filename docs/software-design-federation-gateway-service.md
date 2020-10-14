@@ -129,7 +129,7 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Batch Download failed, uploader requested batchTag within timerange but it could not found | INFO | Could not find any batches for given date | requestedDate |
 | Batch Download failed, uploader requested batchTag that could not be found | INFO | Could not find batch with given batchTag | batchTag |
 | Batch Download failed, requested date does not match date of batch | INFO | Given date does not match the requested batchTag | batchTag, requestedDate |
-| Successful Batch Download | INFO | Successful Batch Download | batchTag | 
+| Successful Batch Download | INFO | Successful Batch Download | batchTag, numKeys | 
 | **Audit Endpoint**
 | Audit Information Request failed | ERROR | BatchTag Could not found | batchTag |
 | Requested Audit Information | INFO | Requested Audit Information | batchTag |
