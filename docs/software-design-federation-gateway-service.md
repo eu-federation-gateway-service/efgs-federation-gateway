@@ -45,8 +45,8 @@ Entities
 | callback_subscription | stores details about the callback subscriptions  | no automatic deletion                |
 | callback_task         | stores details about a specific callback task    | no automatic deletion |
 | certificate           | stores the certificate for the countries         | no automatic deletion |
-| diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
-| diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
+| diagnosiskeybatch     | represents donwload batches                      | automated deletion 14 days after inserting into database |
+| diagnosiskey          | represents a single diagnostic key               | automated deletion 14 days after inserting into database |
 | shedlock              | task synchronization infrastructure              | no automatic deletion |
 
 ### Data Deletion
