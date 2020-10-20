@@ -8,8 +8,7 @@ Governance](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileap
 
 Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
 
-This document is not finished and major aspects are missing.
-This document is still in proposal state, meaning feedback is welcome and will change its content.
+This document is not finished, feedback is welcome and will change its content.
 
 
 #	Overview
