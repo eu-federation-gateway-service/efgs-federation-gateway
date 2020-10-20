@@ -35,7 +35,7 @@
     <springdoc.version>1.4.8</springdoc.version>
     <protobuf.version>3.12.2</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
-    <junit.version>4.13</junit.version>
+    <junit.version>4.13.1</junit.version>
     <mapstruct.version>1.3.1.Final</mapstruct.version>
     <mockito.version>1.9.5</mockito.version>
     <bcpkix.version>1.66</bcpkix.version>
