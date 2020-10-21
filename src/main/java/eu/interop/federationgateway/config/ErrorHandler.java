@@ -80,6 +80,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorMessageBody> handleException(Exception e) {
+    log.error(e.getMessage());
     if (e instanceof ResponseStatusException) {
       return ResponseEntity
         .status(((ResponseStatusException) e).getStatus())
