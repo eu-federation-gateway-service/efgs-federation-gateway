@@ -119,7 +119,7 @@ public class DbEncryptionService {
     return Base64.getEncoder().encodeToString(encrypt(plain));
   }
 
-  private byte[] decrypt(byte[] encrypted)
+  private synchronized byte[] decrypt(byte[] encrypted)
     throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
     cipher.init(Cipher.DECRYPT_MODE, key, getInitializationVector());
     return cipher.doFinal(encrypted);
