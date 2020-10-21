@@ -80,13 +80,13 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorMessageBody> handleException(Exception e) {
-    log.error(e.getMessage());
     if (e instanceof ResponseStatusException) {
       return ResponseEntity
         .status(((ResponseStatusException) e).getStatus())
         .contentType(MediaType.APPLICATION_JSON)
         .body(new ErrorMessageBody(((ResponseStatusException) e).getReason()));
     } else {
+      log.error(e.getMessage());
       return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .contentType(MediaType.APPLICATION_JSON)
