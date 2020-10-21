@@ -45,7 +45,7 @@ efgs:
   upload-settings:
     maximum-upload-batch-size: 5000
   download-settings:
-    max-age-in-days: 7
+    max-age-in-days: 14
   cert-auth:
     header-fields:
       thumbprint: X-SSL-Client-SHA256
