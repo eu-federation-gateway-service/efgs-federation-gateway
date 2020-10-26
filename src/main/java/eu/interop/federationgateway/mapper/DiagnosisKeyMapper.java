@@ -156,14 +156,6 @@ public abstract class DiagnosisKeyMapper {
       .build();
   }
 
-  private List<String> parseVisitedCountries(String input) {
-    if (StringUtils.isEmpty(input)) {
-      return Collections.emptyList();
-    } else {
-      return Arrays.asList(input.split(","));
-    }
-  }
-
   public abstract List<EfgsProto.DiagnosisKey> entityToProto(List<DiagnosisKeyEntity> entity);
 
   public byte[] byteStringToByteArray(ByteString byteString) {
@@ -182,4 +174,12 @@ public abstract class DiagnosisKeyMapper {
   public abstract DiagnosisKeyPayload.ReportType mapReportType(
     EfgsProto.ReportType reportType
   );
+
+  private List<String> parseVisitedCountries(String input) {
+    if (StringUtils.isEmpty(input)) {
+      return Collections.emptyList();
+    } else {
+      return Arrays.asList(input.split(","));
+    }
+  }
 }
