@@ -33,6 +33,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ValueMapping;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Mapper(componentModel = "spring")
@@ -147,11 +149,19 @@ public abstract class DiagnosisKeyMapper {
       .setRollingStartIntervalNumber(entity.getPayload().getRollingStartIntervalNumber())
       .setRollingPeriod(entity.getPayload().getRollingPeriod())
       .setTransmissionRiskLevel(entity.getPayload().getTransmissionRiskLevel())
-      .addAllVisitedCountries(Arrays.asList(entity.getPayload().getVisitedCountries().split(",")))
+      .addAllVisitedCountries(parseVisitedCountries(entity.getPayload().getVisitedCountries()))
       .setOrigin(entity.getPayload().getOrigin())
       .setReportType(mapReportType(entity.getPayload().getReportType()))
       .setDaysSinceOnsetOfSymptoms(entity.getPayload().getDaysSinceOnsetOfSymptoms())
       .build();
+  }
+
+  private List<String> parseVisitedCountries(String input) {
+    if (StringUtils.isEmpty(input)) {
+      return Collections.emptyList();
+    } else {
+      return Arrays.asList(input.split(","));
+    }
   }
 
   public abstract List<EfgsProto.DiagnosisKey> entityToProto(List<DiagnosisKeyEntity> entity);
