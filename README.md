@@ -78,8 +78,8 @@ docker-compose up --build
 The EFGS Docker image will be built. Also a MySQL database will be created. After that both start up and EFGS service is available on localhost port 8080.
 
 To access your local EFGS instance you need to whitelist your personal authentication certificate.
-To do this execute the `create_certificate_signature` script from `tools` directory. The script will ask four your certificate (defaults to `client.pem`). Provide the full path to your certificate here. Please pay attention that your certificate does not contain a private key and has unix line endings. Otherwise the generated signature would not match.
-As an result the script will generate a ```insert.sql``` file. This file contains one prepared SQL insert statement. Execute this statement with a MySQL CLient of your choice inside your Docker MySql database.
+To do this execute the `create_certificate_signature` script from `tools` directory. The script will ask for your certificate (defaults to `client.pem`). Provide the full path to your certificate here. Please pay attention that your certificate does not contain a private key and has unix line endings. Otherwise the generated signature would not match.
+As an result the script will generate a ```insert.sql``` file. This file contains one prepared SQL insert statement. Execute this statement with a MySQL Client of your choice inside your Docker MySql database.
 
 To also be able to upload keys repeat this step with your signing certificate.
 
