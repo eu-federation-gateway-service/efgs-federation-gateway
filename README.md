@@ -46,7 +46,7 @@ Please check, whether following prerequisites are installed on your machine:
 - [Maven](https://maven.apache.org)
 
 #### Build Docker Image
-This project also supports building a Docker image for local testing (Docker image should not be used for productive environments).
+This project also supports building a Docker image for local testing (Docker image should not be used for production environments).
 
 In order to run EFGS locally you need four certificates:
 
