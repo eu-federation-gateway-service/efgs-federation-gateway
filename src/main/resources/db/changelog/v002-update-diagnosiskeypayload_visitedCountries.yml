@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-diagnosiskeypayload-visited-countries
+      author: f11h
+      changes:
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: payload_visited_countries
+            newDataType: varchar(400)
