@@ -133,7 +133,7 @@ public class DiagnosisKeyEntityService {
    */
   public List<AuditEntry> getAllDiagnosisKeyEntityByBatchTag(String batchTag) {
     log.info("Requested all DiagnosisKeyEntities by a batchTag.");
-    return diagnosisKeyEntityRepository.findAllByBatchTag(batchTag);
+    return diagnosisKeyEntityRepository.getAuditInformationByBatchTag(batchTag);
   }
 
   /**
@@ -148,7 +148,7 @@ public class DiagnosisKeyEntityService {
   }
 
   public List<DiagnosisKeyEntity> getDiagnosisKeysBatchForCountry(String batchTag, String country) {
-    return diagnosisKeyEntityRepository.findByBatchTagIsAndUploader_CountryIsNot(batchTag, country);
+    return diagnosisKeyEntityRepository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(batchTag, country);
   }
 
   public static class DiagnosisKeyInsertException extends Exception {

@@ -188,7 +188,7 @@ public class DiagnosisKeyEntityServiceTest {
   @Test
   public void testBatchForCountry() {
     diagnosisKeyEntityService.getDiagnosisKeysBatchForCountry(TestData.FIRST_BATCHTAG, TestData.COUNTRY_A);
-    verify(diagnosisKeyEntityRepositoryMock).findByBatchTagIsAndUploader_CountryIsNot(
+    verify(diagnosisKeyEntityRepositoryMock).findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(
       eq(TestData.FIRST_BATCHTAG),
       eq(TestData.COUNTRY_A)
     );

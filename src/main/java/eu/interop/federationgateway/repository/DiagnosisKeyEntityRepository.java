@@ -44,16 +44,16 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
 
   @Query("SELECT new eu.interop.federationgateway.model.AuditEntry("
     + "min(uploader.country), min(createdAt), min(uploader.thumbprint), min(uploader.signingCertThumbprint)"
-    + ", COUNT(*), min(uploader.batchSignature))"
+    + ", COUNT(*), min(uploader.batchSignature), min(id) as minId) "
     + "FROM DiagnosisKeyEntity WHERE batchTag = :batchTag "
-    + "GROUP BY uploader.batchTag")
-  List<AuditEntry> findAllByBatchTag(@Param("batchTag") String batchTag);
+    + "GROUP BY uploader.batchTag ORDER BY minId ASC")
+  List<AuditEntry> getAuditInformationByBatchTag(@Param("batchTag") String batchTag);
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNull();
 
   Optional<DiagnosisKeyEntity> findFirstByBatchTagIsNullAndUploaderBatchTagIsNotIn(List<String> uploaderBatchTags);
 
-  List<DiagnosisKeyEntity> findByBatchTagIsAndUploader_CountryIsNot(String batchTag, String country);
+  List<DiagnosisKeyEntity> findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(String batchTag, String country);
 
   @Modifying
   @Query("UPDATE DiagnosisKeyEntity d SET d.batchTag = :batchTag WHERE d.uploader.batchTag IN :uploaderBatchTags")
