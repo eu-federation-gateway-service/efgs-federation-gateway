@@ -86,6 +86,7 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
         .contentType(MediaType.APPLICATION_JSON)
         .body(new ErrorMessageBody(((ResponseStatusException) e).getReason()));
     } else {
+      log.error("Uncatched exception", e);
       return ResponseEntity
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .contentType(MediaType.APPLICATION_JSON)

@@ -71,6 +71,7 @@ public class DownloadController {
   private static final String BATCHTAG_HEADER = "batchTag";
   private static final String NEXT_BATCHTAG_HEADER = "nextBatchTag";
   private static final String MDC_PROP_BATCHTAG = "batchTag";
+  private static final String MDC_PROP_NUMKEYS = "numKeys";
 
   private final EfgsProperties properties;
 
@@ -176,6 +177,8 @@ public class DownloadController {
     EfgsProto.DiagnosisKeyBatch protoBatch = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(diagnosisKeyMapper.entityToProto(entities))
       .build();
+    
+    EfgsMdc.put(MDC_PROP_NUMKEYS, protoBatch.getKeysCount());
 
     String nextBatchTag = "null";
     if (batchEntity.get().getBatchLink() != null) {

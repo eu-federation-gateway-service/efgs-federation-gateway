@@ -8,8 +8,7 @@ Governance](https://ec.europa.eu/health/sites/health/files/ehealth/docs/mobileap
 
 Target audience for this document are software engineers who want to get a better understanding of the insight of the implementation to be able to contribute.
 
-This document is not finished and major aspects are missing.
-This document is still in proposal state, meaning feedback is welcome and will change its content.
+This document is not finished, feedback is welcome and will change its content.
 
 
 #	Overview
@@ -45,8 +44,8 @@ Entities
 | callback_subscription | stores details about the callback subscriptions  | no automatic deletion                |
 | callback_task         | stores details about a specific callback task    | no automatic deletion |
 | certificate           | stores the certificate for the countries         | no automatic deletion |
-| diagnosiskeybatch     | represents donwload batches                      | automated deletion after 14 days |
-| diagnosiskey          | represents a single diagnostic key               | automated deletion after 14 days |
+| diagnosiskeybatch     | represents donwload batches                      | automated deletion 14 days after inserting into database |
+| diagnosiskey          | represents a single diagnostic key               | automated deletion 14 days after inserting into database |
 | shedlock              | task synchronization infrastructure              | no automatic deletion |
 
 ### Data Deletion
@@ -129,7 +128,7 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Batch Download failed, uploader requested batchTag within timerange but it could not found | INFO | Could not find any batches for given date | requestedDate |
 | Batch Download failed, uploader requested batchTag that could not be found | INFO | Could not find batch with given batchTag | batchTag |
 | Batch Download failed, requested date does not match date of batch | INFO | Given date does not match the requested batchTag | batchTag, requestedDate |
-| Successful Batch Download | INFO | Successful Batch Download | batchTag | 
+| Successful Batch Download | INFO | Successful Batch Download | batchTag, numKeys | 
 | **Audit Endpoint**
 | Audit Information Request failed | ERROR | BatchTag Could not found | batchTag |
 | Requested Audit Information | INFO | Requested Audit Information | batchTag |
