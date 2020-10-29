@@ -57,7 +57,7 @@ In order to run EFGS locally you need four certificates:
 
 You need to provide your own National Backend certificates. Details can be found in the certificate governance document.
 
-The EFGS TrustAncor and Outboud Callback certificates can be created by executing the `create_trustanchor` and `create_callback_client_certificate` script from `tools` directory. These scripts will generate certifcates and pack them into a Java Key Store.
+The EFGS TrustAncor and Outbound Callback certificates can be created by executing the `create_trustanchor` and `create_callback_client_certificate` script from `tools` directory. These scripts will generate certifcates and pack them into a Java Key Store.
 
 For testing purpose it is advised to not change the default parameters and answer all question of the script the the default value (just press enter) 
 As a result you will have two files: `efgs-ta.jks` and `efgs-cb-client.jks`. We need these keystores later.
