@@ -65,7 +65,8 @@
       **/dbencryption/*,
       **/entity/*,
       **/CertificateUtils.java,
-      **/EfgsKeyStore.java
+      **/EfgsKeyStore.java,
+      **/ErrorHandler.java
     </sonar.coverage.exclusions>
   </properties>
 
