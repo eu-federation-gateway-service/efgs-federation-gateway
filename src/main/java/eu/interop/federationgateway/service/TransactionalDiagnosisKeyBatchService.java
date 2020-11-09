@@ -27,10 +27,11 @@ import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.utils.EfgsMdc;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -161,7 +162,8 @@ public class TransactionalDiagnosisKeyBatchService {
   }
 
   private boolean isBatchFromToday(DiagnosisKeyBatchEntity lastEntry) {
-    return lastEntry.getCreatedAt().toLocalDate().isEqual(LocalDate.now());
+    return lastEntry.getCreatedAt().toInstant().truncatedTo(ChronoUnit.DAYS).equals(
+      Instant.now().truncatedTo(ChronoUnit.DAYS));
   }
 
   private int getSequenceNumberFromBatchTag(String batchTag) {

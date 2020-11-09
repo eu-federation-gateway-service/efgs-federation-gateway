@@ -24,6 +24,7 @@ import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.EfgsProto;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
@@ -68,6 +69,22 @@ public class DiagnosiskeyMapperTest {
     List<EfgsProto.DiagnosisKey> expected = Arrays.asList(
       TestData.getDiagnosisKeyProto(),
       TestData.getDiagnosisKeyProto()
+    );
+
+    Assert.assertEquals(converted, expected);
+  }
+
+  @Test
+  public void testMappingFromEntityToProtoVisitedCountriesEmpty() {
+    DiagnosisKeyEntity entity = TestData.getDiagnosisKeyTestEntityforCreation();
+    entity.getPayload().setVisitedCountries("");
+
+    List<EfgsProto.DiagnosisKey> converted = mapper.entityToProto(Collections.singletonList(
+      entity
+    ));
+
+    List<EfgsProto.DiagnosisKey> expected = Collections.singletonList(
+      TestData.getDiagnosisKeyProto().toBuilder().clearVisitedCountries().build()
     );
 
     Assert.assertEquals(converted, expected);

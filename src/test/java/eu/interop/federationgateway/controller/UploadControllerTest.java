@@ -92,6 +92,12 @@ public class UploadControllerTest {
 
   private MockMvc mockMvc;
 
+  private static final List<String> VISITED_COUNTRIES = Arrays.asList(
+    "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM",
+    "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "YZ",
+    "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM"
+  );
+
   @Before
   public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
     OperatorCreationException, InvalidKeyException, SignatureException {
@@ -386,6 +392,7 @@ public class UploadControllerTest {
 
   private EfgsProto.DiagnosisKey buildKey(int transmissionRiskLevel, String origin) {
     return TestData.getDiagnosisKeyProto().toBuilder()
+      .addAllVisitedCountries(VISITED_COUNTRIES)
       .setTransmissionRiskLevel(transmissionRiskLevel)
       .setOrigin(origin)
       .setDaysSinceOnsetOfSymptoms(1)
@@ -396,6 +403,7 @@ public class UploadControllerTest {
 
   private EfgsProto.DiagnosisKey buildKey(byte[] keyData) {
     return TestData.getDiagnosisKeyProto().toBuilder()
+      .addAllVisitedCountries(VISITED_COUNTRIES)
       .setTransmissionRiskLevel(1)
       .setKeyData(ByteString.copyFrom(keyData))
       .setDaysSinceOnsetOfSymptoms(1)
@@ -406,6 +414,7 @@ public class UploadControllerTest {
 
   private EfgsProto.DiagnosisKey buildKey(int transmissionRiskLevel) {
     return TestData.getDiagnosisKeyProto().toBuilder()
+      .addAllVisitedCountries(VISITED_COUNTRIES)
       .setTransmissionRiskLevel(transmissionRiskLevel)
       .setDaysSinceOnsetOfSymptoms(1)
       .setRollingStartIntervalNumber(Math.toIntExact(Instant.now().getEpochSecond() / 600))

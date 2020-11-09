@@ -32,5 +32,8 @@ databaseChangeLog:
   - include:
       file: changelog/v001-update-diagnosiskeypayload_encryption.yml
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v002-update-diagnosiskeypayload_visitedCountries.yml
+      relativeToChangelogFile: true
 
 

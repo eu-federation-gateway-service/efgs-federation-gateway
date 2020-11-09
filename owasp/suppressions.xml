@@ -4,4 +4,8 @@
     <notes>see https://github.com/jeremylong/DependencyCheck/issues/1827></notes>
     <cve>CVE-2018-1258</cve>
   </suppress>
+  <suppress>
+    <notes>see https://tomcat.apache.org/security-9.html#Apache_Tomcat_9.x_vulnerabilities vulnerability is fixed in tomcat 9.0.38</notes>
+    <cve>CVE-2020-13943</cve>
+  </suppress>
 </suppressions>
