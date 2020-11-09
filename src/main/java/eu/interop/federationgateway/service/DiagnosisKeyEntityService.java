@@ -152,6 +152,8 @@ public class DiagnosisKeyEntityService {
   }
 
   public static class DiagnosisKeyInsertException extends Exception {
+
+    private static final long serialVersionUID = 1L;
     @Getter
     private final HashMap<Integer, List<Integer>> resultMap;
 

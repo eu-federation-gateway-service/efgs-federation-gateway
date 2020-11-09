@@ -47,6 +47,7 @@ public class EfgsCallbackTrustManager implements X509TrustManager {
 
   /**
    * Empty implementation because client certificates are directly validated with their thumbprint.
+   * @return the empty implementation.
    */
   @Override
   public X509Certificate[] getAcceptedIssuers() {

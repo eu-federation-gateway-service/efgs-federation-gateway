@@ -70,6 +70,8 @@ public class SemVerUtils {
   }
 
   public static class SemVerParsingException extends Exception {
+    private static final long serialVersionUID = 1L;
+    
     SemVerParsingException(String message) {
       super(message);
     }

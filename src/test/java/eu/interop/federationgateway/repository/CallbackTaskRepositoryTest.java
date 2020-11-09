@@ -22,7 +22,6 @@ package eu.interop.federationgateway.repository;
 
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
-import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;

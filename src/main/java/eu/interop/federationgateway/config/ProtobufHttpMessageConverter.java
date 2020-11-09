@@ -26,6 +26,7 @@ import com.googlecode.protobuf.format.ProtobufFormatter;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import eu.interop.federationgateway.utils.SemVerUtils;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +132,8 @@ public class ProtobufHttpMessageConverter extends AbstractHttpMessageConverter<M
 
     try {
       builder = (Message.Builder) clazz.getMethod("newBuilder").invoke(clazz);
-    } catch (Exception e) {
+    } catch (IllegalAccessException | IllegalArgumentException 
+            | NoSuchMethodException | SecurityException | InvocationTargetException e) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
         "Invalid Protobuf Message type: no invocable newBuilder() method on " + clazz);
     }
