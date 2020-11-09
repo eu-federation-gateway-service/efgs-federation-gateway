@@ -46,9 +46,10 @@ public class AuditEntry {
    * @param uploaderSigningThumbprint the thumbprint of the signing certificate
    * @param amount                    the amount of the uploaded keys
    * @param batchSignature            the batchsignature
+   * @param minId                     Used by query - will not bestored in entity.
    */
   public AuditEntry(String country, ZonedDateTime uploadedTime, String uploaderThumbprint,
-                    String uploaderSigningThumbprint, long amount, String batchSignature) {
+                    String uploaderSigningThumbprint, long amount, String batchSignature, Long minId) {
     this.country = country;
     this.uploadedTime = uploadedTime;
     this.uploaderThumbprint = uploaderThumbprint;

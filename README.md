@@ -46,14 +46,21 @@ Please check, whether following prerequisites are installed on your machine:
 - [Maven](https://maven.apache.org)
 
 #### Build Docker Image
-This project also supports building a Docker image for local testing (Docker image should not be used for productive environments).
+This project also supports building a Docker image for local testing (Docker image should not be used for production environments).
 
-In order to run EFGS locally two certificates (in addition to your personal authentication and signing certificate) need to be created:
-TrustAnchor Certificate and Outbound Callback Certificate. To create them just execute the create_trustanchor and create_callback_client_certificate script from tools directory.
-These scripts will generate certifcates and pack them into a Java Key Store.
+In order to run EFGS locally you need four certificates:
+
+* National Backend Personal Authentication certificate (NB[TLS]).
+* National Backend Signing Certificate (NB[BS]).
+* EFGS TrustAncor Certificate (EFGS[TA]).
+* EFGS Outbound Callback Certificate (EFGS[TLS]).
+
+You need to provide your own National Backend certificates. Details can be found in the certificate governance document.
+
+The EFGS TrustAncor and Outbound Callback certificates can be created by executing the `create_trustanchor` and `create_callback_client_certificate` script from `tools` directory. These scripts will generate certifcates and pack them into a Java Key Store.
 
 For testing purpose it is advised to not change the default parameters and answer all question of the script the the default value (just press enter) 
-As a result you will have two files: efgs-ta.jks and efgs-cb-client.jks. We need these keystores later.
+As a result you will have two files: `efgs-ta.jks` and `efgs-cb-client.jks`. We need these keystores later.
 
 To build the Docker image enable the maven profile ```docker``` and build the project:
 
@@ -71,8 +78,8 @@ docker-compose up --build
 The EFGS Docker image will be built. Also a MySQL database will be created. After that both start up and EFGS service is available on localhost port 8080.
 
 To access your local EFGS instance you need to whitelist your personal authentication certificate.
-To do this execute the create_certificate_signature script from tools directory. The script will ask four your certificate (defaults to client.pem). Provide the full path to your certificate here. Please pay attention that your certificate does not contain a private key and has unix line endings. Otherwise the generated signature would not match.
-As an result the script will generate a ```insert.sql``` file. This file contains one prepared SQL insert statement. Execute this statement with a MySQL CLient of your choice sinside your Docker MySql database.
+To do this execute the `create_certificate_signature` script from `tools` directory. The script will ask for your certificate (defaults to `client.pem`). Provide the full path to your certificate here. Please pay attention that your certificate does not contain a private key and has unix line endings. Otherwise the generated signature would not match.
+As an result the script will generate a ```insert.sql``` file. This file contains one prepared SQL insert statement. Execute this statement with a MySQL Client of your choice inside your Docker MySql database.
 
 To also be able to upload keys repeat this step with your signing certificate.
 
