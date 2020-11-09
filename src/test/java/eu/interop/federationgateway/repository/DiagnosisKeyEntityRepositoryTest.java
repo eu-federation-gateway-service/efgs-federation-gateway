@@ -126,22 +126,22 @@ public class DiagnosisKeyEntityRepositoryTest {
 
   @Test
   public void testFindByBatchTagIsAndUploader_CountryIsNot() {
-    List<DiagnosisKeyEntity> result = repository.findByBatchTagIsAndUploader_CountryIsNot(TestData.FIRST_BATCHTAG, TestData.COUNTRY_A);
+    List<DiagnosisKeyEntity> result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.FIRST_BATCHTAG, TestData.COUNTRY_A);
     Assert.assertEquals(1, result.size());
     Assert.assertEquals(TestData.COUNTRY_B, result.get(0).getUploader().getCountry());
     Assert.assertEquals(TestData.FIRST_BATCHTAG, result.get(0).getBatchTag());
 
-    result = repository.findByBatchTagIsAndUploader_CountryIsNot(TestData.FIRST_BATCHTAG, TestData.COUNTRY_B);
+    result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.FIRST_BATCHTAG, TestData.COUNTRY_B);
     Assert.assertEquals(1, result.size());
     Assert.assertEquals(TestData.COUNTRY_A, result.get(0).getUploader().getCountry());
     Assert.assertEquals(TestData.FIRST_BATCHTAG, result.get(0).getBatchTag());
 
-    result = repository.findByBatchTagIsAndUploader_CountryIsNot(TestData.SECOND_BATCHTAG, TestData.COUNTRY_A);
+    result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.SECOND_BATCHTAG, TestData.COUNTRY_A);
     Assert.assertEquals(1, result.size());
     Assert.assertEquals(TestData.COUNTRY_B, result.get(0).getUploader().getCountry());
     Assert.assertEquals(TestData.SECOND_BATCHTAG, result.get(0).getBatchTag());
 
-    result = repository.findByBatchTagIsAndUploader_CountryIsNot(TestData.SECOND_BATCHTAG, TestData.COUNTRY_B);
+    result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.SECOND_BATCHTAG, TestData.COUNTRY_B);
     Assert.assertTrue(result.isEmpty());
   }
 
