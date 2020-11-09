@@ -122,7 +122,7 @@ public class BatchSignatureUtilsTest {
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.ROLLING_START_INTERVAL_NUMBER).array()).getBytes(StandardCharsets.US_ASCII)); // 2 - rollingStartIntervalNumber
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array()).getBytes(StandardCharsets.US_ASCII));
-      ; // 3 - rollingPeriod
+      // 3 - rollingPeriod
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array()).getBytes(StandardCharsets.US_ASCII));// 4 - transmissionRiskLevel
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
@@ -130,7 +130,7 @@ public class BatchSignatureUtilsTest {
         .getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII)); //5 - Visited Countries
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII));
-      ; // 6 - origin
+      // 6 - origin
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array()).getBytes(StandardCharsets.US_ASCII)); // 7 - ReportType
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
@@ -152,25 +152,25 @@ public class BatchSignatureUtilsTest {
     final List<DiagnosisKey> sortedBatch = sortBatchByKeyData(batch);
     for (DiagnosisKey diagnosisKey : sortedBatch) {
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.ROLLING_START_INTERVAL_NUMBER).array()).getBytes(StandardCharsets.US_ASCII));
-      ;
+      
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(diagnosisKey.getKeyData().toByteArray()).getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.TRANSMISSION_RISK_LEVEL).array()).getBytes(StandardCharsets.US_ASCII));
-      ;
+      
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(TestData.ROLLING_PERIOD).array()).getBytes(StandardCharsets.US_ASCII));
-      ;
+      
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(String.join(",", List.of(TestData.COUNTRY_A, TestData.COUNTRY_B, TestData.COUNTRY_C, TestData.COUNTRY_D))
         .getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII));
 
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(ByteBuffer.allocate(4).putInt(REPORT_TYPE).array()).getBytes(StandardCharsets.US_ASCII));
-      ;
+      
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
       batchBytes.writeBytes(BatchSignatureUtils.bytesToBase64(TestData.AUTH_CERT_COUNTRY.getBytes(StandardCharsets.US_ASCII)).getBytes(StandardCharsets.US_ASCII));
-      ;
+      
       batchBytes.writeBytes(".".getBytes(StandardCharsets.US_ASCII));
     }
     return batchBytes.toByteArray();
@@ -348,7 +348,7 @@ public class BatchSignatureUtilsTest {
     var path = file.getAbsolutePath().replace("%20", " ");
     BufferedReader br = new BufferedReader(new FileReader(path));
 
-    List<DiagnosisKey> keys = new ArrayList<DiagnosisKey>();
+    List<DiagnosisKey> keys = new ArrayList<>();
 
     while (br.ready()) {
       String line = br.readLine();

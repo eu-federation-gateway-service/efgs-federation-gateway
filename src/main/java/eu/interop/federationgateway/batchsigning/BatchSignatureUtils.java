@@ -29,8 +29,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -119,15 +117,6 @@ public class BatchSignatureUtils {
       log.error("Failed to convert byte array to string");
       return null;
     }
-  }
-
-  private static List<DiagnosisKey> sortBatchByKeyData(DiagnosisKeyBatch batch) {
-    return batch.getKeysList()
-      .stream()
-      .sorted(Comparator.nullsLast(
-        Comparator.comparing(diagnosisKey -> bytesToBase64(generateBytesToVerify(diagnosisKey)))
-      ))
-      .collect(Collectors.toList());
   }
 
   private static void writeSeperatorInArray(final ByteArrayOutputStream byteArray) {

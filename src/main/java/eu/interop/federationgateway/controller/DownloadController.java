@@ -84,8 +84,9 @@ public class DownloadController {
   /**
    * This endpoint enabled the download of diagnosis keys.
    *
-   * @param date     A {@link String} containing an ISO-8601 date descriptor.
-   * @param batchTag A {@link String} containing
+   * @param date A {@link String} containing an ISO-8601 date descriptor.
+   * @param batchTag A {@link String} containing batchTag.
+   * @param downloaderCountry A {@link String} containing downloader country.
    * @return Key-Value map with country codes and corresponding audit information.
    */
   @Operation(

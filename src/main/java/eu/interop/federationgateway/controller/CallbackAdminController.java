@@ -67,6 +67,7 @@ public class CallbackAdminController {
   /**
    * Gets the current callback subscription URLs.
    *
+   * @param country A {@link String} containing the country.
    * @return List with registered callbacks.
    */
   @Operation(

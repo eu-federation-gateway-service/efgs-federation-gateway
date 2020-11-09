@@ -207,7 +207,7 @@ public class BatchSignatureVerifierTest {
 
       int max=100;
 
-      List<String> keyList = new ArrayList<String>();
+      List<String> keyList = new ArrayList<>();
 
       for(int x=0;x<max;x++)
         keyList.add(null);
