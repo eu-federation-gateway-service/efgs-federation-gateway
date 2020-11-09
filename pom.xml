@@ -63,7 +63,9 @@
       **/model/*,
       **/mapper/*,
       **/dbencryption/*,
-      **/entity/*
+      **/entity/*,
+      **/CertificateUtils.java,
+      **/EfgsKeyStore.java
     </sonar.coverage.exclusions>
   </properties>
 
