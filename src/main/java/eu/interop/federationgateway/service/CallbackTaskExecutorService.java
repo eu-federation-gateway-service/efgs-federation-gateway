@@ -140,20 +140,20 @@ public class CallbackTaskExecutorService {
       return false;
     }
 
-    if (callbackResponse.statusCode().is2xxSuccessful()) {
-      log.info("Got 2xx response for callback.");
+    if (callbackResponse != null) {
+      if (callbackResponse.statusCode().is2xxSuccessful()) {
+        log.info("Got 2xx response for callback.");
 
-      return true;
-    } else {
-      if (callbackResponse != null) {
+        return true;
+      } else {
         EfgsMdc.put("statusCode", callbackResponse.rawStatusCode());
         log.error("Got a non 2xx response for callback.");
-      } else {
-        log.error("Got no response for callback.");
       }
-
-      return false;
+    } else {
+      log.error("Got no response for callback.");
     }
+
+    return false;
   }
 
   /**
