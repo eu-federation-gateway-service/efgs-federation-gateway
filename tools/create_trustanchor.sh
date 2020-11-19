@@ -20,8 +20,18 @@ certCN=${input:-${certCN}}
 read -p "certC [${certC}]: " input
 certC=${input:-${certC}}
 
+case "$(uname -s)" in
+  MINGW32*|MSYS*|MINGW*)
+    # Work around MinGW/MSYS's path conversion (http://www.mingw.org/wiki/Posix_path_conversion) 
+    ertSubject="//C=${certC}\CN=${certCN}\O=TrustAnchor Dev Org"
+  ;;
+  *)
+    certSubject="/C=${certC}/CN=${certCN}/O=TrustAnchor Dev Org"
+  ;;
+esac
+
 echo [2 of 5] Creating certificate...
-openssl req -nodes -new -x509 -keyout trustanchor.key -out trustanchor.pem -days 720 -subj "//C=${certC}\CN=${certCN}\O=TrustAnchor Dev Org"
+openssl req -nodes -new -x509 -keyout trustanchor.key -out trustanchor.pem -days 720 -subj "$certSubject"
 echo ... Certificate created.
 
 echo [3 of 5] Creating keystore...

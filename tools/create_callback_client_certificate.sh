@@ -28,8 +28,19 @@ certC=${input:-${certC}}
 #        * ) echo "Please answer Y(es) or N(o).";;
 # esac
 #done
+
+case "$(uname -s)" in
+  MINGW32*|MSYS*|MINGW*)
+    # Work around MinGW/MSYS's path conversion (http://www.mingw.org/wiki/Posix_path_conversion) 
+    ertSubject="//C=${certC}\CN=${certCN}\O=EFGS DEV Org"
+  ;;
+  *)
+    certSubject="/C=${certC}/CN=${certCN}/O=EFGS DEV Org"
+  ;;
+esac
+
 echo [2 of 6] Creating certificate...
-openssl req -nodes -new -x509 -keyout callback.key -out callback.pem -days 720 -subj "//C=${certC}\CN=${certCN}\O=EFGS DEV Org"
+openssl req -nodes -new -x509 -keyout callback.key -out callback.pem -days 720 -subj "$certSubject"
 echo ... Certificate created.
 
 echo [3 of 6] Creating keystore...
