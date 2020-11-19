@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# fail on error
+set -e
+
 keystorefilename="efgs-cb-client.jks"
 keystorepassword="3fgs-p4ssw0rd"
 certCN="EFGS-Callback DEV"
@@ -6,10 +10,10 @@ certC="DE"
 yn=N
 
 ECHO [1 of 6] Deleting old files...
-rm callback.pem
-rm callback.key
-rm callback.p12
-rm ${keystorefilename}
+rm -f callback.pem
+rm -f callback.key
+rm -f callback.p12
+rm -f ${keystorefilename}
 echo ... old files deleted.
 read -p "keystorefilename [${keystorefilename}]:" input
 keystorefilename=${input:-${keystorefilename}}

@@ -1,14 +1,17 @@
 #!/bin/bash
 
+# fail on error
+set -e
+
 keystorefilename="efgs-ta.jks"
 keystorepassword="3fgs-p4ssw0rd"
 certCN="EFGS-TrustAnchor DEV"
 certC="DE"
 
 echo [1 of 5] Deleting old files...
-rm trustanchor.pem
-rm trustanchor.pem
-rm ${keystorefilename}
+rm -f trustanchor.pem
+rm -f trustanchor.pem
+rm -f ${keystorefilename}
 echo ... old files deleted.
 
 read -p "keystorefilename [${keystorefilename}]:" input
