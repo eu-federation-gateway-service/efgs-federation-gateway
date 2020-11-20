@@ -9,7 +9,7 @@ certCN="EFGS-Callback DEV"
 certC="DE"              
 yn=N
 
-ECHO [1 of 6] Deleting old files...
+echo [1 of 6] Deleting old files...
 rm -f callback.pem
 rm -f callback.key
 rm -f callback.p12
