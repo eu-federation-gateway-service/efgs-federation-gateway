@@ -7,7 +7,7 @@ SET /P "certC=Certificate Country [DE]: " || SET "certC=DE"
 
 ECHO [1 of 5] Deleting old files...
 DEL trustanchor.pem
-DEL trustanchor.pem
+DEL trustanchor.key
 DEL %keystorefilename%
 ECHO ... old files deleted.
 

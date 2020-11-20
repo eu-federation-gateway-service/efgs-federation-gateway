@@ -10,7 +10,7 @@ certC="DE"
 
 echo [1 of 5] Deleting old files...
 rm -f trustanchor.pem
-rm -f trustanchor.pem
+rm -f trustanchor.key
 rm -f ${keystorefilename}
 echo ... old files deleted.
 
