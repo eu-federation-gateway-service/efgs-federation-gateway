@@ -317,6 +317,13 @@
       <artifactId>shedlock-spring</artifactId>
       <version>${shedlock.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -389,6 +396,7 @@
         <configuration>
           <suppressionFile>./owasp/suppressions.xml</suppressionFile>
           <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+          <skip>${skipOwaspDependencyCheck}</skip>
         </configuration>
         <executions>
           <execution>

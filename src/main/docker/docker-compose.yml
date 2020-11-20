@@ -16,6 +16,15 @@ services:
         aliases:
           - mysql
 
+  pgsql:
+    image: postgres
+    ports:
+      - "3306:5432"
+    environment:
+      - POSTGRES_USER=sa
+      - POSTGRES_PASSWORD=sa
+      - POSTGRES_DB=fg
+
   backend:
     build: .
     image: efgs-federation-gateway/backend
