@@ -25,27 +25,27 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>6.0.2</owasp.version>
-    <spring.boot.version>2.3.4.RELEASE</spring.boot.version>
-    <spring.cloud.version>Hoxton.SR7</spring.cloud.version>
-    <spring.test.version>5.2.8.RELEASE</spring.test.version>
-    <spring.security.version>5.3.3.RELEASE</spring.security.version>
-    <lombok.version>1.18.12</lombok.version>
-    <liquibase.version>3.10.0</liquibase.version>
-    <springdoc.version>1.4.8</springdoc.version>
-    <protobuf.version>3.12.2</protobuf.version>
+    <owasp.version>6.0.5</owasp.version>
+    <spring.boot.version>2.4.1</spring.boot.version>
+    <spring.cloud.version>2020.0.0</spring.cloud.version>
+    <spring.test.version>5.3.2</spring.test.version>
+    <spring.security.version>5.4.2</spring.security.version>
+    <lombok.version>1.18.16</lombok.version>
+    <liquibase.version>4.2.2</liquibase.version>
+    <springdoc.version>1.5.2</springdoc.version>
+    <protobuf.version>3.14.0</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
-    <junit.version>4.13.1</junit.version>
-    <mapstruct.version>1.3.1.Final</mapstruct.version>
-    <mockito.version>1.9.5</mockito.version>
-    <bcpkix.version>1.66</bcpkix.version>
+    <junit.version>5.7.0</junit.version>
+    <mapstruct.version>1.4.1.Final</mapstruct.version>
+    <mockito.version>3.7.0</mockito.version>
+    <bcpkix.version>1.68</bcpkix.version>
     <reactor.version>1.0.1.RELEASE</reactor.version>
-    <okhttp.version>4.0.1</okhttp.version>
-    <shedlock.version>4.14.0</shedlock.version>
+    <okhttp.version>4.9.0</okhttp.version>
+    <shedlock.version>4.20.0</shedlock.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.1.1</plugin.checkstyle.version>
     <plugin.sonar.version>3.6.1.1688</plugin.sonar.version>
-    <plugin.jacoco.version>0.8.5</plugin.jacoco.version>
+    <plugin.jacoco.version>0.8.6</plugin.jacoco.version>
     <plugin.os-maven.version>1.6.2</plugin.os-maven.version>
     <plugin.surefire.version>3.0.0-M5</plugin.surefire.version>
     <!-- license -->
@@ -223,8 +223,8 @@
       <artifactId>liquibase-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
@@ -286,7 +286,7 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
+      <artifactId>mockito-core</artifactId>
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>

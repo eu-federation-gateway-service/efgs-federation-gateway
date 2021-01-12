@@ -1,6 +1,9 @@
 server:
   port: 8090
 spring:
+  profiles:
+    group:
+      "dev": "h2"
   application:
     name: eu-interop-federation-gateway
   datasource:
