@@ -225,7 +225,7 @@ public class TestData {
     OperatorCreationException {
     if (TestData.keyPair == null) {
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-      keyGen.initialize(2048);
+      keyGen.initialize(4096);
       TestData.keyPair = keyGen.generateKeyPair();
     }
 
