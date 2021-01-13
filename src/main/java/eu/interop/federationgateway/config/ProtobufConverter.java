@@ -27,6 +27,9 @@ import com.google.protobuf.Message;
 import com.googlecode.protobuf.format.JsonFormat;
 import java.io.IOException;
 import java.util.Base64;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 public class ProtobufConverter extends JsonFormat {
 
@@ -55,8 +58,13 @@ public class ProtobufConverter extends JsonFormat {
     if (field != null && field.getType() == Descriptors.FieldDescriptor.Type.BYTES) {
       tokenizer.consumeIdentifier();
       tokenizer.consume(":");
-      byte[] value = Base64.getDecoder().decode(tokenizer.consumeString());
-      builder.setField(field, ByteString.copyFrom(value));
+
+      try {
+        byte[] value = Base64.getDecoder().decode(tokenizer.consumeString());
+        builder.setField(field, ByteString.copyFrom(value));
+      } catch (IllegalArgumentException e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Base64 in JSON object");
+      }
 
       if (tokenizer.tryConsume(",")) {
         mergeField(tokenizer, extensionRegistry, builder);
