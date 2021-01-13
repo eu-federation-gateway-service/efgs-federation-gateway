@@ -34,11 +34,13 @@ import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
@@ -128,11 +130,12 @@ public class CallbackTaskExecutorService {
         .withZoneSameInstant(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE))
       .build().toUri();
 
-    ClientResponse callbackResponse;
+    ResponseEntity<Void> callbackResponse;
     try {
       callbackResponse = webClient.get()
         .uri(requestUri)
-        .exchange()
+        .retrieve()
+        .toBodilessEntity()
         .block();
     } catch (Exception e) {
       EfgsMdc.put("callbackErrorMessage", e.getMessage());
@@ -141,12 +144,12 @@ public class CallbackTaskExecutorService {
     }
 
     if (callbackResponse != null) {
-      if (callbackResponse.statusCode().is2xxSuccessful()) {
+      if (callbackResponse.getStatusCode().is2xxSuccessful()) {
         log.info("Got 2xx response for callback.");
 
         return true;
       } else {
-        EfgsMdc.put("statusCode", callbackResponse.rawStatusCode());
+        EfgsMdc.put("statusCode", callbackResponse.getStatusCodeValue());
         log.error("Got a non 2xx response for callback.");
       }
     } else {

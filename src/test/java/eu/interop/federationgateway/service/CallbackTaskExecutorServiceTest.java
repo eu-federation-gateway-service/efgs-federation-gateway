@@ -114,6 +114,7 @@ public class CallbackTaskExecutorServiceTest {
 
     mockWebServer.start();
     mockWebServer.useHttps(sslContext.getSocketFactory(), false);
+    mockWebServer.requireClientAuth();
 
     mockCallbackUrl = "https://localhost:" + mockWebServer.getPort();
 
@@ -192,6 +193,25 @@ public class CallbackTaskExecutorServiceTest {
     Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
+
+    Assert.assertEquals(0, callbackTaskRepository.count());
+    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+  }
+
+  @Test
+  public void callbackExecutorShouldCallCallbackURLForMassiveAmountOfCallbackTasks() throws InterruptedException {
+    CallbackSubscriptionEntity subscription1 = createSubscription(TestData.CALLBACK_ID_FIRST, TestData.COUNTRY_A);
+    DiagnosisKeyBatchEntity batch = createDiagnosisKeyBatch("BT1", ZonedDateTime.now(ZoneOffset.UTC));
+
+    MockResponse response = new MockResponse()
+      .setBody("x".repeat(1000))
+      .setResponseCode(200);
+
+    for (int i = 0; i < 200; i++) {
+      createCallbackTask(subscription1, batch, null);
+      mockWebServer.enqueue(response);
+      callbackTaskExecutorService.execute();
+    }
 
     Assert.assertEquals(0, callbackTaskRepository.count());
     Assert.assertEquals(1, callbackSubscriptionRepository.count());
