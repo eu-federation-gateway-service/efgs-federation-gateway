@@ -128,8 +128,11 @@ public class CallbackTaskExecutorServiceTest {
     Mockito.doReturn(true)
       .when(callbackServiceMock).checkUrl(Mockito.anyString(), Mockito.anyString());
 
+    TransactionalCallbackTaskExecutorService tctes =
+      new TransactionalCallbackTaskExecutorService(callbackTaskRepository);
+
     callbackTaskExecutorService = new CallbackTaskExecutorService(
-      efgsProperties, webClient, callbackServiceMock, callbackTaskRepository);
+      efgsProperties, webClient, callbackServiceMock, callbackTaskRepository, tctes);
   }
 
   @After

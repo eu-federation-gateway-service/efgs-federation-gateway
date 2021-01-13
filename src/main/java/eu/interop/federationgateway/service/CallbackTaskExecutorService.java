@@ -47,14 +47,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class CallbackTaskExecutorService {
 
-  private static final String MDC_PROP_TASK_ID = "taskId";
-  private static final String MDC_PROP_COUNTRY = "country";
-  private static final String MDC_PROP_CALLBACK_ID = "callbackId";
+  protected static final String MDC_PROP_TASK_ID = "taskId";
+  protected static final String MDC_PROP_COUNTRY = "country";
+  protected static final String MDC_PROP_CALLBACK_ID = "callbackId";
 
   private final EfgsProperties efgsProperties;
   private final WebClient webClient;
   private final CallbackService callbackService;
   private final CallbackTaskRepository callbackTaskRepository;
+  private final TransactionalCallbackTaskExecutorService transactionalCallbackTaskExecutorService;
 
   /**
    * Execute Callback processing.
@@ -66,7 +67,7 @@ public class CallbackTaskExecutorService {
     CallbackTaskEntity currentTask = getNextCallbackTask();
 
     while (currentTask != null) {
-      setExecutionLock(currentTask);
+      transactionalCallbackTaskExecutorService.setExecutionLock(currentTask);
       CallbackSubscriptionEntity subscription = currentTask.getCallbackSubscription();
 
       EfgsMdc.put(MDC_PROP_CALLBACK_ID, subscription.getCallbackId());
@@ -86,8 +87,8 @@ public class CallbackTaskExecutorService {
 
       if (callbackResult) {
         log.info("Successfully executed callback. Deleting callback task from database");
-        removeNotBeforeForNextTask(currentTask);
-        deleteTask(currentTask);
+        transactionalCallbackTaskExecutorService.removeNotBeforeForNextTask(currentTask);
+        transactionalCallbackTaskExecutorService.deleteTask(currentTask);
       } else {
         if (currentTask.getRetries() >= efgsProperties.getCallback().getMaxRetries()) {
           log.error("Callback reached max amount of retries. Deleting callback subscription.");
@@ -97,25 +98,13 @@ public class CallbackTaskExecutorService {
           currentTask.setRetries(currentTask.getRetries() + 1);
           currentTask.setLastTry(ZonedDateTime.now(ZoneOffset.UTC));
 
-          removeExecutionLock(currentTask);
+          transactionalCallbackTaskExecutorService.removeExecutionLock(currentTask);
         }
       }
       EfgsMdc.clear();
       currentTask = getNextCallbackTask();
     }
     log.info("Callback processing finished.");
-  }
-
-  private void removeNotBeforeForNextTask(CallbackTaskEntity currentTask) {
-    callbackTaskRepository.findFirstByNotBeforeIs(currentTask).ifPresent(task -> {
-      EfgsMdc.put(MDC_PROP_CALLBACK_ID, currentTask.getCallbackSubscription().getCallbackId());
-      EfgsMdc.put(MDC_PROP_COUNTRY, currentTask.getCallbackSubscription().getCountry());
-
-      log.info("Removing notBefore restriction from CallbackTask.");
-
-      task.setNotBefore(null);
-      callbackTaskRepository.save(task);
-    });
   }
 
   boolean sendCallback(CallbackTaskEntity callbackTask) {
@@ -157,44 +146,6 @@ public class CallbackTaskExecutorService {
     }
 
     return false;
-  }
-
-  /**
-   * Deletes a CallbackTaskEntity from database.
-   *
-   * @param task the task that has to be deleted.
-   */
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
-  void deleteTask(CallbackTaskEntity task) {
-    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
-    log.info("Deleting CallbackTask from db");
-    callbackTaskRepository.delete(task);
-  }
-
-  /**
-   * Sets execution lock for given task so that no other instance will work on this task.
-   *
-   * @param task The task to be locked.
-   */
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
-  void setExecutionLock(CallbackTaskEntity task) {
-    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
-    log.info("Setting execution lock for CallbackTask");
-    task.setExecutionLock(ZonedDateTime.now(ZoneOffset.UTC));
-    callbackTaskRepository.save(task);
-  }
-
-  /**
-   * Removes execution lock from task.
-   *
-   * @param task the task.
-   */
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
-  void removeExecutionLock(CallbackTaskEntity task) {
-    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
-    log.info("Removing execution lock for CallbackTask.");
-    task.setExecutionLock(null);
-    callbackTaskRepository.save(task);
   }
 
   private CallbackTaskEntity getNextCallbackTask() {
