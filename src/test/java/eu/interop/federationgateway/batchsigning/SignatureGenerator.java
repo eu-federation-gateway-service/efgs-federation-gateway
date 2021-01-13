@@ -111,6 +111,6 @@ public class SignatureGenerator {
   }
 
   private ContentSigner createContentSigner() throws OperatorCreationException {
-    return new JcaContentSignerBuilder(TestData.DIGEST_ALGORITHM).build(TestData.keyPair.getPrivate());
+    return new JcaContentSignerBuilder("SHA256withECDSA").build(TestData.keyPair.getPrivate());
   }
 }
