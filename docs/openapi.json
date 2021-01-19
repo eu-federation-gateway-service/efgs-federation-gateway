@@ -282,12 +282,12 @@
         "parameters": [{
             "name": "batchTag",
             "in": "header",
-            "description": "Required Tag to tag the send batch (must be not unique).",
+            "description": "Required Tag to tag the send batch (must be unique).",
             "required": true,
             "schema": {
               "type": "string"
             },
-            "example": "20200731-1"
+            "example": "20200731-1, or a hash"
           }, {
             "name": "batchSignature",
             "in": "header",
