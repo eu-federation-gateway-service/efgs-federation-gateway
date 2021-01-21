@@ -28,6 +28,7 @@ efgs:
     keyStorePass: 3fgs-p4ssw0rd
     certificateAlias: efgs_trust_anchor
   callback:
+    locklimit: 1800000
     keyStorePath: /ec/prod/app/san/efgs/efgs-cb-client.jks
     keyStorePass: 3fgs-p4ssw0rd
     keyStorePrivateKeyAlias: efgs_callback_key
@@ -48,6 +49,7 @@ efgs:
   upload-settings:
     maximum-upload-batch-size: 5000
   download-settings:
+    locklimit: 1800000
     max-age-in-days: 6
   cert-auth:
     header-fields:

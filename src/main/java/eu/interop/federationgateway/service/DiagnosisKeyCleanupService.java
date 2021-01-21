@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +46,8 @@ public class DiagnosisKeyCleanupService {
    * Cleanup task to delete all DiagnosisKeys and DiagnosisKeyBatches which are older then configured.
    */
   @Scheduled(cron = "0 0 0 * * *")
+  @SchedulerLock(name = "DiagnosisKeyCleanupService_cleanupDiagnosisKeys", lockAtLeastFor = "PT0S",
+    lockAtMostFor = "${efgs.download-settings.locklimit}")
   public void cleanupDiagnosisKeys() {
     ZonedDateTime deleteTimestamp = LocalDate.ofInstant(ZonedDateTime.now(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC)
       .atStartOfDay(ZoneOffset.UTC)
