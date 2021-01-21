@@ -89,8 +89,8 @@ public class UploadController {
         name = "batchTag",
         in = ParameterIn.HEADER,
         required = true,
-        description = "Required Tag to tag the send batch (must be not unique).",
-        example = "20200731-1"
+        description = "Required Tag to tag the send batch (must be unique).",
+        example = "20200731-1, or a hash"
       ),
       @Parameter(
         name = "batchSignature",
