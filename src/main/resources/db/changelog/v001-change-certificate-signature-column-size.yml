@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-certificate-signature-column-size
+      author: f11h
+      changes:
+        - modifyDataType:
+            tableName: certificate
+            columnName: signature
+            newDataType: varchar(690)
+
