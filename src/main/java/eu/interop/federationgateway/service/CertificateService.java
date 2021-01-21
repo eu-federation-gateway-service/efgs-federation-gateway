@@ -148,10 +148,10 @@ public class CertificateService {
     }
 
     // load EFGS Trust Anchor PublicKey from KeyStore
-    PublicKey publicKey = null;
+    X509Certificate trustAnchor = null;
     try {
-      publicKey = trustAnchorKeyStore.getCertificate(
-        efgsProperties.getTrustAnchor().getCertificateAlias()).getPublicKey();
+      trustAnchor = (X509Certificate) trustAnchorKeyStore.getCertificate(
+        efgsProperties.getTrustAnchor().getCertificateAlias());
     } catch (KeyStoreException e) {
       log.error("Could not load EFGS-TrustAnchor from KeyStore.");
       return false;
@@ -159,10 +159,10 @@ public class CertificateService {
 
     // verify certificate signature
     try {
-      Signature verifier = Signature.getInstance("SHA256with" + publicKey.getAlgorithm());
+      Signature verifier = Signature.getInstance(trustAnchor.getSigAlgName());
       byte[] signatureBytes = Base64.getDecoder().decode(certificateEntity.getSignature());
 
-      verifier.initVerify(publicKey);
+      verifier.initVerify(trustAnchor);
       verifier.update(certificateEntity.getRawData().getBytes());
 
       if (verifier.verify(signatureBytes)) {
