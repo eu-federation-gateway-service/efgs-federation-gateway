@@ -94,11 +94,11 @@ public class TestData {
   public static final String CALLBACK_URL_EFGS = "https://example.org";
   public static final String CALLBACK_URL_EXAMPLE = "https://example.net";
   public static final int DAYS_SINCE_ONSET_OF_SYMPTOMS = 42;
-  public static final String DIGEST_ALGORITHM = "SHA1withRSA";
   private static final String TEST_BATCH_TAG_DE = "uploaderBatchTag_DE";
   private static final String TEST_BATCH_TAG_NL = "uploaderBatchTag_NL";
   private static final String COMMON_NAME_SIGNING_CERT = "demo";
   public static String AUTH_CERT_HASH;
+  public static String DIGEST_ALGORITHM = "SHA256withRSA";
   public static KeyPair keyPair;
   public static X509Certificate validAuthenticationCertificate;
   public static X509Certificate expiredCertificate;
@@ -124,7 +124,7 @@ public class TestData {
     jcaPEMWriter.close();
     stringWriter.close();
 
-    Signature signer = Signature.getInstance("SHA256withRSA");
+    Signature signer = Signature.getInstance(TestData.trustAnchor.getSigAlgName());
     signer.initSign(keyPair.getPrivate());
     signer.update(rawData.getBytes());
     byte[] signedData = signer.sign();
@@ -180,7 +180,7 @@ public class TestData {
     jcaPEMWriter.close();
     stringWriter.close();
 
-    Signature signer = Signature.getInstance("SHA256withRSA");
+    Signature signer = Signature.getInstance(TestData.trustAnchor.getSigAlgName());
     signer.initSign(keyPair.getPrivate());
     signer.update(rawData.getBytes());
     byte[] signedData = signer.sign();
@@ -225,7 +225,7 @@ public class TestData {
     OperatorCreationException {
     if (TestData.keyPair == null) {
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-      keyGen.initialize(2048);
+      keyGen.initialize(4096);
       TestData.keyPair = keyGen.generateKeyPair();
     }
 

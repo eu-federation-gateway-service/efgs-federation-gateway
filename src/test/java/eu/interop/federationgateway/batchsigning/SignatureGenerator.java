@@ -97,7 +97,7 @@ public class SignatureGenerator {
 
   private SignerInfoGenerator createSignerInfo(X509Certificate cert) throws OperatorCreationException,
     CertificateEncodingException {
-    return new JcaSignerInfoGeneratorBuilder(createDigestBuilder()).build(createContentSigner(), cert);
+    return new JcaSignerInfoGeneratorBuilder(createDigestBuilder()).build(createContentSigner(cert), cert);
   }
 
   private X509CertificateHolder createCertificateHolder(X509Certificate cert) throws CertificateEncodingException,
@@ -110,7 +110,7 @@ public class SignatureGenerator {
 
   }
 
-  private ContentSigner createContentSigner() throws OperatorCreationException {
-    return new JcaContentSignerBuilder(TestData.DIGEST_ALGORITHM).build(TestData.keyPair.getPrivate());
+  private ContentSigner createContentSigner(X509Certificate cert) throws OperatorCreationException {
+    return new JcaContentSignerBuilder(cert.getSigAlgName()).build(TestData.keyPair.getPrivate());
   }
 }

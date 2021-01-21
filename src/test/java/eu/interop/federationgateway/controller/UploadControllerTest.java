@@ -46,6 +46,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
 import org.junit.Assert;
@@ -365,6 +366,34 @@ public class UploadControllerTest {
     )
       .andExpect(status().isCreated())
       .andExpect(result -> Assert.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
+  }
+
+  @Test
+  public void testRequestUploadKeysWithInvalidJson() throws Exception {
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+
+    EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
+      .addAllKeys(Collections.singletonList(key1)).build();
+
+    byte[] bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch);
+    String signature = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
+
+    // Create JSON representation of diagnosiskey
+    ProtobufFormatter formatter = new ProtobufConverter();
+    String jsonFormatted = formatter.printToString(batch);
+
+    // replace keyData with invalid base64
+    jsonFormatted = jsonFormatted.replaceFirst("keyData\": \"[A-Za-z0-9=]*\"", "keyData\": \"invalidBase64\"");
+
+    mockMvc.perform(post("/diagnosiskeys/upload")
+      .contentType("application/json; version=1.0")
+      .header("batchTag", TestData.FIRST_BATCHTAG)
+      .header("batchSignature", signature)
+      .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+      .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
+      .content(jsonFormatted)
+    )
+      .andExpect(status().isBadRequest());
   }
 
   @Test
