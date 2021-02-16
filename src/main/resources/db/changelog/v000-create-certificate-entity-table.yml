@@ -46,6 +46,7 @@ databaseChangeLog:
   - changeSet:
       id: create-certificate-entity-table-increment
       author: f11h
+      context: '!psql'
       changes:
         - addAutoIncrement:
             tableName: certificate

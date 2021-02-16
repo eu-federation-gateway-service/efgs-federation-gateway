@@ -58,6 +58,7 @@ databaseChangeLog:
   - changeSet:
       id: create-callback-task-entity-table-increment
       author: f11h
+      context: '!psql'
       changes:
         - addAutoIncrement:
             tableName: callback_task
