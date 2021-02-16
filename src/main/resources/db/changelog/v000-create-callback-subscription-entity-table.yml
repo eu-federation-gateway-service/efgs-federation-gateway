@@ -34,13 +34,3 @@ databaseChangeLog:
                   type: varchar(2)
                   constraints:
                     nullable: false
-  - changeSet:
-      id: create-callback-subscription-entity-table-increment
-      author: f11h
-      changes:
-        - addAutoIncrement:
-            tableName: callback_subscription
-            columnName: id
-            columnDataType: bigint
-            startWith: 1
-            incrementBy: 1
