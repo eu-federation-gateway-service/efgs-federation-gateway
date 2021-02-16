@@ -36,7 +36,7 @@ certC=${input:-${certC}}
 case "$(uname -s)" in
   MINGW32*|MSYS*|MINGW*)
     # Work around MinGW/MSYS's path conversion (http://www.mingw.org/wiki/Posix_path_conversion) 
-    ertSubject="//C=${certC}\CN=${certCN}\O=EFGS DEV Org"
+    certSubject="//C=${certC}\CN=${certCN}\O=EFGS DEV Org"
   ;;
   *)
     certSubject="/C=${certC}/CN=${certCN}/O=EFGS DEV Org"
