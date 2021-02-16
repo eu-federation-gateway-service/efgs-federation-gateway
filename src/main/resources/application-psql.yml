@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:3306/fg
+    username: sa
+    password: sa
+    driver-class-name: org.postgresql.Driver
+    jndi-name: false
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect

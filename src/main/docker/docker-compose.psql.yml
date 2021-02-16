@@ -1,0 +1,19 @@
+version: '3'
+services:
+  psql:
+    image: postgres:10
+    environment:
+      - POSTGRES_USER=fg_adm
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=fg
+    networks:
+      persistence:
+        aliases:
+          - psql
+  backend:
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_PROFILES_ACTIVE=psql
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://psql:5432/fg
+    depends_on:
+      - psql

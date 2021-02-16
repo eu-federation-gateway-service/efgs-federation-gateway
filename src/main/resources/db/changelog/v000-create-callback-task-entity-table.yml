@@ -55,13 +55,3 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk_callbacktask_callbacksubscription
                     references: callback_subscription(id)
-  - changeSet:
-      id: create-callback-task-entity-table-increment
-      author: f11h
-      changes:
-        - addAutoIncrement:
-            tableName: callback_task
-            columnName: id
-            columnDataType: bigint
-            startWith: 1
-            incrementBy: 1
