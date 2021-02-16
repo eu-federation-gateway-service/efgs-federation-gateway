@@ -1,15 +1,19 @@
 #!/bin/bash
+
+# fail on error
+set -e
+
 keystorefilename="efgs-cb-client.jks"
 keystorepassword="3fgs-p4ssw0rd"
 certCN="EFGS-Callback DEV"
 certC="DE"              
 yn=N
 
-ECHO [1 of 6] Deleting old files...
-rm callback.pem
-rm callback.key
-rm callback.p12
-rm ${keystorefilename}
+echo [1 of 6] Deleting old files...
+rm -f callback.pem
+rm -f callback.key
+rm -f callback.p12
+rm -f ${keystorefilename}
 echo ... old files deleted.
 read -p "keystorefilename [${keystorefilename}]:" input
 keystorefilename=${input:-${keystorefilename}}
@@ -28,8 +32,19 @@ certC=${input:-${certC}}
 #        * ) echo "Please answer Y(es) or N(o).";;
 # esac
 #done
+
+case "$(uname -s)" in
+  MINGW32*|MSYS*|MINGW*)
+    # Work around MinGW/MSYS's path conversion (http://www.mingw.org/wiki/Posix_path_conversion) 
+    certSubject="//C=${certC}\CN=${certCN}\O=EFGS DEV Org"
+  ;;
+  *)
+    certSubject="/C=${certC}/CN=${certCN}/O=EFGS DEV Org"
+  ;;
+esac
+
 echo [2 of 6] Creating certificate...
-openssl req -nodes -new -x509 -keyout callback.key -out callback.pem -days 720 -subj "//C=${certC}\CN=${certCN}\O=EFGS DEV Org"
+openssl req -nodes -new -x509 -keyout callback.key -out callback.pem -days 720 -subj "$certSubject"
 echo ... Certificate created.
 
 echo [3 of 6] Creating keystore...
