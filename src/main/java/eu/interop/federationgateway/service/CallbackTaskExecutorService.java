@@ -87,8 +87,7 @@ public class CallbackTaskExecutorService {
 
       if (callbackResult) {
         log.info("Successfully executed callback. Deleting callback task from database");
-        transactionalCallbackTaskExecutorService.removeNotBeforeForNextTask(currentTask);
-        transactionalCallbackTaskExecutorService.deleteTask(currentTask);
+        transactionalCallbackTaskExecutorService.removeNotBeforeForNextTaskAndDeleteTask(currentTask);
       } else {
         if (currentTask.getRetries() >= efgsProperties.getCallback().getMaxRetries()) {
           log.error("Callback reached max amount of retries. Deleting callback subscription.");
