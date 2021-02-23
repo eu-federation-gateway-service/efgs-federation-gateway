@@ -35,8 +35,10 @@ SET ISODATE=%ISODATE:T= %
 
 setlocal EnableDelayedExpansion
 
-openssl base64 -in %certFileName% -out cert.base64 -A
-SET /P CERT_BASE64=<cert.base64
+SET RAW=
+FOR /f "tokens=*" %%i IN ('type %certFileName%') DO (
+    SET RAW=!RAW!%%i\n
+)
 
 openssl x509 -fingerprint -sha256 -in %certFileName% -noout > HASH.txt
 SET /P HASH=<HASH.txt
@@ -63,7 +65,7 @@ IF %TYPEQ%==yes (
 )
 
 
-SET template=INSERT INTO certificate VALUES(NULL, '%ISODATE%', '%HASH%', '%COUNTRY%', '%TYPE%', FALSE, NULL, '%SIGNATURE%', FROM_BASE64('%CERT_BASE64%'));
+SET template=INSERT INTO certificate VALUES(NULL, '%ISODATE%', '%HASH%', '%COUNTRY%', '%TYPE%', FALSE, NULL, '%SIGNATURE%', '%RAW%');
 ECHO %template% > insert.sql
 
 ECHO [4 of 5] Insert statement created.
