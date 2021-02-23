@@ -15,6 +15,10 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog.yml
+  task:
+    scheduling:
+      pool:
+        size: 5
 management:
   endpoints:
     web:
