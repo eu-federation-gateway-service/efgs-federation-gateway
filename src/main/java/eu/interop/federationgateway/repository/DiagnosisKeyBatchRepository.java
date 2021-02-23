@@ -25,6 +25,8 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface DiagnosisKeyBatchRepository extends JpaRepository<DiagnosisKeyBatchEntity, Long> {
 
   @Modifying
-  int deleteByCreatedAtBefore(ZonedDateTime before);
+  @Query("DELETE FROM DiagnosisKeyBatchEntity d WHERE d.createdAt < :before")
+  int deleteByCreatedAtBefore(@Param("before") ZonedDateTime before);
 
   Optional<DiagnosisKeyBatchEntity> findByBatchName(String name);
 

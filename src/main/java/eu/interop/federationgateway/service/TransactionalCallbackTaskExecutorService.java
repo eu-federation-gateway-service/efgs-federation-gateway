@@ -47,7 +47,7 @@ public class TransactionalCallbackTaskExecutorService {
    * @param currentTask the tasks the following should be searched for.
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
-  void removeNotBeforeForNextTask(CallbackTaskEntity currentTask) {
+  void removeNotBeforeForNextTaskAndDeleteTask(CallbackTaskEntity currentTask) {
     callbackTaskRepository.findFirstByNotBeforeIs(currentTask).ifPresent(task -> {
       EfgsMdc.put(MDC_PROP_CALLBACK_ID, currentTask.getCallbackSubscription().getCallbackId());
       EfgsMdc.put(MDC_PROP_COUNTRY, currentTask.getCallbackSubscription().getCountry());
@@ -57,18 +57,9 @@ public class TransactionalCallbackTaskExecutorService {
       task.setNotBefore(null);
       callbackTaskRepository.save(task);
     });
-  }
 
-  /**
-   * Deletes a CallbackTaskEntity from database.
-   *
-   * @param task the task that has to be deleted.
-   */
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
-  void deleteTask(CallbackTaskEntity task) {
-    EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
     log.info("Deleting CallbackTask from db");
-    callbackTaskRepository.delete(task);
+    callbackTaskRepository.delete(currentTask);
   }
 
   /**
@@ -76,7 +67,6 @@ public class TransactionalCallbackTaskExecutorService {
    *
    * @param task The task to be locked.
    */
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
   void setExecutionLock(CallbackTaskEntity task) {
     EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
     log.info("Setting execution lock for CallbackTask");
@@ -89,7 +79,6 @@ public class TransactionalCallbackTaskExecutorService {
    *
    * @param task the task.
    */
-  @Transactional(Transactional.TxType.REQUIRES_NEW)
   void removeExecutionLock(CallbackTaskEntity task) {
     EfgsMdc.put(MDC_PROP_TASK_ID, task.getId());
     log.info("Removing execution lock for CallbackTask.");
