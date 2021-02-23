@@ -36,7 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKeyEntity, Long> {
 
   @Modifying
-  int deleteByCreatedAtBefore(ZonedDateTime before);
+  @Query("DELETE FROM DiagnosisKeyEntity d WHERE d.createdAt < :before")
+  int deleteByCreatedAtBefore(@Param("before") ZonedDateTime before);
 
   List<DiagnosisKeyEntity> findAllByPayloadOrigin(String country);
 
