@@ -27,13 +27,16 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.persistence.AttributeConverter;
 import javax.persistence.PersistenceException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DbEncryptionReportTypeConverter implements AttributeConverter<DiagnosisKeyPayload.ReportType, String> {
-
+  @Autowired
+  DbEncryptionService dbEncryptionService;
+  
   @Override
   public String convertToDatabaseColumn(DiagnosisKeyPayload.ReportType s) {
     try {
-      return DbEncryptionService.getInstance().encryptString(s.name());
+      return dbEncryptionService.encryptString(s.name());
     } catch (InvalidAlgorithmParameterException | InvalidKeyException 
             | BadPaddingException | IllegalBlockSizeException e) {
       throw new PersistenceException(e);
@@ -43,7 +46,7 @@ public class DbEncryptionReportTypeConverter implements AttributeConverter<Diagn
   @Override
   public DiagnosisKeyPayload.ReportType convertToEntityAttribute(String s) {
     try {
-      return DiagnosisKeyPayload.ReportType.valueOf(DbEncryptionService.getInstance().decryptString(s));
+      return DiagnosisKeyPayload.ReportType.valueOf(dbEncryptionService.decryptString(s));
     } catch (InvalidAlgorithmParameterException | InvalidKeyException 
             | BadPaddingException | IllegalBlockSizeException e) {
       throw new PersistenceException(e);

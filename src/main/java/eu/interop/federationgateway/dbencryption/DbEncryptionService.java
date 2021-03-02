@@ -36,9 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
 
 @Slf4j
-public class DbEncryptionService {
 
-  private static final String PASSWORD_PROPERTY_NAME = "efgs_dbencryption_password";
+public class DbEncryptionService {
   private static final Charset CHARSET = StandardCharsets.UTF_8;
   private static DbEncryptionService instance;
   private final Cipher cipher;
@@ -48,12 +47,8 @@ public class DbEncryptionService {
    * Constructor for DbEncryptionService.
    * Initializes Cipher with ciphersuite configured in application properties.
    */
-  private DbEncryptionService() {
+  private DbEncryptionService(String dbEncryptionPassword) {
     cipher = AesBytesEncryptor.CipherAlgorithm.CBC.createCipher();
-
-    String dbEncryptionPassword = System.getenv().containsKey(PASSWORD_PROPERTY_NAME)
-      ? System.getenv(PASSWORD_PROPERTY_NAME)
-      : System.getProperty(PASSWORD_PROPERTY_NAME);
 
     if (dbEncryptionPassword != null) {
       int passwordLength = dbEncryptionPassword.length();
@@ -72,9 +67,9 @@ public class DbEncryptionService {
    * Returns an instance of Singleton-DbEncryptionService.
    * @return The DbEncryptionService instance
    */
-  public static DbEncryptionService getInstance() {
+  public static DbEncryptionService getInstance(String dbEncryptionPassword) {
     if (DbEncryptionService.instance == null) {
-      DbEncryptionService.instance = new DbEncryptionService();
+      DbEncryptionService.instance = new DbEncryptionService(dbEncryptionPassword);
     }
 
     return instance;

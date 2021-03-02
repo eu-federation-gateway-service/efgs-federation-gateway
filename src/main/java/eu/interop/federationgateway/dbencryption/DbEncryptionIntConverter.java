@@ -26,13 +26,16 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.persistence.AttributeConverter;
 import javax.persistence.PersistenceException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DbEncryptionIntConverter implements AttributeConverter<Integer, String> {
+  @Autowired
+  DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(Integer s) {
     try {
-      return DbEncryptionService.getInstance().encryptInteger(s);
+      return dbEncryptionService.encryptInteger(s);
     } catch (InvalidAlgorithmParameterException | InvalidKeyException 
             | BadPaddingException | IllegalBlockSizeException e) {
       throw new PersistenceException(e);
@@ -42,7 +45,7 @@ public class DbEncryptionIntConverter implements AttributeConverter<Integer, Str
   @Override
   public Integer convertToEntityAttribute(String s) {
     try {
-      return DbEncryptionService.getInstance().decryptInteger(s);
+      return dbEncryptionService.decryptInteger(s);
     } catch (InvalidAlgorithmParameterException | InvalidKeyException 
             | BadPaddingException | IllegalBlockSizeException e) {
       throw new PersistenceException(e);
