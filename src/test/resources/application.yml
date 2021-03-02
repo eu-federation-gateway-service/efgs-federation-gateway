@@ -54,6 +54,7 @@ efgs:
     header-fields:
       thumbprint: X-SSL-Client-SHA256
       distinguished-name: X-SSL-Client-DN
+      full-cert: X-SSL-Client-Cert
   batching:
     timeinterval: 300000
     doclimit: 5000
