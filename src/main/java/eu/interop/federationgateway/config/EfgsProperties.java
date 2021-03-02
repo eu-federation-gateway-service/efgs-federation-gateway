@@ -104,6 +104,8 @@ public class EfgsProperties {
     public static class HeaderFields {
       private String thumbprint;
       private String distinguishedName;
+      private String fullCert;
+      private Boolean useFullCertificate = false;
     }
   }
 }
