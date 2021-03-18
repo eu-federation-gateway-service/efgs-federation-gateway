@@ -38,5 +38,6 @@ databaseChangeLog:
   - include:
       file: changelog/v001-change-certificate-signature-column-size.yml
       relativeToChangelogFile: true
-
-
+  - include:
+      file: changelog/v003-increase-column-size-for-batchsignature.yml
+      relativeToChangelogFile: true
