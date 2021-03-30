@@ -214,6 +214,7 @@ public class UploadControllerTest {
     bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch2);
     String signatureBatch2 = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
 
+    // The first upload request should successfully insert key1 and report it as HTTP 201 (created).
     mockMvc.perform(post("/diagnosiskeys/upload")
       .contentType("application/protobuf; version=1.0")
       .header("batchTag", TestData.FIRST_BATCHTAG)
@@ -223,6 +224,8 @@ public class UploadControllerTest {
       .content(batch1.toByteArray())
     ).andExpect(status().isCreated());
 
+    // The second upload request should report one conflict (key1 as 409) and
+    // one insert (key2 as 201).
     mockMvc.perform(post("/diagnosiskeys/upload")
       .contentType("application/protobuf; version=1.0")
       .header("batchTag", TestData.SECOND_BATCHTAG)
@@ -233,7 +236,8 @@ public class UploadControllerTest {
     )
       .andExpect(status().isMultiStatus())
       .andExpect(result -> {
-        Assert.assertEquals(1, diagnosisKeyEntityRepository.count());
+        // According to the backend response(s) there should be two keys in the database now.
+        Assert.assertEquals(2, diagnosisKeyEntityRepository.count());
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String, Object> map = jsonParser.parseMap(result.getResponse().getContentAsString());
