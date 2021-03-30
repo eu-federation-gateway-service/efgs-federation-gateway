@@ -29,6 +29,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.Getter;
 import lombok.NonNull;
@@ -68,7 +69,9 @@ public class DiagnosisKeyEntityService {
    * @param diagnosisKeyEntities the diagnosis key entities
    * @throws DiagnosisKeyInsertException will be thrown if an error occurred during insertion.
    */
-  @Transactional(rollbackOn = DiagnosisKeyInsertException.class)
+  @Transactional(
+    rollbackOn = DiagnosisKeyInsertException.class,
+    dontRollbackOn = DiagnosisKeyDuplicateInsertException.class)
   public void saveDiagnosisKeyEntities(
     List<DiagnosisKeyEntity> diagnosisKeyEntities
   ) throws DiagnosisKeyInsertException {
@@ -76,24 +79,43 @@ public class DiagnosisKeyEntityService {
     resultMap.put(201, new ArrayList<>());
     resultMap.put(409, new ArrayList<>());
     resultMap.put(500, new ArrayList<>());
-
     ZonedDateTime uploadTimestamp = ZonedDateTime.now(ZoneOffset.UTC);
+
+    // Find and filter duplicate keys before trying to insert them into the database to avoid
+    // a database transaction rollback. This way, the rest of the batch can be inserted into
+    // the database (and reported as 201) even if there were some duplicate keys in the batch.
+    List<String> batchPayloadHashes =
+      diagnosisKeyEntities.stream().map((key) -> key.getPayloadHash()).collect(Collectors.toList());
+    List<String> existingPayloadHashes = diagnosisKeyEntityRepository
+      .getDiagnosisKeysByPayloadHashes(batchPayloadHashes)
+      .stream()
+      .map((k) -> k.getPayloadHash()).collect(Collectors.toList());
 
     for (int index = 0; index < diagnosisKeyEntities.size(); index++) {
       DiagnosisKeyEntity key = diagnosisKeyEntities.get(index);
+
+      if (existingPayloadHashes.contains(key.getPayloadHash())) {
+        // Key with the same payload hash already exists in database.
+        // Report as 409 and skip inserting into database.
+        resultMap.get(409).add(index);
+        continue;
+      } 
+
       key.setCreatedAt(uploadTimestamp);
       try {
         saveDiagnosisKeyEntity(key);
         resultMap.get(201).add(index);
-      } catch (DataIntegrityViolationException e) {
-        log.error("{}: {}", index, e.getMessage());
-        resultMap.get(409).add(index);
+        existingPayloadHashes.add(key.getPayloadHash());
       } catch (Exception e) {
         resultMap.get(500).add(index);
       }
     }
-
-    if (!resultMap.get(409).isEmpty() || !resultMap.get(500).isEmpty()) {
+    if (!resultMap.get(500).isEmpty()) {
+      // The INSERT of at least one key triggered an exception. We have to assume that the database
+      // transaction will be rolled back and therefore need to report all previously inserted keys
+      // as failed (500) and clear the list of 201.
+      resultMap.get(500).addAll(resultMap.get(201));
+      resultMap.get(201).clear();
 
       EfgsMdc.put("insertedKeyCount", resultMap.get(201).size());
       EfgsMdc.put("conflictKeysCount", resultMap.get(409).size());
@@ -101,6 +123,16 @@ public class DiagnosisKeyEntityService {
 
       log.error("error inserting keys");
       throw new DiagnosisKeyInsertException("Error during insertion of diagnosis keys!", resultMap);
+
+    } else if (!resultMap.get(409).isEmpty()) {
+      // Duplicate keys detected but no exception triggered during INSERT
+
+      EfgsMdc.put("insertedKeyCount", resultMap.get(201).size());
+      EfgsMdc.put("conflictKeysCount", resultMap.get(409).size());
+      EfgsMdc.put("failedKeysCount", resultMap.get(500).size());
+
+      log.error("error inserting keys");
+      throw new DiagnosisKeyDuplicateInsertException("Error during insertion of diagnosis keys!", resultMap);
     }
   }
 
@@ -160,6 +192,12 @@ public class DiagnosisKeyEntityService {
     DiagnosisKeyInsertException(String message, HashMap<Integer, List<Integer>> resultMap) {
       super(message);
       this.resultMap = resultMap;
+    }
+  }
+
+  public static class DiagnosisKeyDuplicateInsertException extends DiagnosisKeyInsertException {
+    DiagnosisKeyDuplicateInsertException(String message, HashMap<Integer, List<Integer>> resultMap) {
+      super(message, resultMap);
     }
   }
 }

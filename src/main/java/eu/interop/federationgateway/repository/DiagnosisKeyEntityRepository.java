@@ -62,4 +62,9 @@ public interface DiagnosisKeyEntityRepository extends JpaRepository<DiagnosisKey
     @Param("uploaderBatchTags") List<String> uploaderBatchTags,
     @Param("batchTag") String batchTag);
 
+
+  @Query("SELECT t "
+    + "FROM DiagnosisKeyEntity t WHERE payloadHash IN :payloadHashes")
+ List<DiagnosisKeyEntity> getDiagnosisKeysByPayloadHashes(@Param("payloadHashes") List<String> payloadHashes);
+
 }
