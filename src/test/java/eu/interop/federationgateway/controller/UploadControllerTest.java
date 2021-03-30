@@ -201,6 +201,7 @@ public class UploadControllerTest {
   public void testRequestUploadKeysExistingHashInProtobufFormat() throws Exception {
     EfgsProto.DiagnosisKey key1 = buildKey(1);
     EfgsProto.DiagnosisKey key2 = buildKey(2);
+    EfgsProto.DiagnosisKey key3 = buildKey(3);
 
     EfgsProto.DiagnosisKeyBatch batch1 = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addAllKeys(Arrays.asList(key1)).build();
@@ -209,7 +210,7 @@ public class UploadControllerTest {
     String signatureBatch1 = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
 
     EfgsProto.DiagnosisKeyBatch batch2 = EfgsProto.DiagnosisKeyBatch.newBuilder()
-      .addAllKeys(Arrays.asList(key1, key2)).build();
+      .addAllKeys(Arrays.asList(key2, key3, key1, key3)).build();
 
     bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch2);
     String signatureBatch2 = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
@@ -224,8 +225,9 @@ public class UploadControllerTest {
       .content(batch1.toByteArray())
     ).andExpect(status().isCreated());
 
-    // The second upload request should report one conflict (key1 as 409) and
-    // one insert (key2 as 201).
+    // The second upload request should report:
+    // - 201 (inserted): key2 [0] and key3 [1]
+    // - 409 (conflict): key1 [2] (already uploaded previously) and key3 [3] (twice in the same batch)
     mockMvc.perform(post("/diagnosiskeys/upload")
       .contentType("application/protobuf; version=1.0")
       .header("batchTag", TestData.SECOND_BATCHTAG)
@@ -236,8 +238,8 @@ public class UploadControllerTest {
     )
       .andExpect(status().isMultiStatus())
       .andExpect(result -> {
-        // According to the backend response(s) there should be two keys in the database now.
-        Assert.assertEquals(2, diagnosisKeyEntityRepository.count());
+        // According to the backend response(s) there should be three keys in the database now.
+        Assert.assertEquals(3, diagnosisKeyEntityRepository.count());
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String, Object> map = jsonParser.parseMap(result.getResponse().getContentAsString());
@@ -246,10 +248,12 @@ public class UploadControllerTest {
         List<Integer> list500 = (List<Integer>) map.get("500");
 
         Assert.assertTrue(list500.isEmpty());
-        Assert.assertTrue(list201.contains(1));
-        Assert.assertTrue(list409.contains(0));
-        Assert.assertEquals(1, list201.size());
-        Assert.assertEquals(1, list409.size());
+        Assert.assertTrue(list201.contains(0)); // key2 [0] is new -> 201
+        Assert.assertTrue(list201.contains(1)); // key3 [1] is new -> 201
+        Assert.assertTrue(list409.contains(2)); // key1 [2] is already in db -> 409
+        Assert.assertTrue(list409.contains(3)); // key3 [3] is duplicate in batch -> 409
+        Assert.assertEquals(2, list201.size());
+        Assert.assertEquals(2, list409.size());
       });
   }
 
