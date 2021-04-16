@@ -24,7 +24,7 @@ openssl base64 -in sig.tmp -out signature.base64 -A
 echo ... saved to signature.base64
 signature=$(cat signature.base64)
 
-cert_base64=$(cat ${certFileName} | base64)
+cert_base64=$(cat ${certFileName} | openssl base64 -A)
 #echo $cert_base64
 
 openssl x509 -fingerprint -sha256 -in ${certFileName} -noout > fingerprint.sha256
