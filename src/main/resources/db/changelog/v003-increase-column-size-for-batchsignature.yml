@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: increase-column-size-for-batchsignature
+      author: ubamrein
+      changes:
+        - modifyDataType:
+            tableName: diagnosiskey
+            columnName: uploader_information_batch_signature
+            newDataType: varchar(8000)
