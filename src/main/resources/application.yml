@@ -27,6 +27,8 @@ management:
   server:
     port: -1
 efgs:
+  dbEncryption:
+    password: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
   trustAnchor:
     keyStorePath: /ec/prod/app/san/efgs/efgs-ta.jks
     keyStorePass: 3fgs-p4ssw0rd

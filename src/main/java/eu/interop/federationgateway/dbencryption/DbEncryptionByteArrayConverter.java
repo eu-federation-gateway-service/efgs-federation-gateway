@@ -25,13 +25,15 @@ import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import javax.persistence.PersistenceException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 
-
+@RequiredArgsConstructor
+@Converter
 public class DbEncryptionByteArrayConverter implements AttributeConverter<byte[], String> {
-  @Autowired
-  DbEncryptionService dbEncryptionService;
+
+  private final DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(byte[] s) {

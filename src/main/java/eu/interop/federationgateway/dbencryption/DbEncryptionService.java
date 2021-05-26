@@ -20,6 +20,7 @@
 
 package eu.interop.federationgateway.dbencryption;
 
+import eu.interop.federationgateway.config.EfgsProperties;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -34,12 +35,13 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.encrypt.AesBytesEncryptor;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-
+@Service
 public class DbEncryptionService {
+
   private static final Charset CHARSET = StandardCharsets.UTF_8;
-  private static DbEncryptionService instance;
   private final Cipher cipher;
   private final Key key;
 
@@ -47,32 +49,20 @@ public class DbEncryptionService {
    * Constructor for DbEncryptionService.
    * Initializes Cipher with ciphersuite configured in application properties.
    */
-  private DbEncryptionService(String dbEncryptionPassword) {
+  private DbEncryptionService(EfgsProperties efgsProperties) {
     cipher = AesBytesEncryptor.CipherAlgorithm.CBC.createCipher();
 
-    if (dbEncryptionPassword != null) {
-      int passwordLength = dbEncryptionPassword.length();
+    if (efgsProperties.getDbEncryption().getPassword() != null) {
+      int passwordLength = efgsProperties.getDbEncryption().getPassword().length();
       if (passwordLength != 16 && passwordLength != 24 && passwordLength != 32) {
         throw new ValidationException(
           "Invalid Application Configuration: Database password must be a string with length of 16, 24 or 32");
       }
 
-      key = new SecretKeySpec(dbEncryptionPassword.getBytes(), "AES");
+      key = new SecretKeySpec(efgsProperties.getDbEncryption().getPassword().getBytes(), "AES");
     } else {
       throw new ValidationException("DB encryption password must be set!");
     }
-  }
-
-  /**
-   * Returns an instance of Singleton-DbEncryptionService.
-   * @return The DbEncryptionService instance
-   */
-  public static DbEncryptionService getInstance(String dbEncryptionPassword) {
-    if (DbEncryptionService.instance == null) {
-      DbEncryptionService.instance = new DbEncryptionService(dbEncryptionPassword);
-    }
-
-    return instance;
   }
 
   /**
@@ -184,7 +174,6 @@ public class DbEncryptionService {
       cipher.init(Cipher.ENCRYPT_MODE, key, getInitializationVector());
       return cipher.doFinal(plain);
     }
-
   }
 
   private IvParameterSpec getInitializationVector() {
