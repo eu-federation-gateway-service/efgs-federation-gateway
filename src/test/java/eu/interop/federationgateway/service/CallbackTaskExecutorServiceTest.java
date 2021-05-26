@@ -57,6 +57,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -193,6 +194,7 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     RecordedRequest request = mockWebServer.takeRequest();
+    Assert.assertEquals("EFGS Callback Engine", request.getHeader(HttpHeaders.USER_AGENT));
     Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
     Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 

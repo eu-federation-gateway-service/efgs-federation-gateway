@@ -30,17 +30,15 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
 
 @Component
 @Slf4j
@@ -50,6 +48,8 @@ public class CallbackTaskExecutorService {
   protected static final String MDC_PROP_TASK_ID = "taskId";
   protected static final String MDC_PROP_COUNTRY = "country";
   protected static final String MDC_PROP_CALLBACK_ID = "callbackId";
+
+  private static final String EFGS_USER_AGENT = "EFGS Callback Engine";
 
   private final EfgsProperties efgsProperties;
   private final WebClient webClient;
@@ -122,6 +122,7 @@ public class CallbackTaskExecutorService {
     try {
       callbackResponse = webClient.get()
         .uri(requestUri)
+        .header(HttpHeaders.USER_AGENT, EFGS_USER_AGENT)
         .retrieve()
         .toBodilessEntity()
         .block();
