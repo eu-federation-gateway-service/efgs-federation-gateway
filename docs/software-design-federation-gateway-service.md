@@ -177,6 +177,8 @@ These key-value-pairs can be followed by additional attributes. The additional a
 | Certificate integrity check failed: Could not use public key to initialize verifier. (initialization error) | ERROR | Could not use public key to initialize verifier. | certVerifyThumbprint |
 | Certificate integrity check failed: Signature verifier is not initialized (initialization error) | ERROR | Signature verifier is not initialized | certVerifyThumbprint |
 | Certificate integrity check failed: Unknown signing algorithm used by EFGS Trust Anchor. (initialization error) | ERROR | Unknown signing algorithm used by EFGS Trust Anchor. | certVerifyThumbprint |
+| **DB Cleanup**
+| DB Cleanup failed for unexpected reason. See exception for more details. Cleanup will be retried 6 times | ERROR | Failed to execute DB Cleanup Job | exception |
 
  
 # Integration into Data Center Infrastructure
