@@ -101,13 +101,13 @@ public class DownloadController {
         required = true,
         description = "Date from where the query should start until today.",
         example = "2020-07-31"
-      ),
+        ),
       @Parameter(
         name = "batchTag",
         in = ParameterIn.HEADER,
         description = "Optional Tag to submit the last received batchTag of the day.",
         example = "20200731-1"
-      )
+        )
     },
     responses = {
       @ApiResponse(responseCode = "200", description = "OK.", headers = {

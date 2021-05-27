@@ -91,14 +91,14 @@ public class UploadController {
         required = true,
         description = "Required Tag to tag the send batch (must be unique).",
         example = "20200731-1, or a hash"
-      ),
+        ),
       @Parameter(
         name = "batchSignature",
         in = ParameterIn.HEADER,
         required = true,
         description = "PKC7 Payload signature in Base64 encoding.",
         example = "ABDBJ345231DJ122..."
-      ),
+        ),
       @Parameter(
         name = "Content-Type",
         in = ParameterIn.HEADER,
@@ -125,7 +125,7 @@ public class UploadController {
         content = @Content(
           mediaType = MediaType.APPLICATION_JSON_VALUE + "+v1.0",
           examples = @ExampleObject("{\n  '201': [1,2,5,8,9],\n  '409': [3,4,6,7],\n  '500': [10]\n}"))
-      ),
+        ),
       @ApiResponse(responseCode = "400", description = "Signature not valid. Bad request.", content = @Content),
       @ApiResponse(responseCode = "403",
         description = "Forbidden call in cause of missing or invalid client certificate.", content = @Content),

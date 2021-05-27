@@ -87,20 +87,20 @@ public class AuditController {
         required = true,
         description = "date with which the database is searched.",
         example = "2020-09-04"
-      ),
+        ),
       @Parameter(
         name = "batchTag",
         in = ParameterIn.PATH,
         required = true,
         description = "batchTag with which the database is searched.",
         example = "20200730-1"
-      ),
+        ),
       @Parameter(
         name = "Accept",
         in = ParameterIn.HEADER,
         required = true,
         example = MediaType.APPLICATION_JSON_VALUE
-      )
+        )
     },
     responses = {
       @ApiResponse(responseCode = "200", description = "OK. Returns the audit information to the selected batch."),
