@@ -106,11 +106,13 @@ public class TransactionalDiagnosisKeyBatchService {
     // for today a batch already exists so generate the upcoming batchtag
     if (lastBatchEntity.isPresent() && isBatchFromToday(lastBatchEntity.get())) {
       newBatchTag = formattedDate + "-" + (getSequenceNumberFromBatchTag(lastBatchEntity.get().getBatchName()) + 1);
-
-      lastBatchEntity.get().setBatchLink(newBatchTag);
-      diagnosisKeyBatchRepository.save(lastBatchEntity.get());
     } else { // otherwise create the first batch for today
       newBatchTag = formattedDate + "-1";
+    }
+
+    if (lastBatchEntity.isPresent()) {
+      lastBatchEntity.get().setBatchLink(newBatchTag);
+      diagnosisKeyBatchRepository.save(lastBatchEntity.get());
     }
 
     newBatchEntity.setBatchName(newBatchTag);
