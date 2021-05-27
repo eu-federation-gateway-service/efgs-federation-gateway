@@ -133,8 +133,8 @@ public class DownloadControllerTest {
 
   @Test
   public void testRequestShouldFailIfBatchTagAndDateDoesNotMatch() throws Exception {
-    ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).minusDays(5);
-    ZonedDateTime timestamp2 = ZonedDateTime.now(ZoneOffset.UTC).minusDays(3);
+    ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).minusDays(3);
+    ZonedDateTime timestamp2 = ZonedDateTime.now(ZoneOffset.UTC).minusDays(5);
     String batchTag = "batchTag";
 
     diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp2, batchTag, null));

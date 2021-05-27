@@ -167,9 +167,10 @@ public class DownloadController {
     Instant batchDate = batchEntity.get().getCreatedAt().toInstant().truncatedTo(ChronoUnit.DAYS);
     Instant dateAsInstant = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 
-    if (!batchDate.equals(dateAsInstant)) {
-      log.info("Given date does not match the requested batchTag");
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Given date does not match the requested batch");
+    if (!(batchDate.isAfter(dateAsInstant) || batchDate.equals(dateAsInstant))) {
+      log.info("Given date does is not after or equals the requested batchTag");
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+        "Given date does is not after or equals the requested batchTag");
     }
 
     List<DiagnosisKeyEntity> entities =

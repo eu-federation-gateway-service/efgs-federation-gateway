@@ -186,6 +186,18 @@ public class CallbackServiceTest {
     // check that url is not a local target
     Assert.assertFalse(callbackService.checkUrl("https://fd9e:35ga:352e:1212::1", TestData.COUNTRY_A));
 
+    // check that url is not a local target
+    Assert.assertFalse(callbackService.checkUrl("https://0", TestData.COUNTRY_A));
+
+    // check that url is not a local target
+    Assert.assertFalse(callbackService.checkUrl("https://0177.0.0.1/asdasd/asdasd/zxc", TestData.COUNTRY_A));
+
+    // check that url is not a local target
+    Assert.assertFalse(callbackService.checkUrl("https://[::]:80", TestData.COUNTRY_A));
+
+    // check that url is not a local target
+    Assert.assertFalse(callbackService.checkUrl("https://0144.0100.0.1/foobar", TestData.COUNTRY_A));
+
     try {
       InetAddress.getByName("example.org");
       // check that url's hostname is resolved
