@@ -217,7 +217,11 @@ public class CallbackService {
       new IpAddressMatcher("172.16.0.0/12"),
       new IpAddressMatcher("192.168.0.0/16"),
       new IpAddressMatcher("::1"),
-      new IpAddressMatcher("fc00::/7")
+      new IpAddressMatcher("fc00::/7"),
+      new IpAddressMatcher("0"),
+      new IpAddressMatcher("0177.0.0.0/8"),
+      new IpAddressMatcher("[::]"),
+      new IpAddressMatcher("0144.0100.0.0/10"),
     };
 
     if (Arrays.stream(localSubnetMatchers)

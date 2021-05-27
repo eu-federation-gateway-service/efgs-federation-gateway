@@ -43,6 +43,5 @@ public interface DiagnosisKeyBatchRepository extends JpaRepository<DiagnosisKeyB
 
   Optional<DiagnosisKeyBatchEntity> findTopByOrderByCreatedAtDesc();
 
-  Optional<DiagnosisKeyBatchEntity> findFirstByCreatedAtIsBetweenOrderByCreatedAtAsc(
-    ZonedDateTime begin, ZonedDateTime end);
+  Optional<DiagnosisKeyBatchEntity> findFirstByCreatedAtIsGreaterThanOrderByCreatedAtAsc(ZonedDateTime begin);
 }

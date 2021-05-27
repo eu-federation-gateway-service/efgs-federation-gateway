@@ -28,6 +28,9 @@ import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Recover;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +51,7 @@ public class DiagnosisKeyCleanupService {
   @Scheduled(cron = "0 0 0 * * *")
   @SchedulerLock(name = "DiagnosisKeyCleanupService_cleanupDiagnosisKeys", lockAtLeastFor = "PT0S",
     lockAtMostFor = "${efgs.download-settings.locklimit}")
+  @Retryable(value = RuntimeException.class, maxAttempts = 6, backoff = @Backoff(delay = 600_000))
   public void cleanupDiagnosisKeys() {
     ZonedDateTime deleteTimestamp = LocalDate.ofInstant(ZonedDateTime.now(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC)
       .atStartOfDay(ZoneOffset.UTC)
@@ -61,6 +65,11 @@ public class DiagnosisKeyCleanupService {
     EfgsMdc.put("deletedDiagnosisKeys", deletedDiagnosisKeys);
     EfgsMdc.put("deletedDiagnosisKeyBatches", deletedDiagnosisKeyBatches);
     log.info("DiagnosisKey and DiagnosisKeyBatch cleanup finished.");
+  }
+
+  @Recover
+  public void recover(RuntimeException e) {
+    log.error("Failed to execute DB Cleanup Job", e);
   }
 
 }
