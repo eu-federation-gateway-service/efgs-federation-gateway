@@ -25,14 +25,20 @@ import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 import javax.persistence.PersistenceException;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
+@Converter
 public class DbEncryptionStringConverter implements AttributeConverter<String, String> {
+
+  private final DbEncryptionService dbEncryptionService;
 
   @Override
   public String convertToDatabaseColumn(String s) {
     try {
-      return DbEncryptionService.getInstance().encryptString(s);
+      return dbEncryptionService.encryptString(s);
     } catch (InvalidAlgorithmParameterException | InvalidKeyException 
             | BadPaddingException | IllegalBlockSizeException e) {
       throw new PersistenceException(e);
@@ -42,7 +48,7 @@ public class DbEncryptionStringConverter implements AttributeConverter<String, S
   @Override
   public String convertToEntityAttribute(String s) {
     try {
-      return DbEncryptionService.getInstance().decryptString(s);
+      return dbEncryptionService.decryptString(s);
     } catch (InvalidAlgorithmParameterException | InvalidKeyException 
             | BadPaddingException | IllegalBlockSizeException e) {
       throw new PersistenceException(e);

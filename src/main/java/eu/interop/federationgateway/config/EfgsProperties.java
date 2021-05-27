@@ -37,6 +37,7 @@ public class EfgsProperties {
   private final Batching batching = new Batching();
   private final Callback callback = new Callback();
   private final TrustAnchor trustAnchor = new TrustAnchor();
+  private final DbEncryption dbEncryption = new DbEncryption();
 
   @Getter
   @Setter
@@ -105,5 +106,11 @@ public class EfgsProperties {
       private String thumbprint;
       private String distinguishedName;
     }
+  }
+
+  @Getter
+  @Setter
+  public static class DbEncryption {
+    private String password;
   }
 }
