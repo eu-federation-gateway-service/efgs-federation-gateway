@@ -100,9 +100,9 @@ public class DiagnosisKeyBatchService {
    */
   public String getFirstBatchTagOfTheDay(LocalDate date) {
     ZonedDateTime begin = date.atStartOfDay(ZoneOffset.UTC);
-    ZonedDateTime end = begin.plusDays(1).minusNanos(1);
+
     Optional<DiagnosisKeyBatchEntity> queryResult =
-      diagnosisKeyBatchRepository.findFirstByCreatedAtIsBetweenOrderByCreatedAtAsc(begin, end);
+      diagnosisKeyBatchRepository.findFirstByCreatedAtIsGreaterThanOrderByCreatedAtAsc(begin);
     return queryResult.map(DiagnosisKeyBatchEntity::getBatchName).orElse(null);
   }
 

@@ -52,19 +52,15 @@ public class DiagnosisKeyBatchRepositoryTest {
     createEntity(ZonedDateTime.now(ZoneOffset.UTC).withHour(10), "BT3");
     createEntity(ZonedDateTime.now(ZoneOffset.UTC).withHour(12), "BT4");
 
-    createEntity(ZonedDateTime.now(ZoneOffset.UTC).plusDays(1), "BT5");
-
-    Optional<DiagnosisKeyBatchEntity> queryResult = repository.findFirstByCreatedAtIsBetweenOrderByCreatedAtAsc(
-      ZonedDateTime.now(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC),
-      ZonedDateTime.now(ZoneOffset.UTC).toLocalDate().plusDays(1).atStartOfDay(ZoneOffset.UTC)
+    Optional<DiagnosisKeyBatchEntity> queryResult = repository.findFirstByCreatedAtIsGreaterThanOrderByCreatedAtAsc(
+      ZonedDateTime.now(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC)
     );
 
     Assert.assertTrue(queryResult.isPresent());
     Assert.assertEquals("BT3", queryResult.get().getBatchName());
 
-    queryResult = repository.findFirstByCreatedAtIsBetweenOrderByCreatedAtAsc(
-      ZonedDateTime.now(ZoneOffset.UTC).withHour(16),
-      ZonedDateTime.now(ZoneOffset.UTC).toLocalDate().plusDays(1).atStartOfDay(ZoneOffset.UTC)
+    queryResult = repository.findFirstByCreatedAtIsGreaterThanOrderByCreatedAtAsc(
+      ZonedDateTime.now(ZoneOffset.UTC).withHour(16)
     );
 
     Assert.assertFalse(queryResult.isPresent());
