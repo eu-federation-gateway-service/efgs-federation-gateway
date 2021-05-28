@@ -21,6 +21,7 @@
 package eu.interop.federationgateway.config;
 
 import java.util.List;
+import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,6 +30,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties("efgs")
 public class EfgsProperties {
+
+  private static final String PASSWORD_PROPERTY_NAME = "efgs_dbencryption_password";
 
   private final ContentNegotiation contentNegotiation = new ContentNegotiation();
   private final UploadSettings uploadSettings = new UploadSettings();
@@ -112,5 +115,15 @@ public class EfgsProperties {
   @Setter
   public static class DbEncryption {
     private String password;
+  }
+
+  /**
+   * Workaround to load DB Encryption Password from System Property until environment is setup correctly.
+   */
+  @PostConstruct
+  public void workaround() {
+    if (System.getProperties().containsKey(PASSWORD_PROPERTY_NAME)) {
+      dbEncryption.setPassword(System.getProperty(PASSWORD_PROPERTY_NAME));
+    }
   }
 }
