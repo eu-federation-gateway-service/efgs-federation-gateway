@@ -23,17 +23,14 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.config.EfgsProperties;
 import java.time.ZonedDateTime;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class CallbackTaskCleanupServiceTest {
 
@@ -43,7 +40,7 @@ public class CallbackTaskCleanupServiceTest {
 
   CallbackService callbackServiceMock;
 
-  @Before
+  @BeforeEach
   public void setup() {
     callbackServiceMock = Mockito.mock(CallbackService.class);
     efgsProperties = Mockito.mock(EfgsProperties.class);
@@ -67,7 +64,7 @@ public class CallbackTaskCleanupServiceTest {
     callbackTaskCleanupService.deleteAbandonedLocks();
 
     Mockito.verify(callbackServiceMock).removeTaskLocksOlderThan(captor.capture());
-    Assert.assertEquals(expectedTimestamp.withNano(0), captor.getValue().withNano(0));
+    Assertions.assertEquals(expectedTimestamp.withNano(0), captor.getValue().withNano(0));
 
   }
 

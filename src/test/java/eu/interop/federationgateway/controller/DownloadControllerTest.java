@@ -20,6 +20,11 @@
 
 package eu.interop.federationgateway.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.googlecode.protobuf.format.ProtobufFormatter;
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.config.EfgsProperties;
@@ -47,25 +52,18 @@ import java.util.Base64;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class DownloadControllerTest {
 
@@ -93,7 +91,7 @@ public class DownloadControllerTest {
     return timestamp.format(DateTimeFormatter.ISO_LOCAL_DATE);
   }
 
-  @Before
+  @BeforeEach
   public void setup() throws CertificateException, NoSuchAlgorithmException, IOException,
     OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
@@ -213,9 +211,9 @@ public class DownloadControllerTest {
         EfgsProto.DiagnosisKeyBatch response = EfgsProto.DiagnosisKeyBatch.parseFrom(
           mvcResult.getResponse().getContentAsByteArray());
 
-        Assert.assertEquals(origin1, response.getKeys(0).getOrigin());
-        Assert.assertEquals(origin2, response.getKeys(1).getOrigin());
-        Assert.assertEquals(origin3, response.getKeys(2).getOrigin());
+        Assertions.assertEquals(origin1, response.getKeys(0).getOrigin());
+        Assertions.assertEquals(origin2, response.getKeys(1).getOrigin());
+        Assertions.assertEquals(origin3, response.getKeys(2).getOrigin());
       });
   }
 
@@ -250,9 +248,9 @@ public class DownloadControllerTest {
         EfgsProto.DiagnosisKeyBatch response = EfgsProto.DiagnosisKeyBatch.parseFrom(
           mvcResult.getResponse().getContentAsByteArray());
 
-        Assert.assertEquals(origin1, response.getKeys(0).getOrigin());
-        Assert.assertEquals(origin2, response.getKeys(1).getOrigin());
-        Assert.assertEquals(2, response.getKeysCount());
+        Assertions.assertEquals(origin1, response.getKeys(0).getOrigin());
+        Assertions.assertEquals(origin2, response.getKeys(1).getOrigin());
+        Assertions.assertEquals(2, response.getKeysCount());
       });
   }
 
@@ -295,9 +293,9 @@ public class DownloadControllerTest {
         EfgsProto.DiagnosisKeyBatch response = EfgsProto.DiagnosisKeyBatch.parseFrom(
           mvcResult.getResponse().getContentAsByteArray());
 
-        Assert.assertEquals(origin3, response.getKeys(0).getOrigin());
-        Assert.assertEquals(origin4, response.getKeys(1).getOrigin());
-        Assert.assertEquals(2, response.getKeysCount());
+        Assertions.assertEquals(origin3, response.getKeys(0).getOrigin());
+        Assertions.assertEquals(origin4, response.getKeys(1).getOrigin());
+        Assertions.assertEquals(2, response.getKeysCount());
       });
   }
 
@@ -329,9 +327,9 @@ public class DownloadControllerTest {
         EfgsProto.DiagnosisKeyBatch response = EfgsProto.DiagnosisKeyBatch.parseFrom(
           mvcResult.getResponse().getContentAsByteArray());
 
-        Assert.assertEquals(origin3, response.getKeys(0).getOrigin());
-        Assert.assertEquals(origin4, response.getKeys(1).getOrigin());
-        Assert.assertEquals(2, response.getKeysCount());
+        Assertions.assertEquals(origin3, response.getKeys(0).getOrigin());
+        Assertions.assertEquals(origin4, response.getKeys(1).getOrigin());
+        Assertions.assertEquals(2, response.getKeysCount());
       });
   }
 
@@ -356,7 +354,7 @@ public class DownloadControllerTest {
       .andExpect(status().isOk())
       .andExpect(content().contentType("application/json; version=1.0"))
       .andExpect(mvcResult -> {
-        Assert.assertTrue(
+        Assertions.assertTrue(
           mvcResult.getResponse().getContentAsString().contains(Base64.getEncoder().encodeToString(TestData.BYTES)));
 
         ProtobufFormatter formatter = new ProtobufConverter();
@@ -370,9 +368,9 @@ public class DownloadControllerTest {
 
         EfgsProto.DiagnosisKeyBatch response = builder.build();
 
-        Assert.assertEquals(origin1, response.getKeys(0).getOrigin());
-        Assert.assertEquals(origin2, response.getKeys(1).getOrigin());
-        Assert.assertEquals(2, response.getKeysCount());
+        Assertions.assertEquals(origin1, response.getKeys(0).getOrigin());
+        Assertions.assertEquals(origin2, response.getKeys(1).getOrigin());
+        Assertions.assertEquals(2, response.getKeysCount());
       });
   }
 

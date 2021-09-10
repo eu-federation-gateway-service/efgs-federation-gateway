@@ -20,6 +20,9 @@
 
 package eu.interop.federationgateway.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.google.protobuf.ByteString;
 import com.googlecode.protobuf.format.ProtobufFormatter;
 import eu.interop.federationgateway.TestData;
@@ -46,28 +49,22 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class UploadControllerTest {
 
@@ -99,7 +96,7 @@ public class UploadControllerTest {
     "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM"
   );
 
-  @Before
+  @BeforeEach
   public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
     OperatorCreationException, InvalidKeyException, SignatureException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
@@ -162,7 +159,7 @@ public class UploadControllerTest {
       .content(batch.toByteArray())
     )
       .andExpect(status().isCreated())
-      .andExpect(result -> Assert.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
+      .andExpect(result -> Assertions.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
   }
 
   @Test
@@ -194,7 +191,7 @@ public class UploadControllerTest {
       .content(batch.toByteArray())
     )
       .andExpect(status().isBadRequest())
-      .andExpect(result -> Assert.assertEquals(0, diagnosisKeyEntityRepository.count()));
+      .andExpect(result -> Assertions.assertEquals(0, diagnosisKeyEntityRepository.count()));
   }
 
   @Test
@@ -203,7 +200,7 @@ public class UploadControllerTest {
     EfgsProto.DiagnosisKey key2 = buildKey(2);
 
     EfgsProto.DiagnosisKeyBatch batch1 = EfgsProto.DiagnosisKeyBatch.newBuilder()
-      .addAllKeys(Arrays.asList(key1)).build();
+      .addAllKeys(List.of(key1)).build();
 
     byte[] bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch1);
     String signatureBatch1 = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
@@ -233,7 +230,7 @@ public class UploadControllerTest {
     )
       .andExpect(status().isMultiStatus())
       .andExpect(result -> {
-        Assert.assertEquals(1, diagnosisKeyEntityRepository.count());
+        Assertions.assertEquals(1, diagnosisKeyEntityRepository.count());
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String, Object> map = jsonParser.parseMap(result.getResponse().getContentAsString());
@@ -241,11 +238,11 @@ public class UploadControllerTest {
         List<Integer> list409 = (List<Integer>) map.get("409");
         List<Integer> list500 = (List<Integer>) map.get("500");
 
-        Assert.assertTrue(list500.isEmpty());
-        Assert.assertTrue(list201.contains(1));
-        Assert.assertTrue(list409.contains(0));
-        Assert.assertEquals(1, list201.size());
-        Assert.assertEquals(1, list409.size());
+        Assertions.assertTrue(list500.isEmpty());
+        Assertions.assertTrue(list201.contains(1));
+        Assertions.assertTrue(list409.contains(0));
+        Assertions.assertEquals(1, list201.size());
+        Assertions.assertEquals(1, list409.size());
       });
   }
 
@@ -284,7 +281,7 @@ public class UploadControllerTest {
       .content(batch2.toByteArray())
     )
       .andExpect(status().isConflict())
-      .andExpect(result -> Assert.assertEquals(1, diagnosisKeyEntityRepository.count()));
+      .andExpect(result -> Assertions.assertEquals(1, diagnosisKeyEntityRepository.count()));
   }
 
   @Test
@@ -350,9 +347,9 @@ public class UploadControllerTest {
 
     Base64.Encoder base64Encoder = Base64.getEncoder();
 
-    Assert.assertTrue(jsonFormatted.contains(base64Encoder.encodeToString(key1.getKeyData().toByteArray())));
-    Assert.assertTrue(jsonFormatted.contains(base64Encoder.encodeToString(key2.getKeyData().toByteArray())));
-    Assert.assertTrue(jsonFormatted.contains(base64Encoder.encodeToString(key3.getKeyData().toByteArray())));
+    Assertions.assertTrue(jsonFormatted.contains(base64Encoder.encodeToString(key1.getKeyData().toByteArray())));
+    Assertions.assertTrue(jsonFormatted.contains(base64Encoder.encodeToString(key2.getKeyData().toByteArray())));
+    Assertions.assertTrue(jsonFormatted.contains(base64Encoder.encodeToString(key3.getKeyData().toByteArray())));
 
     log.info("Json Formatted Payload: {}", jsonFormatted);
 
@@ -365,7 +362,7 @@ public class UploadControllerTest {
       .content(jsonFormatted)
     )
       .andExpect(status().isCreated())
-      .andExpect(result -> Assert.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
+      .andExpect(result -> Assertions.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count()));
   }
 
   @Test

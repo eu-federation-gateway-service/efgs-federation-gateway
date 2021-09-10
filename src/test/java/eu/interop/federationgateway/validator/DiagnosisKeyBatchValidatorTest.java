@@ -29,12 +29,12 @@ import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.model.EfgsProto;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
+import java.util.List;
 import javax.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @Slf4j
@@ -47,7 +47,7 @@ public class DiagnosisKeyBatchValidatorTest {
 
   private int rollingStartInterval;
 
-  @Before
+  @BeforeEach
   public void setup() {
 
     validator = new DiagnosisKeyBatchValidator();
@@ -73,9 +73,9 @@ public class DiagnosisKeyBatchValidatorTest {
           .build();
 
       EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-        .addAllKeys(Arrays.asList(diagnosisKey)).build();
+        .addAllKeys(List.of(diagnosisKey)).build();
 
-      Assert.assertFalse(validator.isValid(batch, contextMock));
+      Assertions.assertFalse(validator.isValid(batch, contextMock));
     }
   }
 
@@ -94,9 +94,9 @@ public class DiagnosisKeyBatchValidatorTest {
           .build();
 
       EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-        .addAllKeys(Arrays.asList(diagnosisKey)).build();
+        .addAllKeys(List.of(diagnosisKey)).build();
 
-      Assert.assertTrue(validator.isValid(batch, contextMock));
+      Assertions.assertTrue(validator.isValid(batch, contextMock));
     }
   }
 
@@ -109,9 +109,9 @@ public class DiagnosisKeyBatchValidatorTest {
         .build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-      .addAllKeys(Arrays.asList(diagnosisKey)).build();
+      .addAllKeys(List.of(diagnosisKey)).build();
 
-    Assert.assertFalse(validator.isValid(batch, contextMock));
+    Assertions.assertFalse(validator.isValid(batch, contextMock));
   }
 
   @Test
@@ -123,9 +123,9 @@ public class DiagnosisKeyBatchValidatorTest {
         .build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-      .addAllKeys(Arrays.asList(diagnosisKey)).build();
+      .addAllKeys(List.of(diagnosisKey)).build();
 
-    Assert.assertFalse(validator.isValid(batch, contextMock));
+    Assertions.assertFalse(validator.isValid(batch, contextMock));
   }
 
   @Test
@@ -141,9 +141,9 @@ public class DiagnosisKeyBatchValidatorTest {
         TestData.getDiagnosisKeyProto().toBuilder().setRollingStartIntervalNumber(invalidRollingStartIntervalNumber).build();
 
       EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-        .addAllKeys(Arrays.asList(diagnosisKey)).build();
+        .addAllKeys(List.of(diagnosisKey)).build();
 
-      Assert.assertFalse(validator.isValid(batch, contextMock));
+      Assertions.assertFalse(validator.isValid(batch, contextMock));
     }
   }
 
@@ -159,9 +159,9 @@ public class DiagnosisKeyBatchValidatorTest {
         TestData.getDiagnosisKeyProto().toBuilder().setRollingStartIntervalNumber(validRollingStartIntervalNumber).build();
 
       EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-        .addAllKeys(Arrays.asList(diagnosisKey)).build();
+        .addAllKeys(List.of(diagnosisKey)).build();
 
-      Assert.assertTrue(validator.isValid(batch, contextMock));
+      Assertions.assertTrue(validator.isValid(batch, contextMock));
     }
   }
 
@@ -176,9 +176,9 @@ public class DiagnosisKeyBatchValidatorTest {
         .build();
 
     EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
-      .addAllKeys(Arrays.asList(diagnosisKey)).build();
+      .addAllKeys(List.of(diagnosisKey)).build();
 
-    Assert.assertFalse(validator.isValid(batch, contextMock));
+    Assertions.assertFalse(validator.isValid(batch, contextMock));
   }
 
 }

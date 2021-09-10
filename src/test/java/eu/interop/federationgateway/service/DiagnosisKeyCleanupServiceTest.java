@@ -32,17 +32,14 @@ import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Random;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class DiagnosisKeyCleanupServiceTest {
 
   @Autowired
@@ -57,8 +54,8 @@ public class DiagnosisKeyCleanupServiceTest {
   @Autowired
   EfgsProperties efgsProperties;
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void cleanup() {
     diagnosisKeyBatchRepository.deleteAll();
     diagnosisKeyEntityRepository.deleteAll();
@@ -85,11 +82,11 @@ public class DiagnosisKeyCleanupServiceTest {
     createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
     createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
 
-    Assert.assertEquals(12, diagnosisKeyEntityRepository.count());
+    Assertions.assertEquals(12, diagnosisKeyEntityRepository.count());
 
     diagnosisKeyCleanupService.cleanupDiagnosisKeys();
 
-    Assert.assertEquals(7, diagnosisKeyEntityRepository.count());
+    Assertions.assertEquals(7, diagnosisKeyEntityRepository.count());
   }
 
   @Test
@@ -113,11 +110,11 @@ public class DiagnosisKeyCleanupServiceTest {
     createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
     createDiagnosisKeyBatch(timestamp.minusDays(retentionDays + 1));
 
-    Assert.assertEquals(12, diagnosisKeyBatchRepository.count());
+    Assertions.assertEquals(12, diagnosisKeyBatchRepository.count());
 
     diagnosisKeyCleanupService.cleanupDiagnosisKeys();
 
-    Assert.assertEquals(7, diagnosisKeyBatchRepository.count());
+    Assertions.assertEquals(7, diagnosisKeyBatchRepository.count());
   }
 
   private DiagnosisKeyBatchEntity createDiagnosisKeyBatch(ZonedDateTime createdAt) {

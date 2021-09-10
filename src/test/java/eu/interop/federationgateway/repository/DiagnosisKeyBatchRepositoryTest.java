@@ -24,22 +24,19 @@ import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class DiagnosisKeyBatchRepositoryTest {
 
   @Autowired
   DiagnosisKeyBatchRepository repository;
 
-  @Before
+  @BeforeEach
   public void setup() {
     repository.deleteAll();
   }
@@ -56,14 +53,14 @@ public class DiagnosisKeyBatchRepositoryTest {
       ZonedDateTime.now(ZoneOffset.UTC).toLocalDate().atStartOfDay(ZoneOffset.UTC)
     );
 
-    Assert.assertTrue(queryResult.isPresent());
-    Assert.assertEquals("BT3", queryResult.get().getBatchName());
+    Assertions.assertTrue(queryResult.isPresent());
+    Assertions.assertEquals("BT3", queryResult.get().getBatchName());
 
     queryResult = repository.findFirstByCreatedAtIsGreaterThanOrderByCreatedAtAsc(
       ZonedDateTime.now(ZoneOffset.UTC).withHour(16)
     );
 
-    Assert.assertFalse(queryResult.isPresent());
+    Assertions.assertFalse(queryResult.isPresent());
   }
 
   private void createEntity(ZonedDateTime timestamp, String batchTag) {

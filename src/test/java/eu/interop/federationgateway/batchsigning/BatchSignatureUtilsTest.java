@@ -38,8 +38,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class BatchSignatureUtilsTest {
 
@@ -57,11 +57,11 @@ public class BatchSignatureUtilsTest {
   private static DiagnosisKey createDiagnosisKey(final String key) {
     DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
 
-    if (key == null || key == "INVALID") {
+    if (key == null || key.equals("INVALID")) {
       byte[] keyData = new byte[16];
       Random byteRandom = new Random();
       byteRandom.nextBytes(keyData);
-      if (key == "INVALID") //Fill array with invalid UTF8 bytes
+      if (key != null) //Fill array with invalid UTF8 bytes
       {
         while (ByteString.copyFrom(keyData).isValidUtf8()) {
           byteRandom.nextBytes(keyData);
@@ -181,9 +181,9 @@ public class BatchSignatureUtilsTest {
     final DiagnosisKeyBatch batch = createDiagnosisKeyBatch(List.of("123"));
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
     final byte[] expectedBytes = createBytesToSignForDummyBatch(batch);
-    Assert.assertNotNull(bytesToVerify);
-    Assert.assertEquals(expectedBytes.length, bytesToVerify.length);
-    Assert.assertArrayEquals(expectedBytes, bytesToVerify);
+    Assertions.assertNotNull(bytesToVerify);
+    Assertions.assertEquals(expectedBytes.length, bytesToVerify.length);
+    Assertions.assertArrayEquals(expectedBytes, bytesToVerify);
   }
 
   @Test
@@ -191,49 +191,49 @@ public class BatchSignatureUtilsTest {
     final DiagnosisKeyBatch batch = createDiagnosisKeyBatch(List.of("978", "D189", "ABC", "123"));
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
     final byte[] expectedBytes = createBytesToSignForDummyBatch(batch);
-    Assert.assertNotNull(bytesToVerify);
-    Assert.assertEquals(expectedBytes.length, bytesToVerify.length);
-    Assert.assertArrayEquals(expectedBytes, bytesToVerify);
+    Assertions.assertNotNull(bytesToVerify);
+    Assertions.assertEquals(expectedBytes.length, bytesToVerify.length);
+    Assertions.assertArrayEquals(expectedBytes, bytesToVerify);
   }
 
   @Test
   public void testMaxUintValue() throws IOException {
     final DiagnosisKeyBatch batch = DiagnosisKeyBatch.parseFrom(readBatchFile("diagnosisKeyBatchMaxValUint.bin"));
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
-    Assert.assertNotNull(bytesToVerify);
+    Assertions.assertNotNull(bytesToVerify);
 
     final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
 
-    Assert.assertEquals(MAX_UINT_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt() & 0xffffffffL);
+    Assertions.assertEquals(MAX_UINT_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt() & 0xffffffffL);
 
     final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20], bytesToVerify[21]};
-    Assert.assertEquals(MAX_UINT_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt() & 0xffffffffL);
+    Assertions.assertEquals(MAX_UINT_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt() & 0xffffffffL);
   }
 
   @Test
   public void testMaxIntValue() throws IOException {
     final DiagnosisKeyBatch batch = DiagnosisKeyBatch.parseFrom(readBatchFile("diagnosisKeyBatchMaxValInt.bin"));
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
-    Assert.assertNotNull(bytesToVerify);
+    Assertions.assertNotNull(bytesToVerify);
 
     final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(Integer.MAX_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt());
+    Assertions.assertEquals(Integer.MAX_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt());
 
     final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20], bytesToVerify[21]};
-    Assert.assertEquals(Integer.MAX_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt());
+    Assertions.assertEquals(Integer.MAX_VALUE, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt());
   }
 
   @Test
   public void testSmallIntValue() throws IOException {
     final DiagnosisKeyBatch batch = DiagnosisKeyBatch.parseFrom(readBatchFile("diagnosisKeyBatchSmallInt.bin"));
     final byte[] bytesToVerify = BatchSignatureUtils.generateBytesToVerify(batch);
-    Assert.assertNotNull(bytesToVerify);
+    Assertions.assertNotNull(bytesToVerify);
 
     final byte[] rollingStartIntervalNumber = {bytesToVerify[5], bytesToVerify[6], bytesToVerify[7], bytesToVerify[8], bytesToVerify[9], bytesToVerify[10], bytesToVerify[11], bytesToVerify[12]};
-    Assert.assertEquals(5, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt());
+    Assertions.assertEquals(5, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingStartIntervalNumber)).getInt());
 
     final byte[] rollingPeriod = {bytesToVerify[14], bytesToVerify[15], bytesToVerify[16], bytesToVerify[17], bytesToVerify[18], bytesToVerify[19], bytesToVerify[20], bytesToVerify[21]};
-    Assert.assertEquals(5, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt());
+    Assertions.assertEquals(5, ByteBuffer.wrap(BatchSignatureUtils.b64ToBytes(rollingPeriod)).getInt());
   }
 
   private InputStream readBatchFile(final String filename) {
@@ -248,9 +248,9 @@ public class BatchSignatureUtilsTest {
       var bytesToVerify = BatchSignatureUtils.generateBytesToVerify(key);
       var expectedBytes = createBytesToSignForDummyKey(key);
 
-      Assert.assertNotNull(bytesToVerify);
-      Assert.assertEquals(expectedBytes.length, bytesToVerify.length);
-      Assert.assertArrayEquals(expectedBytes, bytesToVerify);
+      Assertions.assertNotNull(bytesToVerify);
+      Assertions.assertEquals(expectedBytes.length, bytesToVerify.length);
+      Assertions.assertArrayEquals(expectedBytes, bytesToVerify);
     }
   }
   
@@ -283,7 +283,7 @@ public class BatchSignatureUtilsTest {
     final byte[] bytesToVerifyOriginal = BatchSignatureUtils.generateBytesToVerify(batchOriginal);
     final byte[] bytesToVerifyModified = BatchSignatureUtils.generateBytesToVerify(batchModified);
 
-    Assert.assertFalse(Arrays.equals(bytesToVerifyOriginal, bytesToVerifyModified));
+    Assertions.assertFalse(Arrays.equals(bytesToVerifyOriginal, bytesToVerifyModified));
   }
 
   //Issue/test by by ebeigarts
@@ -299,12 +299,9 @@ public class BatchSignatureUtilsTest {
 
     String k1s = new String(k1, 0, 16, StandardCharsets.UTF_8);
     String k2s = new String(k2, 0, 16, StandardCharsets.UTF_8);
-
     String k3s = new String(k3, 0, 3, StandardCharsets.UTF_8);
 
-    Arrays.equals(k1, k2);
-
-    Arrays.equals(k1s.getBytes(StandardCharsets.UTF_8), k2s.getBytes(StandardCharsets.UTF_8));
+    Assertions.assertArrayEquals(k1s.getBytes(StandardCharsets.UTF_8), k2s.getBytes(StandardCharsets.UTF_8));
 
     var key1 = TestData.createDiagnosisKeyDetails(k1s, 233, 2, 2, List.of("DE"));
     var key2 = TestData.createDiagnosisKeyDetails(k2s, 233, 2, 2, List.of("DE"));
@@ -314,7 +311,7 @@ public class BatchSignatureUtilsTest {
     var key2b = BatchSignatureUtils.generateBytesToVerify(key2);
     var key3b = BatchSignatureUtils.generateBytesToVerify(key3);
 
-    Assert.assertTrue(Arrays.equals(key1b, key2b));  //String Conversion with invalid codepoints to UTF8 returns the same
+    Assertions.assertArrayEquals(key1b, key2b);  //String Conversion with invalid codepoints to UTF8 returns the same
 
     var key11 = TestData.createDiagnosisKeyDetails(k1, 233, 2, 2, List.of("DE"));
     var key22 = TestData.createDiagnosisKeyDetails(k2, 233, 2, 2, List.of("DE"));
@@ -325,10 +322,10 @@ public class BatchSignatureUtilsTest {
     var key22b = BatchSignatureUtils.generateBytesToVerify(key22);
     var key33b = BatchSignatureUtils.generateBytesToVerify(key33);
 
-    Assert.assertFalse(Arrays.equals(key11b, key22b)); //Without UTF8 everything correct
-    Assert.assertFalse(Arrays.equals(key11b, key1b));
-    Assert.assertFalse(Arrays.equals(key22b, key2b));
-    Assert.assertTrue(Arrays.equals(key3b, key33b)); //Always the same with valid characters
+    Assertions.assertFalse(Arrays.equals(key11b, key22b)); //Without UTF8 everything correct
+    Assertions.assertFalse(Arrays.equals(key11b, key1b));
+    Assertions.assertFalse(Arrays.equals(key22b, key2b));
+    Assertions.assertArrayEquals(key3b, key33b); //Always the same with valid characters
   }
 
 
@@ -348,8 +345,6 @@ public class BatchSignatureUtilsTest {
     var path = file.getAbsolutePath().replace("%20", " ");
     BufferedReader br = new BufferedReader(new FileReader(path));
 
-    List<DiagnosisKey> keys = new ArrayList<>();
-
     while (br.ready()) {
       String line = br.readLine();
       var parts = line.split("\\|");
@@ -360,7 +355,7 @@ public class BatchSignatureUtilsTest {
       var javadiagnosiskeyb64Result = BatchSignatureUtils.bytesToBase64(diagnosiskeybytes);
       var diagnosiskeyb64 = parts[1];
 
-      Assert.assertEquals(javadiagnosiskeyb64Result, diagnosiskeyb64);
+      Assertions.assertEquals(javadiagnosiskeyb64Result, diagnosiskeyb64);
 
       var rollingStartIntervalNumber = parts[2].substring(1);
       rollingStartIntervalNumber = rollingStartIntervalNumber.substring(0, rollingStartIntervalNumber.length() - 1);
@@ -368,7 +363,7 @@ public class BatchSignatureUtilsTest {
       var javaRSIb64Result = BatchSignatureUtils.bytesToBase64(rollingStartIntervalNumberbytes);
       var rollingStartIntervalNumberb64 = parts[3];
 
-      Assert.assertEquals(javaRSIb64Result, rollingStartIntervalNumberb64);
+      Assertions.assertEquals(javaRSIb64Result, rollingStartIntervalNumberb64);
 
       var rollingPeriod = parts[4].substring(1);
       rollingPeriod = rollingPeriod.substring(0, rollingPeriod.length() - 1);
@@ -376,7 +371,7 @@ public class BatchSignatureUtilsTest {
       var javaRPb64Result = BatchSignatureUtils.bytesToBase64(rollingPeriodbytes);
       var rollingPeriodb64 = parts[5];
 
-      Assert.assertEquals(javaRPb64Result, rollingPeriodb64);
+      Assertions.assertEquals(javaRPb64Result, rollingPeriodb64);
 
       var transmissionRiskLevel = parts[6].substring(1);
       transmissionRiskLevel = transmissionRiskLevel.substring(0, transmissionRiskLevel.length() - 1);
@@ -384,7 +379,7 @@ public class BatchSignatureUtilsTest {
       var javaTRLb64Result = BatchSignatureUtils.bytesToBase64(transmissionRiskLevelbytes);
       var transmissionRiskLevelb64 = parts[7];
 
-      Assert.assertEquals(javaTRLb64Result, transmissionRiskLevelb64);
+      Assertions.assertEquals(javaTRLb64Result, transmissionRiskLevelb64);
 
       var visitedCountries = parts[8].substring(1);
       visitedCountries = visitedCountries.substring(0, visitedCountries.length() - 1);
@@ -393,7 +388,7 @@ public class BatchSignatureUtilsTest {
       var visitedCountriesb64 = parts[9];
 
 
-      Assert.assertEquals(javaVCb64Result, visitedCountriesb64);
+      Assertions.assertEquals(javaVCb64Result, visitedCountriesb64);
 
       var origin = parts[10].substring(1);
       origin = origin.substring(0, origin.length() - 1);
@@ -401,7 +396,7 @@ public class BatchSignatureUtilsTest {
       var javaORb64Result = BatchSignatureUtils.bytesToBase64(originbytes);
       var originb64 = parts[11];
 
-      Assert.assertEquals(javaORb64Result, originb64);
+      Assertions.assertEquals(javaORb64Result, originb64);
 
       var reportType = parts[12].substring(1);
       reportType = reportType.substring(0, reportType.length() - 1);
@@ -409,7 +404,7 @@ public class BatchSignatureUtilsTest {
       var javaRTb64Result = BatchSignatureUtils.bytesToBase64(reportTypebytes);
       var reportTypeb64 = parts[13];
 
-      Assert.assertEquals(javaRTb64Result, reportTypeb64);
+      Assertions.assertEquals(javaRTb64Result, reportTypeb64);
 
       var dsosType = parts[14].substring(1);
       dsosType = dsosType.substring(0, dsosType.length() - 1);
@@ -417,7 +412,7 @@ public class BatchSignatureUtilsTest {
       var dsosb64Result = BatchSignatureUtils.bytesToBase64(dsosbytes);
       var dsosTypeb64 = parts[15];
 
-      Assert.assertEquals(dsosb64Result, dsosTypeb64);
+      Assertions.assertEquals(dsosb64Result, dsosTypeb64);
 
 
       DiagnosisKey.Builder diagnosisKey = DiagnosisKey.newBuilder();
@@ -435,7 +430,7 @@ public class BatchSignatureUtilsTest {
       var overallb64 = BatchSignatureUtils.bytesToBase64(BatchSignatureUtils.generateBytesToVerify(diagnosisKey.build()));
       var overallCSharp64 = parts[16];
 
-      Assert.assertEquals(overallb64, overallCSharp64);
+      Assertions.assertEquals(overallb64, overallCSharp64);
 
     }
   }

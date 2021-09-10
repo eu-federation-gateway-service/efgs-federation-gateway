@@ -20,8 +20,8 @@
 
 package eu.interop.federationgateway.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class SemVerUtilsTest {
 
@@ -29,26 +29,26 @@ public class SemVerUtilsTest {
   public void testParsing() throws SemVerUtils.SemVerParsingException {
     SemVerUtils.SemVer result = SemVerUtils.parseSemVer("1.0");
 
-    Assert.assertEquals(1, result.getMajor());
-    Assert.assertEquals(0, result.getMinor());
+    Assertions.assertEquals(1, result.getMajor());
+    Assertions.assertEquals(0, result.getMinor());
   }
 
   @Test
   public void testCompatibility() throws SemVerUtils.SemVerParsingException {
-    Assert.assertTrue(SemVerUtils.parseSemVerAndCheckCompatibility("1.0", "1.0"));
-    Assert.assertTrue(SemVerUtils.parseSemVerAndCheckCompatibility("8.5", "8.5"));
-    Assert.assertFalse(SemVerUtils.parseSemVerAndCheckCompatibility("0.1", "1.0"));
-    Assert.assertFalse(SemVerUtils.parseSemVerAndCheckCompatibility("1.1", "0.0"));
-    Assert.assertFalse(SemVerUtils.parseSemVerAndCheckCompatibility("1.5", "1.1"));
+    Assertions.assertTrue(SemVerUtils.parseSemVerAndCheckCompatibility("1.0", "1.0"));
+    Assertions.assertTrue(SemVerUtils.parseSemVerAndCheckCompatibility("8.5", "8.5"));
+    Assertions.assertFalse(SemVerUtils.parseSemVerAndCheckCompatibility("0.1", "1.0"));
+    Assertions.assertFalse(SemVerUtils.parseSemVerAndCheckCompatibility("1.1", "0.0"));
+    Assertions.assertFalse(SemVerUtils.parseSemVerAndCheckCompatibility("1.5", "1.1"));
   }
 
-  @Test(expected = SemVerUtils.SemVerParsingException.class)
-  public void testParsingErrorTooMuchEntries() throws SemVerUtils.SemVerParsingException {
-    SemVerUtils.parseSemVer("1.2.3.4");
+  @Test
+  public void testParsingErrorTooMuchEntries() {
+    Assertions.assertThrows(SemVerUtils.SemVerParsingException.class, () -> SemVerUtils.parseSemVer("1.2.3.4"));
   }
 
-  @Test(expected = SemVerUtils.SemVerParsingException.class)
-  public void testParsingErrorInvalidString() throws SemVerUtils.SemVerParsingException {
-    SemVerUtils.parseSemVer("nonSem.VerString");
+  @Test
+  public void testParsingErrorInvalidString() {
+    Assertions.assertThrows(SemVerUtils.SemVerParsingException.class, () -> SemVerUtils.parseSemVer("nonSem.VerString"));
   }
 }

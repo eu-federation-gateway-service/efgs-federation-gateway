@@ -26,17 +26,14 @@ import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class CallbackTaskRepositoryTest {
 
   @Autowired
@@ -51,8 +48,8 @@ public class CallbackTaskRepositoryTest {
   @Autowired
   CertificateRepository certificateRepository;
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void setup() {
 
     repository.deleteAll();
@@ -70,15 +67,15 @@ public class CallbackTaskRepositoryTest {
     createEntity(ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(6), "d");
     createEntity(ZonedDateTime.now(ZoneOffset.UTC).minusMinutes(8), "e");
 
-    Assert.assertEquals(5, repository.count());
-    Assert.assertEquals(5, countNonNullTaskLocks(repository.findAll()));
+    Assertions.assertEquals(5, repository.count());
+    Assertions.assertEquals(5, countNonNullTaskLocks(repository.findAll()));
 
     ZonedDateTime timestamp = ZonedDateTime.now().minusMinutes(5);
     int updateCount = repository.removeTaskLocksOlderThan(timestamp);
 
-    Assert.assertEquals(2, updateCount);
-    Assert.assertEquals(5, repository.count());
-    Assert.assertEquals(3, countNonNullTaskLocks(repository.findAll()));
+    Assertions.assertEquals(2, updateCount);
+    Assertions.assertEquals(5, repository.count());
+    Assertions.assertEquals(3, countNonNullTaskLocks(repository.findAll()));
 
   }
 

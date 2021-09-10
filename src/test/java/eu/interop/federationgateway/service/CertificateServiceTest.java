@@ -33,17 +33,14 @@ import java.security.cert.CertificateException;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class CertificateServiceTest {
@@ -53,8 +50,8 @@ public class CertificateServiceTest {
 
   @Autowired
   CertificateService certificateService;
-
-  @Before
+  
+  @BeforeEach
   public void setup() throws CertificateException, SignatureException, NoSuchAlgorithmException, IOException, OperatorCreationException, InvalidKeyException {
     certificateRepository.deleteAll();
     TestData.insertCertificatesForAuthentication(certificateRepository);
@@ -64,14 +61,14 @@ public class CertificateServiceTest {
   public void certificateRepositoryShouldReturnCertificate() {
     Optional<CertificateEntity> certOptional = certificateService.getCertificate(TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
 
-    Assert.assertTrue(certOptional.isPresent());
-    Assert.assertEquals(TestData.validCertificateHash, certOptional.get().getThumbprint());
+    Assertions.assertTrue(certOptional.isPresent());
+    Assertions.assertEquals(TestData.validCertificateHash, certOptional.get().getThumbprint());
 
     String authCertThumbprint = CertificateUtils.getCertThumbprint(TestData.validAuthenticationCertificate);
     certOptional = certificateService.getAuthenticationCertificate(authCertThumbprint);
 
-    Assert.assertTrue(certOptional.isPresent());
-    Assert.assertEquals(authCertThumbprint, certOptional.get().getThumbprint());
+    Assertions.assertTrue(certOptional.isPresent());
+    Assertions.assertEquals(authCertThumbprint, certOptional.get().getThumbprint());
   }
 
   @Test
@@ -80,8 +77,8 @@ public class CertificateServiceTest {
     Optional<CertificateEntity> anotherCertOptional = certificateService.getCertificate(
       CertificateUtils.getCertThumbprint(TestData.notValidYetCertificate), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
 
-    Assert.assertTrue(certOptional.isPresent());
-    Assert.assertTrue(anotherCertOptional.isPresent());
+    Assertions.assertTrue(certOptional.isPresent());
+    Assertions.assertTrue(anotherCertOptional.isPresent());
 
     CertificateEntity cert = certOptional.get();
     cert.setRawData(anotherCertOptional.get().getRawData());
@@ -89,7 +86,7 @@ public class CertificateServiceTest {
     certificateRepository.save(cert);
 
     certOptional = certificateService.getCertificate(TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
-    Assert.assertTrue(certOptional.isEmpty());
+    Assertions.assertTrue(certOptional.isEmpty());
   }
 
   @Test
@@ -98,8 +95,8 @@ public class CertificateServiceTest {
     Optional<CertificateEntity> anotherCertOptional = certificateService.getCertificate(
       CertificateUtils.getCertThumbprint(TestData.notValidYetCertificate), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
 
-    Assert.assertTrue(certOptional.isPresent());
-    Assert.assertTrue(anotherCertOptional.isPresent());
+    Assertions.assertTrue(certOptional.isPresent());
+    Assertions.assertTrue(anotherCertOptional.isPresent());
 
     CertificateEntity cert = certOptional.get();
     cert.setSignature(anotherCertOptional.get().getSignature());
@@ -107,7 +104,7 @@ public class CertificateServiceTest {
     certificateRepository.save(cert);
 
     certOptional = certificateService.getCertificate(TestData.validCertificateHash, TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
-    Assert.assertTrue(certOptional.isEmpty());
+    Assertions.assertTrue(certOptional.isEmpty());
   }
 
   @Test
@@ -116,8 +113,8 @@ public class CertificateServiceTest {
     Optional<CertificateEntity> anotherCertOptional = certificateService.getCertificate(
       CertificateUtils.getCertThumbprint(TestData.notValidYetCertificate), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
 
-    Assert.assertTrue(certOptional.isPresent());
-    Assert.assertTrue(anotherCertOptional.isPresent());
+    Assertions.assertTrue(certOptional.isPresent());
+    Assertions.assertTrue(anotherCertOptional.isPresent());
 
     certificateRepository.delete(anotherCertOptional.get());
 
@@ -127,6 +124,6 @@ public class CertificateServiceTest {
     certificateRepository.save(cert);
 
     certOptional = certificateService.getCertificate(anotherCertOptional.get().getThumbprint(), TestData.AUTH_CERT_COUNTRY, CertificateEntity.CertificateType.SIGNING);
-    Assert.assertTrue(certOptional.isEmpty());
+    Assertions.assertTrue(certOptional.isEmpty());
   }
 }

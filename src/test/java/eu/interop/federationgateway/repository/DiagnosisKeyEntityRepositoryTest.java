@@ -26,22 +26,19 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class DiagnosisKeyEntityRepositoryTest {
 
   @Autowired
   DiagnosisKeyEntityRepository repository;
 
-  @Before
+  @BeforeEach
   public void setup() {
     repository.deleteAll();
 
@@ -88,20 +85,20 @@ public class DiagnosisKeyEntityRepositoryTest {
   public void testFindByPayloadOrigin() {
     List<DiagnosisKeyEntity> result = repository.findAllByPayloadOrigin(TestData.FIRST_ORIGIN);
 
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(TestData.FIRST_ORIGIN, result.get(0).getPayload().getOrigin());
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals(TestData.FIRST_ORIGIN, result.get(0).getPayload().getOrigin());
 
     result = repository.findAllByPayloadOrigin(TestData.SECOND_ORIGIN);
 
-    Assert.assertEquals(2, result.size());
-    Assert.assertEquals(TestData.SECOND_ORIGIN, result.get(0).getPayload().getOrigin());
-    Assert.assertEquals(TestData.SECOND_ORIGIN, result.get(1).getPayload().getOrigin());
+    Assertions.assertEquals(2, result.size());
+    Assertions.assertEquals(TestData.SECOND_ORIGIN, result.get(0).getPayload().getOrigin());
+    Assertions.assertEquals(TestData.SECOND_ORIGIN, result.get(1).getPayload().getOrigin());
   }
 
   @Test
   public void testFindByBatchTag() {
-    Assert.assertEquals(2, repository.countAllByUploader_BatchTag(TestData.FIRST_BATCHTAG));
-    Assert.assertEquals(1, repository.countAllByUploader_BatchTag(TestData.SECOND_BATCHTAG));
+    Assertions.assertEquals(2, repository.countAllByUploader_BatchTag(TestData.FIRST_BATCHTAG));
+    Assertions.assertEquals(1, repository.countAllByUploader_BatchTag(TestData.SECOND_BATCHTAG));
   }
 
   @Test
@@ -120,29 +117,29 @@ public class DiagnosisKeyEntityRepositoryTest {
 
     Optional<DiagnosisKeyEntity> result = repository.findFirstByBatchTagIsNull();
 
-    Assert.assertTrue(result.isPresent());
-    Assert.assertEquals("x", result.get().getPayloadHash());
+    Assertions.assertTrue(result.isPresent());
+    Assertions.assertEquals("x", result.get().getPayloadHash());
   }
 
   @Test
   public void testFindByBatchTagIsAndUploader_CountryIsNot() {
     List<DiagnosisKeyEntity> result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.FIRST_BATCHTAG, TestData.COUNTRY_A);
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(TestData.COUNTRY_B, result.get(0).getUploader().getCountry());
-    Assert.assertEquals(TestData.FIRST_BATCHTAG, result.get(0).getBatchTag());
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals(TestData.COUNTRY_B, result.get(0).getUploader().getCountry());
+    Assertions.assertEquals(TestData.FIRST_BATCHTAG, result.get(0).getBatchTag());
 
     result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.FIRST_BATCHTAG, TestData.COUNTRY_B);
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(TestData.COUNTRY_A, result.get(0).getUploader().getCountry());
-    Assert.assertEquals(TestData.FIRST_BATCHTAG, result.get(0).getBatchTag());
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals(TestData.COUNTRY_A, result.get(0).getUploader().getCountry());
+    Assertions.assertEquals(TestData.FIRST_BATCHTAG, result.get(0).getBatchTag());
 
     result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.SECOND_BATCHTAG, TestData.COUNTRY_A);
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(TestData.COUNTRY_B, result.get(0).getUploader().getCountry());
-    Assert.assertEquals(TestData.SECOND_BATCHTAG, result.get(0).getBatchTag());
+    Assertions.assertEquals(1, result.size());
+    Assertions.assertEquals(TestData.COUNTRY_B, result.get(0).getUploader().getCountry());
+    Assertions.assertEquals(TestData.SECOND_BATCHTAG, result.get(0).getBatchTag());
 
     result = repository.findByBatchTagIsAndUploader_CountryIsNotOrderByIdAsc(TestData.SECOND_BATCHTAG, TestData.COUNTRY_B);
-    Assert.assertTrue(result.isEmpty());
+    Assertions.assertTrue(result.isEmpty());
   }
 
 

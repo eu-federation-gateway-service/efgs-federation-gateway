@@ -37,17 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class BatchSignatureVerifierTest {
 
@@ -59,7 +56,7 @@ public class BatchSignatureVerifierTest {
 
   SignatureGenerator signatureGenerator;
 
-  @Before
+  @BeforeEach
   public void setup() throws NoSuchAlgorithmException, CertificateException, IOException, OperatorCreationException,
     InvalidKeyException, SignatureException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
@@ -69,7 +66,7 @@ public class BatchSignatureVerifierTest {
   public void testVerifyReturnsTrue()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC"));
-    Assert.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+    Assertions.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
       TestData.validCertificate)));
   }
 
@@ -77,7 +74,7 @@ public class BatchSignatureVerifierTest {
   public void testVerifyReturnsFalseWhenCertIsExpired()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
       TestData.expiredCertificate)));
   }
 
@@ -85,7 +82,7 @@ public class BatchSignatureVerifierTest {
   public void testVerifyReturnsFalseWhenCertIsNotValidYet()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
       TestData.notValidYetCertificate)));
   }
 
@@ -93,7 +90,7 @@ public class BatchSignatureVerifierTest {
   public void testVerifyReturnsFalseWhenCertIsManipulated()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
       TestData.manipulatedCertificate)));
   }
 
@@ -103,7 +100,7 @@ public class BatchSignatureVerifierTest {
     final DiagnosisKeyBatch batchVerifier = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC",
       "DFG"));
     final DiagnosisKeyBatch batchSigner = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("DFG", "XYZ", "ABC"));
-    Assert.assertNotNull(batchSignatureVerifier.checkBatchSignature(batchVerifier, createSignature(batchSigner,
+    Assertions.assertNotNull(batchSignatureVerifier.checkBatchSignature(batchVerifier, createSignature(batchSigner,
       TestData.validCertificate)));
   }
 
@@ -111,14 +108,14 @@ public class BatchSignatureVerifierTest {
   public void testVerifyReturnsFalseWhenCorruptedBatchBytesAreSigned()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithCorruptedBatchBytes(batch)));
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithCorruptedBatchBytes(batch)));
   }
 
   @Test
   public void testVerifyReturnsFalseWhenBase64SignatureIsCorrupted()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("XYZ", "ABC"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithCorruptedB64String(batch)));
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithCorruptedB64String(batch)));
   }
 
   @Test
@@ -126,7 +123,7 @@ public class BatchSignatureVerifierTest {
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123", "456"));
     final DiagnosisKeyBatch incorrectBatch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(incorrectBatch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(incorrectBatch,
       TestData.validCertificate)));
   }
 
@@ -134,7 +131,7 @@ public class BatchSignatureVerifierTest {
   public void testVerifyReturnsFalseWhenBatchWithIncorrectByteOrderIsSigned()
     throws OperatorCreationException, CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("1AB8C3"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch,
       createInvalidSignatureForBatchWithIncorrectByteOder(batch)));
   }
 
@@ -145,7 +142,7 @@ public class BatchSignatureVerifierTest {
 
     certificateRepository.deleteAll();
 
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
       TestData.validCertificate)));
   }
 
@@ -157,7 +154,7 @@ public class BatchSignatureVerifierTest {
     DiagnosisKeyBatch modifiedBatch = batch.toBuilder().addKeys(
       batch.getKeysList().get(0).toBuilder().setOrigin(TestData.COUNTRY_A).build()).build();
 
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(modifiedBatch, createSignature(modifiedBatch,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(modifiedBatch, createSignature(modifiedBatch,
       TestData.validCertificate)));
   }
 
@@ -166,7 +163,7 @@ public class BatchSignatureVerifierTest {
     CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123456ABC"));
 
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithoutCert(batch)));
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithoutCert(batch)));
   }
 
   @Test
@@ -174,14 +171,14 @@ public class BatchSignatureVerifierTest {
     throws CertificateEncodingException, CMSException, IOException, OperatorCreationException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123456ABC"));
 
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithoutSignerInfo(batch)));
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, createSignatureWithoutSignerInfo(batch)));
   }
 
   @Test
   public void testVerifyReturnsFalseWhenPKCS7ContentTypeIsNotSignedData()
-    throws CertificateEncodingException, CMSException, IOException, CertificateParsingException {
+    throws CertificateEncodingException, CMSException, IOException {
     final DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(List.of("123456ABC"));
-    Assert.assertNull(batchSignatureVerifier.checkBatchSignature(batch, signatureGenerator.encryptData(new byte[]{41,
+    Assertions.assertNull(batchSignatureVerifier.checkBatchSignature(batch, signatureGenerator.encryptData(new byte[]{41,
       52, 38})));
   }
 
@@ -198,7 +195,7 @@ public class BatchSignatureVerifierTest {
 
     var signature = createSignature(batch,  TestData.validCertificate);
 
-    Assert.assertTrue(signature.length()<maxBytes);
+    Assertions.assertTrue(signature.length()<maxBytes);
   }
 
   @Test
@@ -213,14 +210,14 @@ public class BatchSignatureVerifierTest {
         keyList.add(null);
 
      DiagnosisKeyBatch batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(keyList);
-      Assert.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+      Assertions.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
         TestData.validCertificate)));
 
       for(int x=0;x<max;x++)
         keyList.add("INVALID");
 
       batch = BatchSignatureUtilsTest.createDiagnosisKeyBatch(keyList);
-      Assert.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
+      Assertions.assertNotNull(batchSignatureVerifier.checkBatchSignature(batch, createSignature(batch,
         TestData.validCertificate)));
   }
 
