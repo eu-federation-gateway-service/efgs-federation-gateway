@@ -20,28 +20,26 @@
 
 package eu.interop.federationgateway.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class DiagnosisKeyControllerTest {
 
   private final ObjectMapper mapper = new ObjectMapper();
@@ -53,7 +51,7 @@ public class DiagnosisKeyControllerTest {
   private DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
   private MockMvc mockMvc;
 
-  @Before
+  @BeforeEach
   public void setup() {
     mockMvc = MockMvcBuilders
       .webAppContextSetup(context)
@@ -69,9 +67,9 @@ public class DiagnosisKeyControllerTest {
       .andExpect(mvcResult -> {
         String allowHeader = mvcResult.getResponse().getHeader(HttpHeaders.ALLOW);
         String acceptHeader = mvcResult.getResponse().getHeader(HttpHeaders.ACCEPT);
-        Assert.assertEquals(HttpMethod.POST + "," + HttpMethod.GET.name() + "," + HttpMethod.OPTIONS.name(),
+        Assertions.assertEquals(HttpMethod.POST + "," + HttpMethod.GET.name() + "," + HttpMethod.OPTIONS.name(),
           allowHeader);
-        Assert.assertEquals("application/json; version=1.0, application/protobuf; version=1.0", acceptHeader);
+        Assertions.assertEquals("application/json; version=1.0, application/protobuf; version=1.0", acceptHeader);
       });
   }
 }

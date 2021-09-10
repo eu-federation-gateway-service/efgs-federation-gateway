@@ -20,6 +20,8 @@
 
 package eu.interop.federationgateway.service;
 
+import static org.mockito.Mockito.verify;
+
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
@@ -31,20 +33,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.List;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.verify;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class CallbackServiceTest {
 
   @Autowired
@@ -58,13 +56,13 @@ public class CallbackServiceTest {
 
   CallbackService callbackService;
 
-  @Before
+  @BeforeEach
   public void setUp() {
      callbackService = new CallbackService(callbackSubscriptionRepository, callbackTaskRepository);
   }
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void teardown() {
     callbackTaskRepository.deleteAll();
     diagnosisKeyBatchRepository.deleteAll();
@@ -78,23 +76,23 @@ public class CallbackServiceTest {
 
     entity = callbackService.saveCallbackSubscription(entity);
 
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
 
     CallbackSubscriptionEntity newEntity = new CallbackSubscriptionEntity(
       null, null, TestData.CALLBACK_ID_FIRST, TestData.CALLBACK_URL_EFGS, TestData.COUNTRY_A);
 
     newEntity = callbackService.saveCallbackSubscription(newEntity);
 
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
-    Assert.assertEquals(TestData.CALLBACK_URL_EFGS, callbackSubscriptionRepository.findAll().get(0).getUrl());
-    Assert.assertEquals(entity.getId(), newEntity.getId());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(TestData.CALLBACK_URL_EFGS, callbackSubscriptionRepository.findAll().get(0).getUrl());
+    Assertions.assertEquals(entity.getId(), newEntity.getId());
 
     CallbackSubscriptionEntity entityOtherCountry = new CallbackSubscriptionEntity(
       null, null, TestData.CALLBACK_ID_FIRST, TestData.CALLBACK_URL_EFGS, TestData.COUNTRY_B);
 
     callbackService.saveCallbackSubscription(entityOtherCountry);
 
-    Assert.assertEquals(2, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(2, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -112,13 +110,13 @@ public class CallbackServiceTest {
 
     callbackTaskRepository.save(taskEntity);
 
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
-    Assert.assertEquals(1, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(1, callbackTaskRepository.count());
 
     callbackService.deleteCallbackSubscription(subscriptionEntity);
 
-    Assert.assertEquals(0, callbackSubscriptionRepository.count());
-    Assert.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(0, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
   }
 
   @Test
@@ -133,75 +131,75 @@ public class CallbackServiceTest {
     };
 
     callbackSubscriptionRepository.saveAll(List.of(given));
-    Assert.assertEquals(3, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(3, callbackSubscriptionRepository.count());
 
     List<CallbackSubscriptionEntity> entities = callbackService.getAllCallbackSubscriptions();
-    Assert.assertEquals(3, entities.size());
-    Assert.assertArrayEquals(given, entities.toArray());
+    Assertions.assertEquals(3, entities.size());
+    Assertions.assertArrayEquals(given, entities.toArray());
 
     entities = callbackService.getAllCallbackSubscriptionsForCountry(TestData.COUNTRY_A);
-    Assert.assertEquals(2, entities.size());
-    Assert.assertArrayEquals(new CallbackSubscriptionEntity[]{given[0], given[1]}, entities.toArray());
+    Assertions.assertEquals(2, entities.size());
+    Assertions.assertArrayEquals(new CallbackSubscriptionEntity[]{given[0], given[1]}, entities.toArray());
 
     entities = callbackService.getAllCallbackSubscriptionsForCountry(TestData.COUNTRY_B);
-    Assert.assertEquals(1, entities.size());
-    Assert.assertArrayEquals(new CallbackSubscriptionEntity[]{given[2]}, entities.toArray());
+    Assertions.assertEquals(1, entities.size());
+    Assertions.assertArrayEquals(new CallbackSubscriptionEntity[]{given[2]}, entities.toArray());
   }
 
   @Test
   public void testCheckUrlMethod() {
     // check if given string is a url
-    Assert.assertFalse(callbackService.checkUrl("teststring1234", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("teststring1234", TestData.COUNTRY_A));
 
     // check for correct protocol (https)
-    Assert.assertFalse(callbackService.checkUrl("http://example.org", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("http://example.org", TestData.COUNTRY_A));
 
     // check that url has no query parameters
-    Assert.assertFalse(callbackService.checkUrl("https://example.org?abc=123", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://example.org?abc=123", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://localhost", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://localhost", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://127.0.0.1", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://127.0.0.1", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://10.2.5.6", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://10.2.5.6", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://100.64.23.5", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://100.64.23.5", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://169.254.85.69", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://169.254.85.69", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://172.16.5.3", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://172.16.5.3", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://192.168.178.5", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://192.168.178.5", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://::1", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://::1", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://fd9e:35ga:352e:1212::1", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://fd9e:35ga:352e:1212::1", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://0", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://0", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://0177.0.0.1/asdasd/asdasd/zxc", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://0177.0.0.1/asdasd/asdasd/zxc", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://[::]:80", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://[::]:80", TestData.COUNTRY_A));
 
     // check that url is not a local target
-    Assert.assertFalse(callbackService.checkUrl("https://0144.0100.0.1/foobar", TestData.COUNTRY_A));
+    Assertions.assertFalse(callbackService.checkUrl("https://0144.0100.0.1/foobar", TestData.COUNTRY_A));
 
     try {
       InetAddress.getByName("example.org");
       // check that url's hostname is resolved
-      Assert.assertTrue(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
+      Assertions.assertTrue(callbackService.checkUrl("https://example.org", TestData.COUNTRY_A));
     } catch (UnknownHostException ignored) {
     } // skipping positive test case if no name resolution is possible
   }
@@ -218,7 +216,7 @@ public class CallbackServiceTest {
     callbackService.removeTaskLocksOlderThan(timestamp);
 
     verify(callbackTaskRepositoryMock).removeTaskLocksOlderThan(captor.capture());
-    Assert.assertEquals(timestamp, captor.getValue());
+    Assertions.assertEquals(timestamp, captor.getValue());
   }
 
   @Test
@@ -237,20 +235,21 @@ public class CallbackServiceTest {
 
     List<CallbackTaskEntity> callbackTasks = callbackTaskRepository.findAll();
 
-    Assert.assertEquals(4, callbackTasks.size());
-    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription2.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription2.getId(), callbackTasks.get(3).getCallbackSubscription().getId());
+    Assertions.assertEquals(4, callbackTasks.size());
+    Assertions.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
+    Assertions.assertEquals(callbackSubscription2.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
+    Assertions.assertEquals(callbackSubscription1.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
+    Assertions.assertEquals(callbackSubscription2.getId(), callbackTasks.get(3).getCallbackSubscription().getId());
 
-    Assert.assertNull(callbackTasks.get(0).getNotBefore());
-    Assert.assertNull(callbackTasks.get(1).getNotBefore());
-    Assert.assertEquals(callbackTasks.get(0), callbackTasks.get(2).getNotBefore());
-    Assert.assertEquals(callbackTasks.get(1), callbackTasks.get(3).getNotBefore());
+    Assertions.assertNull(callbackTasks.get(0).getNotBefore());
+    Assertions.assertNull(callbackTasks.get(1).getNotBefore());
+    Assertions.assertEquals(callbackTasks.get(0), callbackTasks.get(2).getNotBefore());
+    Assertions.assertEquals(callbackTasks.get(1), callbackTasks.get(3).getNotBefore());
   }
 
   @Test
   public void notBeforePropertyShouldBeSetToPreviousCallbackTask2() {
+    callbackTaskRepository.deleteAll();
     CallbackSubscriptionEntity callbackSubscription1 = createCallbackSubscriptionEntity("r1");
 
     DiagnosisKeyBatchEntity batch = new DiagnosisKeyBatchEntity(null, ZonedDateTime.now(), "batchTag", "batchTag2");
@@ -268,14 +267,14 @@ public class CallbackServiceTest {
 
     List<CallbackTaskEntity> callbackTasks = callbackTaskRepository.findAll();
 
-    Assert.assertEquals(3, callbackTasks.size());
-    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
-    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
+    Assertions.assertEquals(3, callbackTasks.size());
+    Assertions.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
+    Assertions.assertEquals(callbackSubscription1.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
+    Assertions.assertEquals(callbackSubscription1.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
 
-    Assert.assertNull(callbackTasks.get(0).getNotBefore());
-    Assert.assertEquals(callbackTasks.get(0), callbackTasks.get(1).getNotBefore());
-    Assert.assertEquals(callbackTasks.get(1), callbackTasks.get(2).getNotBefore());
+    Assertions.assertNull(callbackTasks.get(0).getNotBefore());
+    Assertions.assertEquals(callbackTasks.get(0), callbackTasks.get(1).getNotBefore());
+    Assertions.assertEquals(callbackTasks.get(1), callbackTasks.get(2).getNotBefore());
   }
 
   @Test
@@ -291,13 +290,13 @@ public class CallbackServiceTest {
 
     List<CallbackTaskEntity> callbackTasks = callbackTaskRepository.findAll();
 
-    Assert.assertEquals(3, callbackTasks.size());
-    Assert.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
-    Assert.assertNull(callbackTasks.get(0).getNotBefore());
-    Assert.assertEquals(callbackSubscription2.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
-    Assert.assertNull(callbackTasks.get(1).getNotBefore());
-    Assert.assertEquals(callbackSubscription3.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
-    Assert.assertNull(callbackTasks.get(2).getNotBefore());
+    Assertions.assertEquals(3, callbackTasks.size());
+    Assertions.assertEquals(callbackSubscription1.getId(), callbackTasks.get(0).getCallbackSubscription().getId());
+    Assertions.assertNull(callbackTasks.get(0).getNotBefore());
+    Assertions.assertEquals(callbackSubscription2.getId(), callbackTasks.get(1).getCallbackSubscription().getId());
+    Assertions.assertNull(callbackTasks.get(1).getNotBefore());
+    Assertions.assertEquals(callbackSubscription3.getId(), callbackTasks.get(2).getCallbackSubscription().getId());
+    Assertions.assertNull(callbackTasks.get(2).getNotBefore());
   }
 
   private CallbackSubscriptionEntity createCallbackSubscriptionEntity(String random) {

@@ -27,16 +27,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class DiagnosiskeyMapperTest {
 
   @Autowired
@@ -56,7 +53,7 @@ public class DiagnosiskeyMapperTest {
       TestData.getDiagnosisKeyTestEntityforCreation()
     );
 
-    Assert.assertEquals(expected, converted);
+    Assertions.assertEquals(expected, converted);
   }
 
   @Test
@@ -71,7 +68,7 @@ public class DiagnosiskeyMapperTest {
       TestData.getDiagnosisKeyProto()
     );
 
-    Assert.assertEquals(converted, expected);
+    Assertions.assertEquals(converted, expected);
   }
 
   @Test
@@ -87,6 +84,6 @@ public class DiagnosiskeyMapperTest {
       TestData.getDiagnosisKeyProto().toBuilder().clearVisitedCountries().build()
     );
 
-    Assert.assertEquals(converted, expected);
+    Assertions.assertEquals(converted, expected);
   }
 }

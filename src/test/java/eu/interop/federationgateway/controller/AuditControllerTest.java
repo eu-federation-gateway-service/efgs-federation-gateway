@@ -20,6 +20,10 @@
 
 package eu.interop.federationgateway.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -51,28 +55,20 @@ import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
-@RunWith(SpringRunner.class)
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class AuditControllerTest {
 
@@ -94,7 +90,7 @@ public class AuditControllerTest {
   private MockMvc mockMvc;
   private SignatureGenerator signatureGenerator;
 
-  @Before
+  @BeforeEach
   public void setup() throws NoSuchAlgorithmException, CertificateException, IOException,
     OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
@@ -128,16 +124,16 @@ public class AuditControllerTest {
     List<AuditEntry> auditEntries = mapper.readValue(jsonResult, new TypeReference<>() {
     });
 
-    Assert.assertEquals(1, auditEntries.size());
+    Assertions.assertEquals(1, auditEntries.size());
     AuditEntry auditEntry = auditEntries.get(0);
-    Assert.assertEquals("DE", auditEntry.getCountry());
-    Assert.assertEquals(3, auditEntry.getAmount());
-    Assert.assertEquals(TestData.AUTH_CERT_HASH, auditEntry.getUploaderThumbprint());
-    Assert.assertNotNull(auditEntry.getUploaderOperatorSignature());
-    Assert.assertNotNull(auditEntry.getSigningCertificateOperatorSignature());
-    Assert.assertNotNull(auditEntry.getUploaderCertificate());
-    Assert.assertNotNull(auditEntry.getSigningCertificate());
-    Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
+    Assertions.assertEquals("DE", auditEntry.getCountry());
+    Assertions.assertEquals(3, auditEntry.getAmount());
+    Assertions.assertEquals(TestData.AUTH_CERT_HASH, auditEntry.getUploaderThumbprint());
+    Assertions.assertNotNull(auditEntry.getUploaderOperatorSignature());
+    Assertions.assertNotNull(auditEntry.getSigningCertificateOperatorSignature());
+    Assertions.assertNotNull(auditEntry.getUploaderCertificate());
+    Assertions.assertNotNull(auditEntry.getSigningCertificate());
+    Assertions.assertEquals(batchSignature, auditEntry.getBatchSignature());
   }
 
   @Test
@@ -168,16 +164,16 @@ public class AuditControllerTest {
     List<AuditEntry> auditEntries = mapper.readValue(jsonResult, new TypeReference<>() {
     });
 
-    Assert.assertEquals(1, auditEntries.size());
+    Assertions.assertEquals(1, auditEntries.size());
     AuditEntry auditEntry = auditEntries.get(0);
-    Assert.assertEquals("DE", auditEntry.getCountry());
-    Assert.assertEquals(3, auditEntry.getAmount());
-    Assert.assertEquals(TestData.AUTH_CERT_HASH, auditEntry.getUploaderThumbprint());
-    Assert.assertNotNull(auditEntry.getUploaderOperatorSignature());
-    Assert.assertNotNull(auditEntry.getSigningCertificateOperatorSignature());
-    Assert.assertNotNull(auditEntry.getUploaderCertificate());
-    Assert.assertNotNull(auditEntry.getSigningCertificate());
-    Assert.assertEquals(batchSignature, auditEntry.getBatchSignature());
+    Assertions.assertEquals("DE", auditEntry.getCountry());
+    Assertions.assertEquals(3, auditEntry.getAmount());
+    Assertions.assertEquals(TestData.AUTH_CERT_HASH, auditEntry.getUploaderThumbprint());
+    Assertions.assertNotNull(auditEntry.getUploaderOperatorSignature());
+    Assertions.assertNotNull(auditEntry.getSigningCertificateOperatorSignature());
+    Assertions.assertNotNull(auditEntry.getUploaderCertificate());
+    Assertions.assertNotNull(auditEntry.getSigningCertificate());
+    Assertions.assertEquals(batchSignature, auditEntry.getBatchSignature());
   }
 
   @Test

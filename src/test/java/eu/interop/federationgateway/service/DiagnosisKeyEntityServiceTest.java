@@ -20,24 +20,24 @@
 
 package eu.interop.federationgateway.service;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.matches;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.matches;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import org.mockito.internal.stubbing.answers.AnswersWithDelay;
 import org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValues;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,7 +49,7 @@ public class DiagnosisKeyEntityServiceTest {
 
   private DiagnosisKeyEntityRepository diagnosisKeyEntityRepositoryMock;
 
-  @Before
+  @BeforeEach
   public void setup() {
     diagnosisKeyEntityRepositoryMock = Mockito.mock(DiagnosisKeyEntityRepository.class);
     this.diagnosisKeyEntityService = new DiagnosisKeyEntityService(diagnosisKeyEntityRepositoryMock);
@@ -60,10 +60,10 @@ public class DiagnosisKeyEntityServiceTest {
     String dummyBatchTag = "dummyBatchTag";
 
     when(diagnosisKeyEntityRepositoryMock.countAllByUploader_BatchTag(matches(dummyBatchTag))).thenReturn(5);
-    Assert.assertTrue(diagnosisKeyEntityService.uploadBatchTagExists(dummyBatchTag));
+    Assertions.assertTrue(diagnosisKeyEntityService.uploadBatchTagExists(dummyBatchTag));
 
     when(diagnosisKeyEntityRepositoryMock.countAllByUploader_BatchTag(matches(dummyBatchTag))).thenReturn(0);
-    Assert.assertFalse(diagnosisKeyEntityService.uploadBatchTagExists(dummyBatchTag));
+    Assertions.assertFalse(diagnosisKeyEntityService.uploadBatchTagExists(dummyBatchTag));
   }
 
   @Test
@@ -77,7 +77,7 @@ public class DiagnosisKeyEntityServiceTest {
     ArgumentCaptor<DiagnosisKeyEntity> captor = ArgumentCaptor.forClass(DiagnosisKeyEntity.class);
     verify(diagnosisKeyEntityRepositoryMock, times(3)).save(captor.capture());
 
-    captor.getAllValues().forEach(Assert::assertNotNull);
+    captor.getAllValues().forEach(Assertions::assertNotNull);
   }
 
   @Test
@@ -91,10 +91,10 @@ public class DiagnosisKeyEntityServiceTest {
     ArgumentCaptor<DiagnosisKeyEntity> captor = ArgumentCaptor.forClass(DiagnosisKeyEntity.class);
     verify(diagnosisKeyEntityRepositoryMock).save(captor.capture());
 
-    Assert.assertEquals(timestamp, captor.getValue().getCreatedAt());
+    Assertions.assertEquals(timestamp, captor.getValue().getCreatedAt());
   }
 
-  @Test(expected = DiagnosisKeyEntityService.DiagnosisKeyInsertException.class)
+  @Test
   public void assertThatFailedInsertationOfMultipleEntitiesThrowsCorrectExceptionDbError() throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
     when(diagnosisKeyEntityRepositoryMock.save(any()))
       .thenThrow(new QueryTimeoutException("DB is broken"));
@@ -103,21 +103,19 @@ public class DiagnosisKeyEntityServiceTest {
     DiagnosisKeyEntity testEntity2 = TestData.getDiagnosisKeyTestEntityforCreation();
     DiagnosisKeyEntity testEntity3 = TestData.getDiagnosisKeyTestEntityforCreation();
 
-    try {
-      diagnosisKeyEntityService.saveDiagnosisKeyEntities(List.of(testEntity, testEntity2, testEntity3));
-    } catch (DiagnosisKeyEntityService.DiagnosisKeyInsertException e) {
-      Assert.assertTrue(e.getResultMap().get(201).isEmpty());
-      Assert.assertTrue(e.getResultMap().get(409).isEmpty());
-      Assert.assertTrue(e.getResultMap().get(500).contains(0));
-      Assert.assertTrue(e.getResultMap().get(500).contains(1));
-      Assert.assertTrue(e.getResultMap().get(500).contains(2));
+    DiagnosisKeyEntityService.DiagnosisKeyInsertException e = Assertions.assertThrows(DiagnosisKeyEntityService.DiagnosisKeyInsertException.class,
+      () -> diagnosisKeyEntityService.saveDiagnosisKeyEntities(List.of(testEntity, testEntity2, testEntity3)));
 
-      verify(diagnosisKeyEntityRepositoryMock, times(3)).save(any());
-      throw e;
-    }
+    Assertions.assertTrue(e.getResultMap().get(201).isEmpty());
+    Assertions.assertTrue(e.getResultMap().get(409).isEmpty());
+    Assertions.assertTrue(e.getResultMap().get(500).contains(0));
+    Assertions.assertTrue(e.getResultMap().get(500).contains(1));
+    Assertions.assertTrue(e.getResultMap().get(500).contains(2));
+
+    verify(diagnosisKeyEntityRepositoryMock, times(3)).save(any());
   }
 
-  @Test(expected = DiagnosisKeyEntityService.DiagnosisKeyInsertException.class)
+  @Test
   public void assertThatFailedInsertationOfMultipleEntitiesThrowsCorrectExceptionOnIntegrityCheck() throws DiagnosisKeyEntityService.DiagnosisKeyInsertException {
     when(diagnosisKeyEntityRepositoryMock.save(any()))
       .thenReturn(null)
@@ -128,17 +126,15 @@ public class DiagnosisKeyEntityServiceTest {
     DiagnosisKeyEntity testEntity2 = TestData.getDiagnosisKeyTestEntityforCreation();
     DiagnosisKeyEntity testEntity3 = TestData.getDiagnosisKeyTestEntityforCreation();
 
-    try {
-      diagnosisKeyEntityService.saveDiagnosisKeyEntities(List.of(testEntity, testEntity2, testEntity3));
-    } catch (DiagnosisKeyEntityService.DiagnosisKeyInsertException e) {
-      Assert.assertTrue(e.getResultMap().get(201).contains(0));
-      Assert.assertTrue(e.getResultMap().get(201).contains(2));
-      Assert.assertTrue(e.getResultMap().get(500).isEmpty());
-      Assert.assertTrue(e.getResultMap().get(409).contains(1));
+    DiagnosisKeyEntityService.DiagnosisKeyInsertException e = Assertions.assertThrows(DiagnosisKeyEntityService.DiagnosisKeyInsertException.class,
+      () -> diagnosisKeyEntityService.saveDiagnosisKeyEntities(List.of(testEntity, testEntity2, testEntity3)));
 
-      verify(diagnosisKeyEntityRepositoryMock, times(3)).save(any());
-      throw e;
-    }
+    Assertions.assertTrue(e.getResultMap().get(201).contains(0));
+    Assertions.assertTrue(e.getResultMap().get(201).contains(2));
+    Assertions.assertTrue(e.getResultMap().get(500).isEmpty());
+    Assertions.assertTrue(e.getResultMap().get(409).contains(1));
+
+    verify(diagnosisKeyEntityRepositoryMock, times(3)).save(any());
   }
 
 
@@ -161,9 +157,7 @@ public class DiagnosisKeyEntityServiceTest {
 
     ZonedDateTime firstTimestamp = captor.getAllValues().get(0).getCreatedAt();
 
-    captor.getAllValues().forEach(entity -> {
-      Assert.assertEquals(firstTimestamp, entity.getCreatedAt());
-    });
+    captor.getAllValues().forEach(entity -> Assertions.assertEquals(firstTimestamp, entity.getCreatedAt()));
   }
 
   @Test

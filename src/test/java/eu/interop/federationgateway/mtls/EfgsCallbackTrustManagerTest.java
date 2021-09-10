@@ -32,15 +32,16 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 import org.apache.commons.lang3.NotImplementedException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class EfgsCallbackTrustManagerTest {
 
   private CertificateService certificateServiceMock;
   private EfgsCallbackTrustManager efgsCallbackTrustManager;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     certificateServiceMock = mock(CertificateService.class);
 
@@ -68,7 +69,7 @@ public class EfgsCallbackTrustManagerTest {
     verify(certificateServiceMock, times(2)).getAuthenticationCertificate(anyString());
   }
 
-  @Test(expected = CertificateException.class)
+  @Test
   public void testTrustManagerShouldThrowExceptionIfCertIsNotFound() throws CertificateException {
     X509Certificate certificateMock = mock(X509Certificate.class);
 
@@ -83,13 +84,13 @@ public class EfgsCallbackTrustManagerTest {
     when(certificateServiceMock.getAuthenticationCertificate(anyString()))
       .thenReturn(Optional.empty());
 
-    efgsCallbackTrustManager.checkServerTrusted(certChain, "");
+    Assertions.assertThrows(CertificateException.class, () -> efgsCallbackTrustManager.checkServerTrusted(certChain, ""));
 
     verify(certificateServiceMock, times(3)).getAuthenticationCertificate(anyString());
   }
 
-  @Test(expected = NotImplementedException.class)
+  @Test
   public void testTrustManagerThrowsNotImplementedWhenUsingClientVerifyMethod() throws CertificateException {
-    efgsCallbackTrustManager.checkClientTrusted(new X509Certificate[0], "");
+    Assertions.assertThrows(NotImplementedException.class, () -> efgsCallbackTrustManager.checkClientTrusted(new X509Certificate[0], ""));
   }
 }

@@ -31,23 +31,20 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.internal.stubbing.answers.AnswersWithDelay;
 import org.mockito.internal.stubbing.defaultanswers.ReturnsEmptyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * This is the test class for the batch service.
  */
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(
   properties = {
     "efgs.batching.doclimit=9",
@@ -71,7 +68,7 @@ public class DiagnosisKeyBatchServiceTest {
 
   private CallbackService callbackServiceMock;
 
-  @Before
+  @BeforeEach
   public void before() {
     batchRepository.deleteAll();
     keyRepository.deleteAll();
@@ -95,15 +92,15 @@ public class DiagnosisKeyBatchServiceTest {
 
     batchService.batchDocuments();
 
-    Assert.assertEquals("error batch repo expect one entry", 1, batchRepository.count());
+    Assertions.assertEquals(1, batchRepository.count(), "error batch repo expect one entry");
 
     // check repos
-    Assert.assertNull(batchRepository.findAll().get(0).getBatchLink());
-    Assert.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
-    Assert.assertEquals("error to find 3 test keys", 3, keyRepository.count());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
+    Assertions.assertNull(batchRepository.findAll().get(0).getBatchLink());
+    Assertions.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+    Assertions.assertEquals(3, keyRepository.count(), "error to find 3 test keys");
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
   }
 
   /**
@@ -124,21 +121,21 @@ public class DiagnosisKeyBatchServiceTest {
 
     batchService.batchDocuments();
 
-    Assert.assertEquals("error batch repo expect 2 entries", 2, batchRepository.count());
+    Assertions.assertEquals(2, batchRepository.count(), "error batch repo expect 2 entries");
 
     // check repos
-    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(0).getBatchLink());
-    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
+    Assertions.assertEquals(formattedDate + "-2", batchRepository.findAll().get(0).getBatchLink());
+    Assertions.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
 
-    Assert.assertEquals("error to find 4 test keys", 4, keyRepository.count());
-    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(0).getBatchTag());
-    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(1).getBatchTag());
-    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(2).getBatchTag());
-    Assert.assertEquals(TestData.TEST_BATCH_TAG_2015616, keyRepository.findAll().get(3).getBatchTag());
+    Assertions.assertEquals(4, keyRepository.count(), "error to find 4 test keys");
+    Assertions.assertEquals(formattedDate + "-2", keyRepository.findAll().get(0).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-2", keyRepository.findAll().get(1).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-2", keyRepository.findAll().get(2).getBatchTag());
+    Assertions.assertEquals(TestData.TEST_BATCH_TAG_2015616, keyRepository.findAll().get(3).getBatchTag());
 
     ArgumentCaptor<DiagnosisKeyBatchEntity> captor = ArgumentCaptor.forClass(DiagnosisKeyBatchEntity.class);
     Mockito.verify(callbackServiceMock).notifyAllCountriesForNewBatchTag(captor.capture());
-    Assert.assertEquals(formattedDate + "-2", captor.getValue().getBatchName());
+    Assertions.assertEquals(formattedDate + "-2", captor.getValue().getBatchName());
   }
 
   /**
@@ -162,17 +159,17 @@ public class DiagnosisKeyBatchServiceTest {
     batchService.batchDocuments();
 
     // the batch repo count should be 4 (keys/batch 5,5,5,8) regarding doc limit is 9
-    Assert.assertEquals(4, batchRepository.count());
+    Assertions.assertEquals(4, batchRepository.count());
 
     // check repos
-    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(0).getBatchLink());
-    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
+    Assertions.assertEquals(formattedDate + "-2", batchRepository.findAll().get(0).getBatchLink());
+    Assertions.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
 
-    Assert.assertEquals("error to find 23 test keys", 23, keyRepository.count());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
-    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
-    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(10).getBatchTag());
-    Assert.assertEquals(formattedDate + "-4", keyRepository.findAll().get(17).getBatchTag());
+    Assertions.assertEquals(23, keyRepository.count(), "error to find 23 test keys");
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-3", keyRepository.findAll().get(10).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-4", keyRepository.findAll().get(17).getBatchTag());
   }
 
   @Test
@@ -188,23 +185,23 @@ public class DiagnosisKeyBatchServiceTest {
     batchService.batchDocuments();
 
     // Expect 3 batches: 1: DE,PL 2: ES 3: BG
-    Assert.assertEquals(3, batchRepository.count());
+    Assertions.assertEquals(3, batchRepository.count());
 
-    Assert.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
-    Assert.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
-    Assert.assertEquals(formattedDate + "-3", batchRepository.findAll().get(2).getBatchName());
+    Assertions.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+    Assertions.assertEquals(formattedDate + "-2", batchRepository.findAll().get(1).getBatchName());
+    Assertions.assertEquals(formattedDate + "-3", batchRepository.findAll().get(2).getBatchName());
 
 
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(3).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(3).getBatchTag());
 
-    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(4).getBatchTag());
-    Assert.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-2", keyRepository.findAll().get(4).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-2", keyRepository.findAll().get(5).getBatchTag());
 
-    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(6).getBatchTag());
-    Assert.assertEquals(formattedDate + "-3", keyRepository.findAll().get(7).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-3", keyRepository.findAll().get(6).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-3", keyRepository.findAll().get(7).getBatchTag());
   }
 
 
@@ -228,13 +225,13 @@ public class DiagnosisKeyBatchServiceTest {
     efgsProperties.getBatching().setTimelimit(defaultTimeLimit);
 
     // the batch repo count should be 1 because batching has stopped after first batch
-    Assert.assertEquals(1, batchRepository.count());
+    Assertions.assertEquals(1, batchRepository.count());
 
     // check repos
-    Assert.assertNull(batchRepository.findAll().get(0).getBatchLink());
-    Assert.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+    Assertions.assertNull(batchRepository.findAll().get(0).getBatchLink());
+    Assertions.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
 
-    Assert.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
-    Assert.assertNull(keyRepository.findAll().get(5).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assertions.assertNull(keyRepository.findAll().get(5).getBatchTag());
   }
 }

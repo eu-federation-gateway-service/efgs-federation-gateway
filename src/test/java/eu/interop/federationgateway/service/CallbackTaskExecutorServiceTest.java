@@ -44,26 +44,23 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import mockwebserver3.RecordedRequest;
 import org.bouncycastle.est.jcajce.JcaJceUtils;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
 public class CallbackTaskExecutorServiceTest {
@@ -100,7 +97,7 @@ public class CallbackTaskExecutorServiceTest {
 
   String mockCallbackUrl;
 
-  @Before
+  @BeforeEach
   public void setup() throws IOException, NoSuchAlgorithmException, KeyManagementException, CertificateException, OperatorCreationException, SignatureException, InvalidKeyException {
     mockWebServer = new MockWebServer();
 
@@ -136,14 +133,14 @@ public class CallbackTaskExecutorServiceTest {
       efgsProperties, webClient, callbackServiceMock, callbackTaskRepository, tctes);
   }
 
-  @After
+  @AfterEach
   public void stopWebServer() throws IOException {
     certificateRepository.deleteAll();
     mockWebServer.shutdown();
   }
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void cleanupDB() {
     callbackTaskRepository.deleteAll();
     callbackSubscriptionRepository.deleteAll();
@@ -161,8 +158,8 @@ public class CallbackTaskExecutorServiceTest {
 
     callbackTaskExecutorService.execute();
 
-    Assert.assertEquals(0, callbackTaskRepository.count());
-    Assert.assertEquals(0, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(0, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -175,12 +172,12 @@ public class CallbackTaskExecutorServiceTest {
 
     callbackTaskExecutorService.execute();
 
-    Assert.assertEquals(1, callbackTaskRepository.findAll().get(0).getRetries());
-    Assert.assertNotNull(callbackTaskRepository.findAll().get(0).getLastTry());
-    Assert.assertNull(callbackTaskRepository.findAll().get(0).getExecutionLock());
+    Assertions.assertEquals(1, callbackTaskRepository.findAll().get(0).getRetries());
+    Assertions.assertNotNull(callbackTaskRepository.findAll().get(0).getLastTry());
+    Assertions.assertNull(callbackTaskRepository.findAll().get(0).getExecutionLock());
 
-    Assert.assertEquals(1, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(1, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -194,13 +191,13 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     RecordedRequest request = mockWebServer.takeRequest();
-    Assert.assertEquals("EFGS Callback Engine", request.getHeader(HttpHeaders.USER_AGENT));
-    Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals("EFGS Callback Engine", request.getHeader(HttpHeaders.USER_AGENT));
+    Assertions.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
 
-    Assert.assertEquals(0, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -218,8 +215,8 @@ public class CallbackTaskExecutorServiceTest {
       callbackTaskExecutorService.execute();
     }
 
-    Assert.assertEquals(0, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -236,15 +233,15 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     RecordedRequest request = mockWebServer.takeRequest();
-    Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
-    Assert.assertEquals(0, callbackTaskRepository.count());
-    Assert.assertEquals(2, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(2, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -254,21 +251,21 @@ public class CallbackTaskExecutorServiceTest {
     CallbackTaskEntity task = createCallbackTask(subscription1, batch1, null);
 
     for (int i = 0; i <= efgsProperties.getCallback().getMaxRetries(); i++) {
-      Assert.assertEquals(1, callbackTaskRepository.count());
-      Assert.assertEquals(1, callbackSubscriptionRepository.count());
+      Assertions.assertEquals(1, callbackTaskRepository.count());
+      Assertions.assertEquals(1, callbackSubscriptionRepository.count());
 
       mockWebServer.enqueue(new MockResponse().setResponseCode(400));
       callbackTaskExecutorService.execute();
 
       RecordedRequest request = mockWebServer.takeRequest();
-      Assert.assertEquals(getDateString(batch1.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-      Assert.assertEquals(batch1.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+      Assertions.assertEquals(getDateString(batch1.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+      Assertions.assertEquals(batch1.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
       final int finalI = i;
 
       callbackTaskRepository.findById(task.getId()).ifPresent(t -> {
-        Assert.assertEquals(finalI + 1, t.getRetries());
-        Assert.assertNotNull(t.getLastTry());
+        Assertions.assertEquals(finalI + 1, t.getRetries());
+        Assertions.assertNotNull(t.getLastTry());
 
         // modify lastTry property to skip wait time
         t.setLastTry(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(
@@ -278,8 +275,8 @@ public class CallbackTaskExecutorServiceTest {
       });
     }
 
-    Assert.assertEquals(0, callbackTaskRepository.count());
-    Assert.assertEquals(0, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(0, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -301,21 +298,21 @@ public class CallbackTaskExecutorServiceTest {
 
     RecordedRequest request = mockWebServer.takeRequest();
 
-    Assert.assertEquals(getDateString(batch1.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch1.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch1.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch1.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(getDateString(batch2.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch2.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch2.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch2.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     // checking if last try property is set
     task2 = callbackTaskRepository.findById(task2.getId()).get();
-    Assert.assertNotNull(task2.getLastTry());
-    Assert.assertNull(task2.getNotBefore());
+    Assertions.assertNotNull(task2.getLastTry());
+    Assertions.assertNull(task2.getNotBefore());
 
     // second request failed --> no more callbacks should be executed until timeout is reached
     callbackTaskExecutorService.execute();
-    Assert.assertEquals(2, mockWebServer.getRequestCount());
+    Assertions.assertEquals(2, mockWebServer.getRequestCount());
 
     // modify lastTry property to skip wait time
     task2.setLastTry(ZonedDateTime.now(ZoneOffset.UTC).minusSeconds(
@@ -330,19 +327,19 @@ public class CallbackTaskExecutorServiceTest {
     callbackTaskExecutorService.execute();
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(getDateString(batch2.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch2.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch2.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch2.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(getDateString(batch3.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch3.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch3.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch3.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
     request = mockWebServer.takeRequest();
-    Assert.assertEquals(getDateString(batch4.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
-    Assert.assertEquals(batch4.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
+    Assertions.assertEquals(getDateString(batch4.getCreatedAt()), request.getRequestUrl().queryParameter("date"));
+    Assertions.assertEquals(batch4.getBatchName(), request.getRequestUrl().queryParameter("batchTag"));
 
-    Assert.assertEquals(0, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(0, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -355,12 +352,12 @@ public class CallbackTaskExecutorServiceTest {
 
     callbackTaskExecutorService.execute();
 
-    Assert.assertEquals(1, callbackTaskRepository.findAll().get(0).getRetries());
-    Assert.assertNotNull(callbackTaskRepository.findAll().get(0).getLastTry());
-    Assert.assertNull(callbackTaskRepository.findAll().get(0).getExecutionLock());
+    Assertions.assertEquals(1, callbackTaskRepository.findAll().get(0).getRetries());
+    Assertions.assertNotNull(callbackTaskRepository.findAll().get(0).getLastTry());
+    Assertions.assertNull(callbackTaskRepository.findAll().get(0).getExecutionLock());
 
-    Assert.assertEquals(1, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(1, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
   }
 
   @Test
@@ -376,10 +373,10 @@ public class CallbackTaskExecutorServiceTest {
 
     callbackTaskExecutorService.execute();
 
-    Assert.assertEquals(1, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(1, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
 
-    Assert.assertNull(callbackTaskRepository.findAll().get(0).getNotBefore());
+    Assertions.assertNull(callbackTaskRepository.findAll().get(0).getNotBefore());
   }
 
   @Test
@@ -394,10 +391,10 @@ public class CallbackTaskExecutorServiceTest {
 
     callbackTaskExecutorService.execute();
 
-    Assert.assertEquals(2, callbackTaskRepository.count());
-    Assert.assertEquals(1, callbackSubscriptionRepository.count());
+    Assertions.assertEquals(2, callbackTaskRepository.count());
+    Assertions.assertEquals(1, callbackSubscriptionRepository.count());
 
-    Assert.assertEquals(task1.getId(), callbackTaskRepository.findAll().get(1).getNotBefore().getId());
+    Assertions.assertEquals(task1.getId(), callbackTaskRepository.findAll().get(1).getNotBefore().getId());
   }
 
   private DiagnosisKeyBatchEntity createDiagnosisKeyBatch(String batchTag, ZonedDateTime created_at) {

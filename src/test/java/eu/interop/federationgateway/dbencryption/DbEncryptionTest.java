@@ -25,17 +25,14 @@ import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.time.ZonedDateTime;
 import javax.persistence.EntityManager;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@RunWith(SpringRunner.class)
 public class DbEncryptionTest {
 
   @Autowired
@@ -44,8 +41,8 @@ public class DbEncryptionTest {
   @Autowired
   EntityManager entityManager;
 
-  @Before
-  @After
+  @BeforeEach
+  @AfterEach
   public void setup() {
     diagnosisKeyEntityRepository.deleteAll();
   }
@@ -64,14 +61,14 @@ public class DbEncryptionTest {
       .setParameter("id", entity.getId())
       .getSingleResult();
 
-    Assert.assertTrue(((Object[]) databaseEntry)[0] instanceof String);
-    Assert.assertNotEquals(entity.getPayload().getRollingStartIntervalNumber(), ((Object[]) databaseEntry)[1]);
-    Assert.assertNotEquals(entity.getPayload().getRollingPeriod(), ((Object[]) databaseEntry)[2]);
-    Assert.assertNotEquals(entity.getPayload().getTransmissionRiskLevel(), ((Object[]) databaseEntry)[3]);
-    Assert.assertNotEquals(entity.getPayload().getVisitedCountries(), ((Object[]) databaseEntry)[4]);
-    Assert.assertNotEquals(entity.getPayload().getOrigin(), ((Object[]) databaseEntry)[5]);
-    Assert.assertNotEquals(entity.getPayload().getReportType().ordinal(), ((Object[]) databaseEntry)[6]);
-    Assert.assertNotEquals(entity.getPayload().getDaysSinceOnsetOfSymptoms(), ((Object[]) databaseEntry)[7]);
+    Assertions.assertTrue(((Object[]) databaseEntry)[0] instanceof String);
+    Assertions.assertNotEquals(entity.getPayload().getRollingStartIntervalNumber(), ((Object[]) databaseEntry)[1]);
+    Assertions.assertNotEquals(entity.getPayload().getRollingPeriod(), ((Object[]) databaseEntry)[2]);
+    Assertions.assertNotEquals(entity.getPayload().getTransmissionRiskLevel(), ((Object[]) databaseEntry)[3]);
+    Assertions.assertNotEquals(entity.getPayload().getVisitedCountries(), ((Object[]) databaseEntry)[4]);
+    Assertions.assertNotEquals(entity.getPayload().getOrigin(), ((Object[]) databaseEntry)[5]);
+    Assertions.assertNotEquals(entity.getPayload().getReportType().ordinal(), ((Object[]) databaseEntry)[6]);
+    Assertions.assertNotEquals(entity.getPayload().getDaysSinceOnsetOfSymptoms(), ((Object[]) databaseEntry)[7]);
   }
 
   @Test
@@ -82,6 +79,6 @@ public class DbEncryptionTest {
     DiagnosisKeyEntity savedEntity = diagnosisKeyEntityRepository.save(entity);
     DiagnosisKeyEntity gotEntity = diagnosisKeyEntityRepository.findById(savedEntity.getId()).get();
 
-    Assert.assertEquals(entity.getPayload(), gotEntity.getPayload());
+    Assertions.assertEquals(entity.getPayload(), gotEntity.getPayload());
   }
 }

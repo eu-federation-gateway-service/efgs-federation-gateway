@@ -6,7 +6,7 @@
 
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
-  <version>1.0.7-RC1</version>
+  <version>1.0.9</version>
   <packaging>${packaging.format}</packaging>
 
   <name>efgs-federation-gateway</name>
@@ -25,27 +25,27 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>6.1.1</owasp.version>
-    <spring.boot.version>2.4.5</spring.boot.version>
-    <spring.cloud.version>2020.0.1</spring.cloud.version>
-    <spring.test.version>5.3.4</spring.test.version>
-    <spring.security.version>5.4.5</spring.security.version>
-    <lombok.version>1.18.18</lombok.version>
-    <liquibase.version>4.3.1</liquibase.version>
-    <springdoc.version>1.5.4</springdoc.version>
-    <protobuf.version>3.15.1</protobuf.version>
+    <owasp.version>6.3.1</owasp.version>
+    <spring.boot.version>2.5.4</spring.boot.version>
+    <spring.cloud.version>2020.0.3</spring.cloud.version>
+    <spring.test.version>5.3.9</spring.test.version>
+    <spring.security.version>5.5.2</spring.security.version>
+    <lombok.version>1.18.20</lombok.version>
+    <liquibase.version>4.4.3</liquibase.version>
+    <springdoc.version>1.5.10</springdoc.version>
+    <protobuf.version>3.17.3</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
-    <junit.version>5.7.1</junit.version>
+    <junit.version>5.7.2</junit.version>
     <mapstruct.version>1.4.2.Final</mapstruct.version>
-    <mockito.version>3.7.7</mockito.version>
-    <bcpkix.version>1.68</bcpkix.version>
+    <mockito.version>3.12.4</mockito.version>
+    <bcpkix.version>1.69</bcpkix.version>
     <reactor.version>1.0.1.RELEASE</reactor.version>
-    <okhttp.version>4.9.1</okhttp.version>
-    <shedlock.version>4.20.0</shedlock.version>
+    <okhttp.version>5.0.0-alpha.2</okhttp.version>
+    <shedlock.version>4.27.0</shedlock.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
-    <plugin.sonar.version>3.6.1.1688</plugin.sonar.version>
-    <plugin.jacoco.version>0.8.6</plugin.jacoco.version>
+    <plugin.sonar.version>3.9.0.2155</plugin.sonar.version>
+    <plugin.jacoco.version>0.8.7</plugin.jacoco.version>
     <plugin.os-maven.version>1.7.0</plugin.os-maven.version>
     <plugin.surefire.version>3.0.0-M5</plugin.surefire.version>
     <!-- license -->
@@ -214,34 +214,12 @@
       <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.vintage</groupId>
-      <artifactId>junit-vintage-engine</artifactId>
-      <version>5.7.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <version>${spring.test.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -303,7 +281,7 @@
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>mockwebserver</artifactId>
+      <artifactId>mockwebserver3-junit5</artifactId>
       <version>${okhttp.version}</version>
       <scope>test</scope>
     </dependency>

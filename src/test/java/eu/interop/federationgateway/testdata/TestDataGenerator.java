@@ -39,16 +39,13 @@ import java.security.cert.CertificateException;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.OperatorCreationException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 public class TestDataGenerator {
 
@@ -57,7 +54,7 @@ public class TestDataGenerator {
 
   SignatureGenerator signatureGenerator;
 
-  @Before
+  @BeforeEach
   public void setup() throws OperatorCreationException, CertificateException, IOException, NoSuchAlgorithmException,
     InvalidKeyException, SignatureException, KeyStoreException {
     TestData.insertCertificatesForAuthentication(certificateRepository);
@@ -69,13 +66,9 @@ public class TestDataGenerator {
    * EFGS with a simple REST client like Postman.
    * <p>
    * This Testcase is ignored by default. To create testdata remove the @Ignore annotation temporary.
-   * @throws java.io.IOException
-   * @throws java.security.cert.CertificateEncodingException
-   * @throws org.bouncycastle.operator.OperatorCreationException
-   * @throws org.bouncycastle.cms.CMSException
    */
   @Test
-  @Ignore("see description above")
+  @Disabled("see description above")
   public void createTestDataForManualTesting() throws IOException, CertificateEncodingException,
     OperatorCreationException, CMSException {
     if (Files.isDirectory(Path.of("testdata"))) {
@@ -96,7 +89,7 @@ public class TestDataGenerator {
 
     FileOutputStream outputStreamCertData = new FileOutputStream("testdata/signatures.txt");
 
-    Assert.assertTrue(outputStreamBatch1.getFD().valid());
+    Assertions.assertTrue(outputStreamBatch1.getFD().valid());
 
     EfgsProto.DiagnosisKeyBatch batch1 = EfgsProto.DiagnosisKeyBatch.newBuilder()
       .addKeys(TestData.getDiagnosisKeyProto().toBuilder().setTransmissionRiskLevel(10).build())
