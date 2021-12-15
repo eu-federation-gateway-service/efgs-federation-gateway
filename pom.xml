@@ -246,7 +246,6 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>2.0.202</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -379,7 +378,7 @@
         <version>${owasp.version}</version>
         <configuration>
           <suppressionFile>./owasp/suppressions.xml</suppressionFile>
-          <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+          <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
         </configuration>
         <executions>
           <execution>

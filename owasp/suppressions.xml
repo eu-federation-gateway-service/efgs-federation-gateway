@@ -14,4 +14,12 @@
     <notes>see https://tomcat.apache.org/security-9.html#Apache_Tomcat_9.x_vulnerabilities vulnerability is fixed in tomcat 9.0.38</notes>
     <cve>CVE-2020-13943</cve>
   </suppress>
+  <suppress>
+    <notes>H2 Vulnerability suppressed</notes>
+    <cve>CVE-2021-23463</cve>
+  </suppress>
+  <suppress>
+    <notes>netty-transport-4.1.70 Vulnerability</notes>
+    <cve>CVE-2021-43797</cve> 
+  </suppress>
 </suppressions>
