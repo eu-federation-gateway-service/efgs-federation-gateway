@@ -23,14 +23,12 @@ package eu.interop.federationgateway.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.interop.federationgateway.config.EfgsProperties;
-import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,15 +38,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
+@AutoConfigureMockMvc
 public class DiagnosisKeyControllerTest {
 
-  private final ObjectMapper mapper = new ObjectMapper();
   @Autowired
   private WebApplicationContext context;
+
   @Autowired
-  private EfgsProperties properties;
-  @Autowired
-  private DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
   private MockMvc mockMvc;
 
   @BeforeEach
@@ -61,8 +57,8 @@ public class DiagnosisKeyControllerTest {
   @Test
   public void testOptionsReturnEndpointInformation() throws Exception {
     mockMvc.perform(options("/diagnosiskeys")
-      .accept("application/json; version=1.0")
-    )
+        .accept("application/json; version=1.0")
+      )
       .andExpect(status().isOk())
       .andExpect(mvcResult -> {
         String allowHeader = mvcResult.getResponse().getHeader(HttpHeaders.ALLOW);

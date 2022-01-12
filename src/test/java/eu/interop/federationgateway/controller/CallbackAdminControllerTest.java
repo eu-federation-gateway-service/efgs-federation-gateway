@@ -31,7 +31,6 @@ import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
 import eu.interop.federationgateway.entity.CertificateEntity;
-import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.Callback;
 import eu.interop.federationgateway.repository.CallbackSubscriptionRepository;
 import eu.interop.federationgateway.repository.CertificateRepository;
@@ -57,19 +56,16 @@ import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
+@AutoConfigureMockMvc
 public class CallbackAdminControllerTest {
-
-  @Autowired
-  private WebApplicationContext context;
 
   @Autowired
   private EfgsProperties properties;
@@ -78,14 +74,12 @@ public class CallbackAdminControllerTest {
   private CertificateRepository certificateRepository;
 
   @Autowired
-  private CertificateAuthentificationFilter certFilter;
-
-  @Autowired
   private CallbackService callbackService;
 
   @Autowired
   private CallbackSubscriptionRepository callbackSubscriptionRepository;
 
+  @Autowired
   private MockMvc mockMvc;
 
   private CertificateEntity callbackCert;
@@ -125,11 +119,6 @@ public class CallbackAdminControllerTest {
       null,
       null
     ));
-
-    mockMvc = MockMvcBuilders
-      .webAppContextSetup(context)
-      .addFilter(certFilter)
-      .build();
   }
 
   @AfterEach

@@ -33,7 +33,6 @@ import eu.interop.federationgateway.batchsigning.BatchSignatureUtilsTest;
 import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
-import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
@@ -59,35 +58,39 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
+@AutoConfigureMockMvc
 public class AuditControllerTest {
 
   private final ObjectMapper mapper = new ObjectMapper();
-  @Autowired
-  private WebApplicationContext context;
+
   @Autowired
   private EfgsProperties properties;
+
   @Autowired
   private DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
+
   @Autowired
   private CertificateRepository certificateRepository;
-  @Autowired
-  private CertificateAuthentificationFilter certFilter;
+
   @Autowired
   private DiagnosisKeyBatchService diagnosisKeyBatchService;
+
   @Autowired
   private DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
+
+  @Autowired
   private MockMvc mockMvc;
+
   private SignatureGenerator signatureGenerator;
 
   @BeforeEach
@@ -97,11 +100,6 @@ public class AuditControllerTest {
 
     diagnosisKeyBatchRepository.deleteAll();
     diagnosisKeyEntityRepository.deleteAll();
-
-    mockMvc = MockMvcBuilders
-      .webAppContextSetup(context)
-      .addFilter(certFilter)
-      .build();
   }
 
   @Test
