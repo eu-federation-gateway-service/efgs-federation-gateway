@@ -6,7 +6,7 @@
 
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
-  <version>1.0.11</version>
+  <version>1.0.12</version>
   <packaging>${packaging.format}</packaging>
 
   <name>efgs-federation-gateway</name>
@@ -25,15 +25,15 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>6.5.0</owasp.version>
-    <spring.boot.version>2.5.7</spring.boot.version>
-    <spring.cloud.version>2020.0.3</spring.cloud.version>
+    <owasp.version>6.5.2</owasp.version>
+    <spring.boot.version>2.6.2</spring.boot.version>
+    <spring.cloud.version>2021.0.0</spring.cloud.version>
     <spring.test.version>5.3.9</spring.test.version>
-    <spring.security.version>5.5.2</spring.security.version>
-    <lombok.version>1.18.20</lombok.version>
+    <spring.security.version>5.5.4</spring.security.version>
+    <lombok.version>1.18.22</lombok.version>
     <liquibase.version>4.4.3</liquibase.version>
     <springdoc.version>1.5.10</springdoc.version>
-    <protobuf.version>3.17.3</protobuf.version>
+    <protobuf.version>3.19.2</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
     <junit.version>5.7.2</junit.version>
     <mapstruct.version>1.4.2.Final</mapstruct.version>
@@ -41,8 +41,7 @@
     <bcpkix.version>1.69</bcpkix.version>
     <reactor.version>1.0.1.RELEASE</reactor.version>
     <okhttp.version>5.0.0-alpha.2</okhttp.version>
-    <shedlock.version>4.27.0</shedlock.version>
-    <log4j.version>2.17.0</log4j.version>
+    <shedlock.version>4.30.0</shedlock.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
     <plugin.sonar.version>3.9.0.2155</plugin.sonar.version>
@@ -296,17 +295,6 @@
       <artifactId>shedlock-spring</artifactId>
       <version>${shedlock.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-to-slf4j</artifactId>
-      <version>${log4j.version}</version>
-  </dependency>
-  
   </dependencies>
 
   <build>

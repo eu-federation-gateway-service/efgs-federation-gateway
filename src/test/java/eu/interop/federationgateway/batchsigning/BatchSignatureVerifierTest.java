@@ -2,7 +2,7 @@
  * ---license-start
  * EU-Federation-Gateway-Service / efgs-federation-gateway
  * ---
- * Copyright (C) 2020 - 2021 T-Systems International GmbH and all other contributors
+ * Copyright (C) 2020 - 2022 T-Systems International GmbH and all other contributors
  * ---
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;

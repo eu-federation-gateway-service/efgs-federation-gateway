@@ -18,16 +18,22 @@
  * ---license-end
  */
 
-package eu.interop.federationgateway.repository;
+package eu.interop.federationgateway.filter;
 
-import eu.interop.federationgateway.entity.CallbackSubscriptionEntity;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.filter.ServletRequestPathFilter;
 
-public interface CallbackSubscriptionRepository extends JpaRepository<CallbackSubscriptionEntity, Long> {
+@Configuration
+public class FilterConfig {
 
-  Optional<CallbackSubscriptionEntity> findByCallbackIdAndCountryIs(String callbackId, String country);
-
-  List<CallbackSubscriptionEntity> findAllByCountryIs(String country);
+  /**
+   * Add {@link ServletRequestPathFilter} to enable PathParsing which is
+   * required by {@link CertificateAuthentificationFilter}.
+   */
+  @Bean
+  FilterRegistrationBean<ServletRequestPathFilter> servletRequestPathFilter() {
+    return new FilterRegistrationBean<>(new ServletRequestPathFilter());
+  }
 }

@@ -2,7 +2,7 @@
  * ---license-start
  * EU-Federation-Gateway-Service / efgs-federation-gateway
  * ---
- * Copyright (C) 2020 - 2021 T-Systems International GmbH and all other contributors
+ * Copyright (C) 2020 - 2022 T-Systems International GmbH and all other contributors
  * ---
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
 import eu.interop.federationgateway.entity.CertificateEntity;
-import eu.interop.federationgateway.filter.CertificateAuthentificationFilter;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
@@ -57,28 +56,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 @Slf4j
 @SpringBootTest
 @ContextConfiguration(classes = EfgsTestKeyStore.class)
+@AutoConfigureMockMvc
 public class UploadControllerTest {
-
-  @Autowired
-  private WebApplicationContext context;
 
   @Autowired
   private EfgsProperties properties;
 
   @Autowired
   private DiagnosisKeyEntityRepository diagnosisKeyEntityRepository;
-
-  @Autowired
-  private CertificateAuthentificationFilter certFilter;
 
   @Autowired
   private CertificateRepository certificateRepository;
@@ -88,6 +81,7 @@ public class UploadControllerTest {
 
   private SignatureGenerator signatureGenerator;
 
+  @Autowired
   private MockMvc mockMvc;
 
   private static final List<String> VISITED_COUNTRIES = Arrays.asList(
@@ -102,10 +96,6 @@ public class UploadControllerTest {
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();
-    mockMvc = MockMvcBuilders
-      .webAppContextSetup(context)
-      .addFilter(certFilter)
-      .build();
   }
 
   @Test
