@@ -6,7 +6,7 @@
 
   <groupId>eu.interop.federationgateway</groupId>
   <artifactId>efgs-federation-gateway</artifactId>
-  <version>1.0.12</version>
+  <version>1.0.13</version>
   <packaging>${packaging.format}</packaging>
 
   <name>efgs-federation-gateway</name>
