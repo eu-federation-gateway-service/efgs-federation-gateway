@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-index-for-created-at
+      author: andreas.scheibal@t-systems.com
+      changes:
+        - createIndex:
+            tableName: diagnosiskey
+            indexName: idx_created_at
+            columns:
+              - column:
+                  name: created_at
+                  
