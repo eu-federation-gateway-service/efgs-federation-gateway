@@ -41,3 +41,6 @@ databaseChangeLog:
   - include:
       file: changelog/v003-increase-column-size-for-batchsignature.yml
       relativeToChangelogFile: true
+  - include: 
+      file: changelog/v004-create-index-createdat-key-entity-table.yml
+      relativeToChangelogFile: true
