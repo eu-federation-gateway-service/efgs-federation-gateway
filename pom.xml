@@ -31,7 +31,7 @@
     <spring.test.version>5.3.9</spring.test.version>
     <spring.security.version>5.5.4</spring.security.version>
     <lombok.version>1.18.22</lombok.version>
-    <liquibase.version>4.4.3</liquibase.version>
+    <liquibase.version>4.8.0</liquibase.version>
     <springdoc.version>1.5.10</springdoc.version>
     <protobuf.version>3.19.2</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
