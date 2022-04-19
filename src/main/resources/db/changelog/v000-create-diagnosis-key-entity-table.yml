@@ -2,6 +2,7 @@ databaseChangeLog:
   - changeSet:
       id: create-diagnosis-key-entity-table
       author: mschulte-tsi
+      validCheckSum: 8:6ab1edfad0af7410c97abf32372bc7fd # because of change from "int unsigned" to "int"
       changes:
         - createTable:
             tableName: diagnosiskey
@@ -52,16 +53,16 @@ databaseChangeLog:
                   type: int
               - column:
                   name: payload_days_since_onset_of_symptoms
-                  type: int unsigned
+                  type: int
               - column:
                   name: format_format
                   type: varchar(64)
               - column:
                   name: format_major_version
-                  type: int unsigned
+                  type: int
               - column:
                   name: format_minor_version
-                  type: int unsigned
+                  type: int
               - column:
                   name: uploader_information_batch_tag
                   type: varchar(64)
