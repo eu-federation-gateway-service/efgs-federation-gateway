@@ -25,14 +25,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>6.5.2</owasp.version>
+    <owasp.version>7.0.4</owasp.version>
     <spring.boot.version>2.6.6</spring.boot.version>
     <spring.cloud.version>2021.0.0</spring.cloud.version>
     <spring.test.version>5.3.9</spring.test.version>
     <spring.security.version>5.5.4</spring.security.version>
     <lombok.version>1.18.22</lombok.version>
-    <liquibase.version>4.4.3</liquibase.version>
-    <springdoc.version>1.5.10</springdoc.version>
+    <liquibase.version>4.9.1</liquibase.version>
+    <springdoc.version>1.6.7</springdoc.version>
     <protobuf.version>3.19.2</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
     <junit.version>5.7.2</junit.version>
@@ -41,6 +41,8 @@
     <bcpkix.version>1.69</bcpkix.version>
     <reactor.version>1.0.1.RELEASE</reactor.version>
     <okhttp.version>5.0.0-alpha.2</okhttp.version>
+    <h2.version>2.1.210</h2.version>
+    <hibernate.version>5.6.5.Final</hibernate.version>
     <shedlock.version>4.30.0</shedlock.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
@@ -245,6 +247,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
+      <version>${h2.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -295,6 +298,22 @@
       <artifactId>shedlock-spring</artifactId>
       <version>${shedlock.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-jpa</artifactId>
+          <exclusions>
+            <exclusion>
+              <groupId>org.hibernate</groupId>
+              <artifactId>hibernate-core</artifactId>
+            </exclusion>
+          </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
