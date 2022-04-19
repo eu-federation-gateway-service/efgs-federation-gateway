@@ -40,3 +40,4 @@ build/
 /tools/*
 !/tools/*.bat
 !/tools/*.sh
+.DS_Store
