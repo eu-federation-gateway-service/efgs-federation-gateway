@@ -28,9 +28,9 @@
     <owasp.version>7.0.4</owasp.version>
     <spring.boot.version>2.6.6</spring.boot.version>
     <spring.cloud.version>2021.0.0</spring.cloud.version>
-    <spring.test.version>5.3.9</spring.test.version>
-    <spring.security.version>5.5.4</spring.security.version>
-    <lombok.version>1.18.22</lombok.version>
+    <spring.test.version>5.3.19</spring.test.version>
+    <spring.security.version>5.6.2</spring.security.version>
+    <lombok.version>1.18.24</lombok.version>
     <liquibase.version>4.9.1</liquibase.version>
     <springdoc.version>1.6.7</springdoc.version>
     <protobuf.version>3.19.2</protobuf.version>
@@ -41,7 +41,7 @@
     <bcpkix.version>1.69</bcpkix.version>
     <reactor.version>1.0.1.RELEASE</reactor.version>
     <okhttp.version>5.0.0-alpha.2</okhttp.version>
-    <h2.version>2.1.210</h2.version>
+    <h2.version>2.1.212</h2.version>
     <shedlock.version>4.30.0</shedlock.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
