@@ -22,6 +22,7 @@ jobs:
     - uses: actions/setup-java@v2
       with:
         java-version: 17
+        distribution: adopt
     - name: environment
       run: |
         sudo apt-get install --yes --no-install-recommends libxml-xpath-perl

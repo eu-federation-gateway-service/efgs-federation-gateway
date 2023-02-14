@@ -22,5 +22,6 @@ jobs:
     - uses: actions/setup-java@v2
       with:
         java-version: 17
+        distribution: adopt
     - name: mvn package
       run: mvn --batch-mode package
