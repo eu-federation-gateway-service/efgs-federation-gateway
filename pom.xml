@@ -32,7 +32,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>8.0.2</owasp.version>
+    <owasp.version>8.1.0</owasp.version>
     <springdoc.version>1.6.14</springdoc.version>
     <protobuf.version>3.21.12</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>

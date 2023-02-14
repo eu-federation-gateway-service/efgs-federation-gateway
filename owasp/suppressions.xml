@@ -1,25 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
   <suppress>
-    <notes>see https://github.com/jeremylong/DependencyCheck/issues/1827></notes>
-    <cve>CVE-2018-1258</cve>
+    <notes>H2 is only used for testing, not production</notes>
+    <cve>CVE-2022-45868</cve>
   </suppress>
   <suppress>
-    <notes>see https://github.com/jeremylong/DependencyCheck/issues/2952</notes>
-    <cve>CVE-2011-2732</cve>
-    <cve>CVE-2011-2731</cve>
-    <cve>CVE-2012-5055</cve>
-  </suppress>
-  <suppress>
-    <notes>see https://tomcat.apache.org/security-9.html#Apache_Tomcat_9.x_vulnerabilities vulnerability is fixed in tomcat 9.0.38</notes>
-    <cve>CVE-2020-13943</cve>
-  </suppress>
-  <suppress>
-    <notes>H2 Vulnerability suppressed</notes>
-    <cve>CVE-2021-23463</cve>
-  </suppress>
-  <suppress>
-    <notes>netty-transport-4.1.70 Vulnerability</notes>
-    <cve>CVE-2021-43797</cve> 
+    <notes>no YAML content from users is parsed within this service</notes>
+    <cve>CVE-2022-1471</cve>
   </suppress>
 </suppressions>
