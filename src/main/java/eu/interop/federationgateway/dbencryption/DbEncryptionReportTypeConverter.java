@@ -21,13 +21,13 @@
 package eu.interop.federationgateway.dbencryption;
 
 import eu.interop.federationgateway.entity.DiagnosisKeyPayload;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+import jakarta.persistence.PersistenceException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-import javax.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

@@ -111,7 +111,7 @@ public class CallbackTaskExecutorServiceTest {
     );
 
     mockWebServer.start();
-    mockWebServer.useHttps(sslContext.getSocketFactory(), false);
+    mockWebServer.useHttps(sslContext.getSocketFactory());
     mockWebServer.requireClientAuth();
 
     mockCallbackUrl = "https://localhost:" + mockWebServer.getPort();

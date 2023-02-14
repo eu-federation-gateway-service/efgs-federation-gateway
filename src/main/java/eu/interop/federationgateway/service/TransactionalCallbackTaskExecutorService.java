@@ -27,9 +27,9 @@ import static eu.interop.federationgateway.service.CallbackTaskExecutorService.M
 import eu.interop.federationgateway.entity.CallbackTaskEntity;
 import eu.interop.federationgateway.repository.CallbackTaskRepository;
 import eu.interop.federationgateway.utils.EfgsMdc;
+import jakarta.transaction.Transactional;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
