@@ -20,8 +20,8 @@
 
 package eu.interop.federationgateway.config;
 
-import javax.annotation.PostConstruct;
-import javax.validation.ValidationException;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;

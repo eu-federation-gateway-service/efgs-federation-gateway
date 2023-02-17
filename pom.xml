@@ -9,6 +9,13 @@
   <version>1.0.15</version>
   <packaging>${packaging.format}</packaging>
 
+  <parent>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-parent</artifactId>
+    <version>2022.0.1</version>
+    <relativePath />
+  </parent>
+
   <name>efgs-federation-gateway</name>
   <description>European Federation Gateway Service project.</description>
   <organization>
@@ -18,37 +25,25 @@
   <properties>
     <packaging.format>war</packaging.format>
     <!-- java -->
-    <java.version>11</java.version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <java.version>17</java.version>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <!-- charset -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>7.0.4</owasp.version>
-    <spring.boot.version>2.6.6</spring.boot.version>
-    <spring.cloud.version>2021.0.0</spring.cloud.version>
-    <spring.test.version>5.3.19</spring.test.version>
-    <spring.security.version>5.6.2</spring.security.version>
-    <lombok.version>1.18.24</lombok.version>
-    <liquibase.version>4.9.1</liquibase.version>
-    <springdoc.version>1.6.7</springdoc.version>
-    <protobuf.version>3.19.6</protobuf.version>
+    <owasp.version>8.1.0</owasp.version>
+    <springdoc.version>1.6.14</springdoc.version>
+    <protobuf.version>3.21.12</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
-    <junit.version>5.7.2</junit.version>
-    <mapstruct.version>1.4.2.Final</mapstruct.version>
-    <mockito.version>3.12.4</mockito.version>
-    <bcpkix.version>1.69</bcpkix.version>
-    <reactor.version>1.0.1.RELEASE</reactor.version>
-    <okhttp.version>5.0.0-alpha.2</okhttp.version>
-    <h2.version>2.1.212</h2.version>
-    <shedlock.version>4.30.0</shedlock.version>
+    <mapstruct.version>1.5.3.Final</mapstruct.version>
+    <bcpkix.version>1.72</bcpkix.version>
+    <shedlock.version>5.1.0</shedlock.version>
     <!-- plugins -->
-    <plugin.checkstyle.version>3.1.2</plugin.checkstyle.version>
-    <plugin.sonar.version>3.9.0.2155</plugin.sonar.version>
-    <plugin.jacoco.version>0.8.7</plugin.jacoco.version>
-    <plugin.os-maven.version>1.7.0</plugin.os-maven.version>
-    <plugin.surefire.version>3.0.0-M5</plugin.surefire.version>
+    <plugin.checkstyle.version>3.2.1</plugin.checkstyle.version>
+    <plugin.sonar.version>3.9.1.2184</plugin.sonar.version>
+    <plugin.jacoco.version>0.8.8</plugin.jacoco.version>
+    <plugin.os-maven.version>1.7.1</plugin.os-maven.version>
     <!-- license -->
     <license.projectName>EU-Federation-Gateway-Service / efgs-federation-gateway</license.projectName>
     <license.inceptionYear>2020</license.inceptionYear>
@@ -131,40 +126,6 @@
     </profile>
   </profiles>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-dependencies</artifactId>
-        <version>${spring.cloud.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springdoc</groupId>
-        <artifactId>springdoc-openapi-ui</artifactId>
-        <version>${springdoc.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-core</artifactId>
-        <version>${liquibase.version}</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <distributionManagement>
     <repository>
       <id>github</id>
@@ -174,12 +135,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -199,8 +156,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-sleuth</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-webflux</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -211,17 +168,8 @@
       <artifactId>spring-retry</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-webflux</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.liquibase</groupId>
       <artifactId>liquibase-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
@@ -244,48 +192,23 @@
       <version>${protobuf-format.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mapstruct</groupId>
       <artifactId>mapstruct</artifactId>
       <version>${mapstruct.version}</version>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
-      <artifactId>bcpkix-jdk15on</artifactId>
+      <artifactId>bcpkix-jdk18on</artifactId>
       <version>${bcpkix.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.projectreactor</groupId>
-      <artifactId>reactor-spring</artifactId>
-      <version>${reactor.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
+    <!--    <dependency>-->
+    <!--      <groupId>org.projectreactor</groupId>-->
+    <!--      <artifactId>reactor-spring</artifactId>-->
+    <!--      <version>${reactor.version}</version>-->
+    <!--    </dependency>-->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
-      <version>${spring.security.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>${okhttp.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>mockwebserver3-junit5</artifactId>
-      <version>${okhttp.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>net.javacrumbs.shedlock</groupId>
@@ -297,6 +220,24 @@
       <artifactId>shedlock-spring</artifactId>
       <version>${shedlock.version}</version>
     </dependency>
+
+    <!-- Test Dependencies -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>mockwebserver3-junit5</artifactId>
+      <version>5.0.0-alpha.11</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -307,60 +248,6 @@
         <version>${plugin.os-maven.version}</version>
       </extension>
     </extensions>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-checkstyle-plugin</artifactId>
-          <version>${plugin.checkstyle.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.sonarsource.scanner.maven</groupId>
-          <artifactId>sonar-maven-plugin</artifactId>
-          <version>${plugin.sonar.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>${plugin.jacoco.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${plugin.surefire.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.xolstice.maven.plugins</groupId>
-          <artifactId>protobuf-maven-plugin</artifactId>
-          <version>0.6.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>license-maven-plugin</artifactId>
-          <version>2.0.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>3.3.1</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.2.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.6</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.owasp</groupId>
@@ -392,7 +279,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${spring.boot.version}</version>
         <executions>
           <execution>
             <goals>
@@ -405,10 +291,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>${plugin.checkstyle.version}</version>
         <configuration>
           <configLocation>codestyle/checkstyle.xml</configLocation>
           <excludes>target/**/*</excludes>
-          <encoding>UTF-8</encoding>
           <consoleOutput>true</consoleOutput>
           <failsOnError>true</failsOnError>
           <violationSeverity>warning</violationSeverity>
@@ -428,6 +314,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${plugin.jacoco.version}</version>
         <executions>
           <execution>
             <goals>
@@ -445,6 +332,7 @@
       <plugin>
         <groupId>org.xolstice.maven.plugins</groupId>
         <artifactId>protobuf-maven-plugin</artifactId>
+        <version>0.6.1</version>
         <executions>
           <execution>
             <goals>
@@ -477,6 +365,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
+        <version>2.0.0</version>
         <configuration>
           <includes>**/*.java</includes>
           <copyrightOwners>${project.organization.name} and all other contributors</copyrightOwners>
@@ -537,6 +426,7 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>

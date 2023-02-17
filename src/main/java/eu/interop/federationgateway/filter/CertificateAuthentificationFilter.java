@@ -24,6 +24,10 @@ import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.CertificateEntity;
 import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.utils.EfgsMdc;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -33,10 +37,6 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -57,6 +57,7 @@ public class CertificateAuthentificationFilter extends OncePerRequestFilter {
   public static final String REQUEST_PROP_COUNTRY = "reqPropCountry";
   public static final String REQUEST_PROP_THUMBPRINT = "reqPropCertThumbprint";
 
+  @Qualifier("requestMappingHandlerMapping")
   private final RequestMappingHandlerMapping requestMap;
 
   private final EfgsProperties properties;

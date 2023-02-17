@@ -111,7 +111,7 @@ public class TestData {
   private static String insertSigningCertificate(CertificateRepository certificateRepository, X509Certificate certificate) throws NoSuchAlgorithmException, CertificateEncodingException, IOException, InvalidKeyException, SignatureException {
     String certHash = CertificateUtils.getCertThumbprint(certificate);
 
-    String certDn = certificate.getSubjectDN().toString();
+    String certDn = certificate.getSubjectX500Principal().toString();
     int countryIndex = certDn.indexOf(("C="));
     String certCountry = certDn.substring(countryIndex + 2, countryIndex + 4);
 
@@ -167,7 +167,7 @@ public class TestData {
     byte[] certHashBytes = MessageDigest.getInstance("SHA-256").digest(validAuthenticationCertificate.getEncoded());
     AUTH_CERT_HASH = new BigInteger(1, certHashBytes).toString(16);
 
-    String certDn = validAuthenticationCertificate.getSubjectDN().toString();
+    String certDn = validAuthenticationCertificate.getSubjectX500Principal().toString();
     int countryIndex = certDn.indexOf(("C="));
     String certCountry = certDn.substring(countryIndex + 2, countryIndex + 4);
 

@@ -21,7 +21,7 @@
 package eu.interop.federationgateway.config;
 
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -80,11 +80,11 @@ public class ErrorHandler extends ResponseEntityExceptionHandler {
    */
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorMessageBody> handleException(Exception e) {
-    if (e instanceof ResponseStatusException) {
+    if (e instanceof ResponseStatusException responseStatusException) {
       return ResponseEntity
-        .status(((ResponseStatusException) e).getStatus())
+        .status(responseStatusException.getStatusCode())
         .contentType(MediaType.APPLICATION_JSON)
-        .body(new ErrorMessageBody(((ResponseStatusException) e).getReason()));
+        .body(new ErrorMessageBody(responseStatusException.getReason()));
     } else {
       log.error("Uncatched exception", e);
       return ResponseEntity
