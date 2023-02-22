@@ -9,7 +9,6 @@ spring:
   datasource:
     jndi-name: jdbc/efgs
   jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: validate
   liquibase:

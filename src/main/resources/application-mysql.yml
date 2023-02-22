@@ -5,5 +5,3 @@ spring:
     password: sa
     driver-class-name: com.mysql.cj.jdbc.Driver
     jndi-name: false
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
