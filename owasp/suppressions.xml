@@ -8,4 +8,13 @@
     <notes>no YAML content from users is parsed within this service</notes>
     <cve>CVE-2022-1471</cve>
   </suppress>
+  <suppress>
+    <notes>False positive, Version matcher "h2 1.3.197" matches to "h2 2.1.214"</notes>
+    <cve>CVE-2018-14335</cve>
+  </suppress>
+  <suppress>
+    <notes>False positive, both "hutool" and "json-java_project" are no dependencies of this project</notes>
+    <cve>CVE-2022-45688</cve>
+  </suppress>
+
 </suppressions>

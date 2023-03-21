@@ -26,6 +26,8 @@ databaseChangeLog:
                   type: varchar(64)
   - changeSet:
       id: create-diagnosis-key-batch-entity-table-increment
+      validCheckSum:
+        - 8:5fafc0a959e1c26161fc8cb698c9f982
       author: dfischer-tech
       changes:
         - addAutoIncrement:
@@ -33,7 +35,6 @@ databaseChangeLog:
             columnName: id
             columnDataType: bigint
             startWith: 1
-            incrementBy: 1
   - changeSet:
       id: create-diagnosis-key-batch-entity-table-indexes
       author: dfischer-tech
