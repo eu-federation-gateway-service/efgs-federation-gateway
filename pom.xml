@@ -256,6 +256,7 @@
         <configuration>
           <suppressionFile>./owasp/suppressions.xml</suppressionFile>
           <failBuildOnAnyVulnerability>false</failBuildOnAnyVulnerability>
+          <ossIndexWarnOnlyOnRemoteErrors>true</ossIndexWarnOnlyOnRemoteErrors>
         </configuration>
         <executions>
           <execution>
