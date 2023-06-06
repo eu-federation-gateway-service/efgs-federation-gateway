@@ -107,7 +107,7 @@ public class DiagnosisKeyBatchService {
   }
 
   /**
-   * Deletes all DiagnosisKeyBatches which are older then timestamp.
+   * Deletes all DiagnosisKeyBatches which are older than the specified timestamp.
    *
    * @param timestamp timestamp to check
    * @return the number of deleted rows.
