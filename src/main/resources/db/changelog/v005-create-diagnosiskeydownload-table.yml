@@ -4,7 +4,7 @@ databaseChangeLog:
        author: michail.panagiotou@ecdc.europa.eu
        changes:
          -  createTable:
-              catalogName:  diagnosiskeydownload
+              tableName:  diagnosiskeydownload
               columns:
                 - column:
                     remarks: Unique id
@@ -16,6 +16,8 @@ databaseChangeLog:
                     remarks: UTC time of the request
                     name: requested_at
                     type: Datetime
+                    constraints:
+                      nullable: false
                 - column:
                     remarks: Foreign key to the DiagnosisKeyBatch table
                     name: Download_batch_id
@@ -28,3 +30,5 @@ databaseChangeLog:
                     remarks: The country iso code
                     name: country
                     type: VARCHAR(2)
+                    constraints:
+                      nullable: false
