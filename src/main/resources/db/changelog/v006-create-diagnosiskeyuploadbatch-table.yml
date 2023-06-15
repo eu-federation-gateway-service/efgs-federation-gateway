@@ -1,0 +1,30 @@
+databaseChangeLog:
+  -  changeSet:
+       id:  createTable-diagnosiskeyuploadbatch
+       author: michail.panagiotou@ecdc.europa.eu
+       changes:
+         -  createTable:
+              catalogName:  diagnosiskeyuploadbatch
+              columns:
+                - column:
+                    remarks: Unique id
+                    name: id
+                    type: BIGINT
+                    constraints:
+                      primaryKey: true
+                - column:
+                    remarks: UTC time of the request
+                    name: created_at
+                    type: Datetime
+                - column:
+                    remarks: The upload key
+                    name: Batchname
+                    type: VARCHAR(64)
+                - column:
+                    remarks: The country iso code
+                    name: country
+                    type: VARCHAR(2)
+                - column:
+                    remarks: Number of keys in this upload batch
+                    name: number_of_keys
+                    type: INT

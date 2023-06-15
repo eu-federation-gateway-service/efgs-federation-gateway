@@ -1,0 +1,34 @@
+databaseChangeLog:
+  -  changeSet:
+       id:  createTable-diagnosiskeycleanup
+       author: michail.panagiotou@ecdc.europa.eu
+       changes:
+         -  createTable:
+              catalogName:  diagnosiskeycleanup
+              columns:
+                - column:
+                    remarks: Unique id
+                    name: id
+                    type: BIGINT
+                    constraints:
+                      primaryKey: true
+                - column:
+                    remarks: UTC time of the request
+                    name: created_at
+                    type: Datetime
+                - column:
+                    remarks: UTC time for deleting keys (keys before that timestamp are deleted)
+                    name: cleanup_timestamp
+                    type: Datetime
+                - column:
+                    remarks: Number of keys deleted
+                    name: number_of_keys
+                    type: INT
+                - column:
+                    remarks: Number of keys in DB before the deletion
+                    name: keys_before
+                    type: INT
+                - column:
+                    remarks: Number of keys in db after the deletion
+                    name: keys_after
+                    type: INT

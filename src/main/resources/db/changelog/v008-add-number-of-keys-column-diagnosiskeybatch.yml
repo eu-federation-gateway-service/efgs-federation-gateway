@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-number-of-keys-column-diagnosiskeybatch
+      author: michail.panagiotou@ecdc.europa.eu
+      changes:
+        - addColumn:
+            tableName: diagnosiskeybatch
+            columns:
+              - column:
+                  remarks: Number of keys in this upload batch
+                  name: Number_of_keys
+                  type: Int
