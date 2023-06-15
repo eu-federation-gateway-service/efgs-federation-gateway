@@ -20,7 +20,7 @@ databaseChangeLog:
                       nullable: false
                 - column:
                     remarks: The upload key
-                    name: Batchname
+                    name: batchname
                     type: VARCHAR(64)
                     constraints:
                       nullable: false

@@ -20,7 +20,7 @@ databaseChangeLog:
                       nullable: false
                 - column:
                     remarks: Foreign key to the DiagnosisKeyBatch table
-                    name: Download_batch_id
+                    name: download_batch_id
                     type: BIGINT
                     constraints:
                       nullable: false
