@@ -101,8 +101,8 @@ public class AuditControllerTest {
     OperatorCreationException, InvalidKeyException, SignatureException, KeyStoreException {
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
-    diagnosisKeyBatchRepository.deleteAll();
     diagnosisKeyDownloadRepository.deleteAll();
+    diagnosisKeyBatchRepository.deleteAll();
     diagnosisKeyEntityRepository.deleteAll();
   }
 
