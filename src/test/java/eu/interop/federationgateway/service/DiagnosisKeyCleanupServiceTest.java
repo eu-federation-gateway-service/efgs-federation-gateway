@@ -23,14 +23,17 @@ package eu.interop.federationgateway.service;
 import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
+import eu.interop.federationgateway.entity.DiagnosisKeyCleanupEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyPayload;
 import eu.interop.federationgateway.entity.FormatInformation;
 import eu.interop.federationgateway.entity.UploaderInformation;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
+import eu.interop.federationgateway.repository.DiagnosisKeyCleanupRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -50,6 +53,9 @@ public class DiagnosisKeyCleanupServiceTest {
 
   @Autowired
   DiagnosisKeyCleanupService diagnosisKeyCleanupService;
+
+  @Autowired
+  DiagnosisKeyCleanupRepository diagnosisKeyCleanupRepository;
 
   @Autowired
   EfgsProperties efgsProperties;
@@ -83,8 +89,13 @@ public class DiagnosisKeyCleanupServiceTest {
     createDiagnosisKey(timestamp.minusDays(retentionDays + 1));
 
     Assertions.assertEquals(12, diagnosisKeyEntityRepository.count());
-
     diagnosisKeyCleanupService.cleanupDiagnosisKeys();
+
+    List<DiagnosisKeyCleanupEntity> diagnosisKeyCleanupEntities = diagnosisKeyCleanupRepository.findAll();
+    Assertions.assertEquals(1, diagnosisKeyCleanupEntities.size());
+    Assertions.assertEquals(5,diagnosisKeyCleanupEntities.get(0).getNumberOfKeys());
+    Assertions.assertEquals(12,diagnosisKeyCleanupEntities.get(0).getKeysBefore());
+    Assertions.assertEquals(7,diagnosisKeyCleanupEntities.get(0).getKeysAfter());
 
     Assertions.assertEquals(7, diagnosisKeyEntityRepository.count());
   }

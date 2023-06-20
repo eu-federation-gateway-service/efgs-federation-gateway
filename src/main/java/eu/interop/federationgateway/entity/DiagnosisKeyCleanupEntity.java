@@ -43,8 +43,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "diagnosiskeybatch")
-public class DiagnosisKeyBatchEntity implements Serializable {
+@Table(name = "diagnosiskeycleanup")
+public class DiagnosisKeyCleanupEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -56,24 +56,18 @@ public class DiagnosisKeyBatchEntity implements Serializable {
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
 
-  @Column(name = "batchname", unique = true)
-  private String batchName;
-
-  @Column(name = "batchlink", unique = true)
-  private String batchLink;
+  @Column(name = "cleanup_timestamp")
+  private ZonedDateTime cleanupTimestamp;
 
   @Column(name = "number_of_keys")
   private Integer numberOfKeys;
 
-  /**
-   * A constructor without the new column (number_of_keys) so that the old implementation is working.
-   */
-  public DiagnosisKeyBatchEntity(Long id, ZonedDateTime createdAt, String batchName,String batchLink) {
-    this.id = id;
-    this.createdAt = createdAt;
-    this.batchName = batchName;
-    this.batchLink = batchLink;
-  }
+  @Column(name = "keys_before")
+  private Integer keysBefore;
+
+  @Column(name = "keys_after")
+  private Integer keysAfter;
+
 }
 
 

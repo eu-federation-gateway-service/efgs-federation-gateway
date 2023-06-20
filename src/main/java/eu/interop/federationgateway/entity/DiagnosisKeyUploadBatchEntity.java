@@ -34,17 +34,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This class represents the Batch - entity.
+ * This class represents the Diagnosis Key Upload Batch - entity.
  */
 @Schema(
-  description = "The Diagnosis Key Batch entity."
+  description = "The Diagnosis Key Upload Batch entity."
 )
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "diagnosiskeybatch")
-public class DiagnosisKeyBatchEntity implements Serializable {
+@Table(name = "diagnosiskeyuploadbatch")
+public class DiagnosisKeyUploadBatchEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -59,21 +59,11 @@ public class DiagnosisKeyBatchEntity implements Serializable {
   @Column(name = "batchname", unique = true)
   private String batchName;
 
-  @Column(name = "batchlink", unique = true)
-  private String batchLink;
-
   @Column(name = "number_of_keys")
   private Integer numberOfKeys;
 
-  /**
-   * A constructor without the new column (number_of_keys) so that the old implementation is working.
-   */
-  public DiagnosisKeyBatchEntity(Long id, ZonedDateTime createdAt, String batchName,String batchLink) {
-    this.id = id;
-    this.createdAt = createdAt;
-    this.batchName = batchName;
-    this.batchLink = batchLink;
-  }
+  @Column(name = "country")
+  private String country;
 }
 
 

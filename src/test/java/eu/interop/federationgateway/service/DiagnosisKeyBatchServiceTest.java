@@ -61,7 +61,8 @@ public class DiagnosisKeyBatchServiceTest {
   private DiagnosisKeyEntityRepository keyRepository;
   @Autowired
   private EfgsProperties efgsProperties;
-
+  @Autowired
+  private DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
   private DiagnosisKeyBatchService batchService;
 
   private TransactionalDiagnosisKeyBatchService transactionalBatchService;
@@ -233,5 +234,29 @@ public class DiagnosisKeyBatchServiceTest {
 
     Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
     Assertions.assertNull(keyRepository.findAll().get(5).getBatchTag());
+  }
+
+  @Test
+  public void testBatchDocumentsAndDiagnosisKeyBatchEntityNumberOfKeys() throws Exception {
+    log.info("process testBatchDocumentsByEmptyRepo()");
+    // save test keys
+    List<DiagnosisKeyEntity> entries = keyRepository.saveAll(TestData.createTestDiagKeysWithoutBatchTag());
+
+    batchService.batchDocuments();
+    List<DiagnosisKeyBatchEntity> diagnosisKeyBatchEntities = diagnosisKeyBatchRepository.findAll();
+    System.out.println(diagnosisKeyBatchEntities.get(0));
+    Assertions.assertEquals(1, diagnosisKeyBatchEntities.size());
+    Assertions.assertEquals(3, diagnosisKeyBatchEntities.get(0).getNumberOfKeys());
+
+
+    Assertions.assertEquals(1, batchRepository.count(), "error batch repo expect one entry");
+
+    // check repos
+    Assertions.assertNull(batchRepository.findAll().get(0).getBatchLink());
+    Assertions.assertEquals(formattedDate + "-1", batchRepository.findAll().get(0).getBatchName());
+    Assertions.assertEquals(3, keyRepository.count(), "error to find 3 test keys");
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(0).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(1).getBatchTag());
+    Assertions.assertEquals(formattedDate + "-1", keyRepository.findAll().get(2).getBatchTag());
   }
 }

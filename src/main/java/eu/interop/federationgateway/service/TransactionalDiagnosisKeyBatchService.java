@@ -79,6 +79,10 @@ public class TransactionalDiagnosisKeyBatchService {
 
     EfgsMdc.put("batchTag", newBatchEntity.getBatchName());
     EfgsMdc.put("diagnosisKeyCount", updatedRows);
+
+    newBatchEntity.setNumberOfKeys(updatedRows);
+    diagnosisKeyBatchRepository.save(newBatchEntity);
+
     log.info("Batch created");
     EfgsMdc.remove("diagnosisKeyCount");
     EfgsMdc.remove("batchTag");

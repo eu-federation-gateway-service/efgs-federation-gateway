@@ -10,5 +10,3 @@ databaseChangeLog:
                   remarks: Number of keys in this upload batch
                   name: number_of_keys
                   type: Int
-                  constraints:
-                    nullable: false
