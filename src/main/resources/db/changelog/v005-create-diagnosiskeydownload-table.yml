@@ -33,3 +33,13 @@ databaseChangeLog:
                     type: VARCHAR(2)
                     constraints:
                       nullable: false
+         - createIndex:
+             tableName: diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload
+             columns:
+               - column:
+                   name: requested_at
+               - column:
+                   name: download_batch_id
+               - column:
+                   name: country

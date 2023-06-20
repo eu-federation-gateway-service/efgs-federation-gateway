@@ -48,11 +48,11 @@ databaseChangeLog:
       file: changelog/v005-create-diagnosiskeydownload-table.yml
       relativeToChangelogFile: true
   - include:
-      file: changelog/v006-create-diagnosiskeyuploadbatch-table.yml
+      file: changelog/v005-create-diagnosiskeyuploadbatch-table.yml
       relativeToChangelogFile: true
   - include:
-      file: changelog/v007-create-diagnosiskeycleanup-table.yml
+      file: changelog/v005-create-diagnosiskeycleanup-table.yml
       relativeToChangelogFile: true
   - include:
-      file: changelog/v008-add-number-of-keys-column-diagnosiskeybatch.yml
+      file: changelog/v005-add-number-of-keys-column-diagnosiskeybatch.yml
       relativeToChangelogFile: true

@@ -65,8 +65,9 @@ public class DiagnosisKeyBatchEntity implements Serializable {
   @Column(name = "number_of_keys")
   private Integer numberOfKeys;
 
+
   /**
-   * A constructor without the new column (number_of_keys) so that the old implementation is working.
+   * This constructor is used for test cases without the numberOfKeys field.
    */
   public DiagnosisKeyBatchEntity(Long id, ZonedDateTime createdAt, String batchName,String batchLink) {
     this.id = id;

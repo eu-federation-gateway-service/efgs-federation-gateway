@@ -101,7 +101,7 @@ public class DiagnosisKeyCleanupServiceTest {
   }
 
   @Test
-  public void cleanUpServiceShouldDeleteAllDiagnosisKeysBatches() {
+  public void cleanUpServiceShouldNotDeleteAllDiagnosisKeysBatches() {
     final int retentionDays = efgsProperties.getDownloadSettings().getMaxAgeInDays();
 
     ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).withHour(14);
@@ -125,7 +125,7 @@ public class DiagnosisKeyCleanupServiceTest {
 
     diagnosisKeyCleanupService.cleanupDiagnosisKeys();
 
-    Assertions.assertEquals(7, diagnosisKeyBatchRepository.count());
+    Assertions.assertEquals(12, diagnosisKeyBatchRepository.count());
   }
 
   private DiagnosisKeyBatchEntity createDiagnosisKeyBatch(ZonedDateTime createdAt) {

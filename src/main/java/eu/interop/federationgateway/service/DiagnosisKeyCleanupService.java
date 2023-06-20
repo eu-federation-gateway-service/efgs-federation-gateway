@@ -64,7 +64,6 @@ public class DiagnosisKeyCleanupService {
 
     final int keysBefore =  (int) diagnosisKeyEntityService.countAll();
     final int deletedDiagnosisKeys = diagnosisKeyEntityService.deleteAllBefore(deleteTimestamp);
-    final int deletedDiagnosisKeyBatches = diagnosisKeyBatchService.deleteAllBefore(deleteTimestamp);
     final int keysAfter =  (int) diagnosisKeyEntityService.countAll();
     DiagnosisKeyCleanupEntity diagnosisKeyCleanupEntity = new DiagnosisKeyCleanupEntity();
     diagnosisKeyCleanupEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
@@ -75,7 +74,6 @@ public class DiagnosisKeyCleanupService {
     diagnosisKeyCleanupRepository.save(diagnosisKeyCleanupEntity);
 
     EfgsMdc.put("deletedDiagnosisKeys", deletedDiagnosisKeys);
-    EfgsMdc.put("deletedDiagnosisKeyBatches", deletedDiagnosisKeyBatches);
     log.info("DiagnosisKey and DiagnosisKeyBatch cleanup finished.");
   }
 

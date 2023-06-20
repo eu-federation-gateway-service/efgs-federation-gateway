@@ -1,10 +1,10 @@
 databaseChangeLog:
   -  changeSet:
-       id:  createTable-diagnosiskeyuploadbatch
+       id:  createTable-diagnosiskeycleanup
        author: michail.panagiotou@ecdc.europa.eu
        changes:
          -  createTable:
-              tableName:  diagnosiskeyuploadbatch
+              tableName:  diagnosiskeycleanup
               columns:
                 - column:
                     remarks: Unique id
@@ -20,20 +20,32 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                 - column:
-                    remarks: The upload key
-                    name: batchname
-                    type: VARCHAR(64)
+                    remarks: UTC time for deleting keys (keys before that timestamp are deleted)
+                    name: cleanup_timestamp
+                    type: Datetime
                     constraints:
                       nullable: false
                 - column:
-                    remarks: The country iso code
-                    name: country
-                    type: VARCHAR(2)
-                    constraints:
-                      nullable: false
-                - column:
-                    remarks: Number of keys in this upload batch
+                    remarks: Number of keys deleted
                     name: number_of_keys
                     type: INT
                     constraints:
                       nullable: false
+                - column:
+                    remarks: Number of keys in DB before the deletion
+                    name: keys_before
+                    type: INT
+                    constraints:
+                      nullable: false
+                - column:
+                    remarks: Number of keys in db after the deletion
+                    name: keys_after
+                    type: INT
+                    constraints:
+                      nullable: false
+         - createIndex:
+             tableName: diagnosiskeycleanup
+             indexName: idx_diagnosiskeycleanup
+             columns:
+               - column:
+                   name: created_at

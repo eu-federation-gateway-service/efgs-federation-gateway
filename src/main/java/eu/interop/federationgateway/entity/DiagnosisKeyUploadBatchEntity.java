@@ -20,7 +20,6 @@
 
 package eu.interop.federationgateway.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,9 +35,6 @@ import lombok.NoArgsConstructor;
 /**
  * This class represents the Diagnosis Key Upload Batch - entity.
  */
-@Schema(
-  description = "The Diagnosis Key Upload Batch entity."
-)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
