@@ -37,6 +37,7 @@ import eu.interop.federationgateway.model.AuditEntry;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
+import eu.interop.federationgateway.repository.DiagnosisKeyDownloadRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
@@ -89,6 +90,8 @@ public class AuditControllerTest {
   private DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
 
   @Autowired
+  private DiagnosisKeyDownloadRepository diagnosisKeyDownloadRepository;
+  @Autowired
   private MockMvc mockMvc;
 
   private SignatureGenerator signatureGenerator;
@@ -99,6 +102,7 @@ public class AuditControllerTest {
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
     diagnosisKeyBatchRepository.deleteAll();
+    diagnosisKeyDownloadRepository.deleteAll();
     diagnosisKeyEntityRepository.deleteAll();
   }
 
