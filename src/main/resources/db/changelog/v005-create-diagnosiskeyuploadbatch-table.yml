@@ -39,9 +39,13 @@ databaseChangeLog:
                       nullable: false
          - createIndex:
              tableName: diagnosiskeyuploadbatch
-             indexName: idx_diagnosiskeyuploadbatch
+             indexName: idx_diagnosiskeyuploadbatch_created_at
              columns:
                - column:
                    name: created_at
+         - createIndex:
+             tableName: diagnosiskeyuploadbatch
+             indexName: idx_diagnosiskeyuploadbatch_country
+             columns:
                - column:
                    name: country

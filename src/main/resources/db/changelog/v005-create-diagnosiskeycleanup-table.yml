@@ -45,7 +45,7 @@ databaseChangeLog:
                       nullable: false
          - createIndex:
              tableName: diagnosiskeycleanup
-             indexName: idx_diagnosiskeycleanup
+             indexName: idx_diagnosiskeycleanup_created_at
              columns:
                - column:
                    name: created_at

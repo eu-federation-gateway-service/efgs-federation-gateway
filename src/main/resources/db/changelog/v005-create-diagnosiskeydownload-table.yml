@@ -35,11 +35,19 @@ databaseChangeLog:
                       nullable: false
          - createIndex:
              tableName: diagnosiskeydownload
-             indexName: idx_diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload_requested_at
              columns:
                - column:
                    name: requested_at
+         - createIndex:
+             tableName: diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload_download_batch_id
+             columns:
                - column:
                    name: download_batch_id
+         - createIndex:
+             tableName: diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload_country
+             columns:
                - column:
                    name: country
