@@ -190,7 +190,7 @@ public class DownloadController {
       nextBatchTag = batchEntity.get().getBatchLink();
     }
 
-    diagnosisKeyDownloadService.save(batchEntity.get().getId(), downloaderCountry);
+    diagnosisKeyDownloadService.save(batchEntity.get().getId(), downloaderCountry,protoBatch.getKeysCount());
 
     log.info("Successful Batch Download");
 

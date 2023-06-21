@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-number-of-keys-column-diagnosiskeydownload
+      author: michail.panagiotou@ecdc.europa.eu
+      changes:
+        - addColumn:
+            tableName: diagnosiskeydownload
+            columns:
+              - column:
+                  remarks: Number of keys in this download batch
+                  name: number_of_keys
+                  type: Int
