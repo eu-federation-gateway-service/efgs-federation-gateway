@@ -74,7 +74,7 @@ public class DiagnosisKeyCleanupService {
     diagnosisKeyCleanupRepository.save(diagnosisKeyCleanupEntity);
 
     EfgsMdc.put("deletedDiagnosisKeys", deletedDiagnosisKeys);
-    log.info("DiagnosisKey and DiagnosisKeyBatch cleanup finished.");
+    log.info("DiagnosisKey cleanup finished.");
   }
 
   @Recover
