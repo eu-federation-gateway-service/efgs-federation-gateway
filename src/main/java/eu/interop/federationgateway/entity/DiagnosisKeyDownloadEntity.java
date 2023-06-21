@@ -58,6 +58,8 @@ public class DiagnosisKeyDownloadEntity implements Serializable {
   @Column(name = "country")
   private String country;
 
+  @Column(name = "number_of_keys")
+  private Integer numberOfKeys;
 }
 
 

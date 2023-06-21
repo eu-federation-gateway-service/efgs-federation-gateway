@@ -41,11 +41,12 @@ public class DiagnosisKeyDownloadService {
    * @param country The country.
    * @return The saved entry.
    */
-  public DiagnosisKeyDownloadEntity save(Long batchId, String country) {
+  public DiagnosisKeyDownloadEntity save(Long batchId, String country, int numberOfKeys) {
     DiagnosisKeyDownloadEntity diagnosisKeyDownloadEntity = new DiagnosisKeyDownloadEntity();
     diagnosisKeyDownloadEntity.setDownloadBatchId(batchId);
     diagnosisKeyDownloadEntity.setCountry(country);
     diagnosisKeyDownloadEntity.setRequestedAt(ZonedDateTime.now(ZoneOffset.UTC));
+    diagnosisKeyDownloadEntity.setNumberOfKeys(numberOfKeys);
 
     return diagnosisKeyDownloadRepository.save(diagnosisKeyDownloadEntity);
   }
