@@ -57,5 +57,5 @@ databaseChangeLog:
       file: changelog/v005-add-number-of-keys-column-diagnosiskeybatch.yml
       relativeToChangelogFile: true
   - include:
-      file: changelog/v006-add-number-of-keys-column-diagnosiskeydownload.yml
+      file: changelog/v005-add-number-of-keys-column-diagnosiskeydownload.yml
       relativeToChangelogFile: true
