@@ -28,6 +28,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
+import eu.interop.federationgateway.service.DiagnosisKeyUploadService;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import eu.interop.federationgateway.validator.DiagnosisKeyBatchConstraint;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,6 +69,8 @@ public class UploadController {
   private final EfgsProperties properties;
 
   private final DiagnosisKeyEntityService diagnosisKeyEntityService;
+
+  private final DiagnosisKeyUploadService diagnosisKeyUploadService;
 
   /**
    * This endpoint enables the upload of diagnosis keys.
@@ -187,6 +190,8 @@ public class UploadController {
     );
 
     diagnosisKeyEntityService.saveDiagnosisKeyEntities(entities);
+
+    diagnosisKeyUploadService.save(batchTag,body.getKeysCount(),uploaderCountry);
     log.info("successfull batch upload");
 
     return ResponseEntity

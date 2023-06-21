@@ -1,0 +1,51 @@
+databaseChangeLog:
+  -  changeSet:
+       id:  createTable-diagnosiskeycleanup
+       author: michail.panagiotou@ecdc.europa.eu
+       changes:
+         -  createTable:
+              tableName:  diagnosiskeycleanup
+              columns:
+                - column:
+                    remarks: Unique id
+                    name: id
+                    type: BIGINT
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                - column:
+                    remarks: UTC time of the request
+                    name: created_at
+                    type: Datetime
+                    constraints:
+                      nullable: false
+                - column:
+                    remarks: UTC time for deleting keys (keys before that timestamp are deleted)
+                    name: cleanup_timestamp
+                    type: Datetime
+                    constraints:
+                      nullable: false
+                - column:
+                    remarks: Number of keys deleted
+                    name: number_of_keys
+                    type: INT
+                    constraints:
+                      nullable: false
+                - column:
+                    remarks: Number of keys in DB before the deletion
+                    name: keys_before
+                    type: INT
+                    constraints:
+                      nullable: false
+                - column:
+                    remarks: Number of keys in db after the deletion
+                    name: keys_after
+                    type: INT
+                    constraints:
+                      nullable: false
+         - createIndex:
+             tableName: diagnosiskeycleanup
+             indexName: idx_diagnosiskeycleanup_created_at
+             columns:
+               - column:
+                   name: created_at

@@ -21,6 +21,8 @@
 package eu.interop.federationgateway.service;
 
 import eu.interop.federationgateway.config.EfgsProperties;
+import eu.interop.federationgateway.entity.DiagnosisKeyCleanupEntity;
+import eu.interop.federationgateway.repository.DiagnosisKeyCleanupRepository;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
@@ -43,6 +45,7 @@ public class DiagnosisKeyCleanupService {
 
   private final DiagnosisKeyEntityService diagnosisKeyEntityService;
 
+  private final DiagnosisKeyCleanupRepository diagnosisKeyCleanupRepository;
   private final EfgsProperties efgsProperties;
 
   /**
@@ -59,12 +62,19 @@ public class DiagnosisKeyCleanupService {
 
     log.info("Starting DiagnosisKey and DiagnosisKeyBatch cleanup");
 
+    final int keysBefore =  (int) diagnosisKeyEntityService.countAll();
     final int deletedDiagnosisKeys = diagnosisKeyEntityService.deleteAllBefore(deleteTimestamp);
-    final int deletedDiagnosisKeyBatches = diagnosisKeyBatchService.deleteAllBefore(deleteTimestamp);
+    final int keysAfter =  (int) diagnosisKeyEntityService.countAll();
+    DiagnosisKeyCleanupEntity diagnosisKeyCleanupEntity = new DiagnosisKeyCleanupEntity();
+    diagnosisKeyCleanupEntity.setCreatedAt(ZonedDateTime.now(ZoneOffset.UTC));
+    diagnosisKeyCleanupEntity.setCleanupTimestamp(deleteTimestamp);
+    diagnosisKeyCleanupEntity.setNumberOfKeys(deletedDiagnosisKeys);
+    diagnosisKeyCleanupEntity.setKeysBefore(keysBefore);
+    diagnosisKeyCleanupEntity.setKeysAfter(keysAfter);
+    diagnosisKeyCleanupRepository.save(diagnosisKeyCleanupEntity);
 
     EfgsMdc.put("deletedDiagnosisKeys", deletedDiagnosisKeys);
-    EfgsMdc.put("deletedDiagnosisKeyBatches", deletedDiagnosisKeyBatches);
-    log.info("DiagnosisKey and DiagnosisKeyBatch cleanup finished.");
+    log.info("DiagnosisKey cleanup finished.");
   }
 
   @Recover

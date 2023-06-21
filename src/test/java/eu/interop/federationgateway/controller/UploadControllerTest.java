@@ -31,9 +31,11 @@ import eu.interop.federationgateway.batchsigning.SignatureGenerator;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
 import eu.interop.federationgateway.entity.CertificateEntity;
+import eu.interop.federationgateway.entity.DiagnosisKeyUploadBatchEntity;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
+import eu.interop.federationgateway.repository.DiagnosisKeyUploadRepository;
 import eu.interop.federationgateway.service.CertificateService;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
@@ -77,6 +79,9 @@ public class UploadControllerTest {
   private CertificateRepository certificateRepository;
 
   @Autowired
+  DiagnosisKeyUploadRepository diagnosisKeyUploadRepository;
+
+  @Autowired
   private CertificateService certificateService;
 
   private SignatureGenerator signatureGenerator;
@@ -96,6 +101,42 @@ public class UploadControllerTest {
     signatureGenerator = new SignatureGenerator(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();
+  }
+
+
+  @Test
+  public void testRequestUploadAndDiagnosisKeyUploadBatchEntity() throws Exception {
+    EfgsProto.DiagnosisKey key1 = buildKey(1);
+    EfgsProto.DiagnosisKey key2 = buildKey(2);
+    EfgsProto.DiagnosisKey key3 = buildKey(3);
+
+    EfgsProto.DiagnosisKeyBatch batch = EfgsProto.DiagnosisKeyBatch.newBuilder()
+      .addAllKeys(Arrays.asList(key1, key2, key3)).build();
+
+    byte[] bytesToSign = BatchSignatureUtilsTest.createBytesToSign(batch);
+    String signature = signatureGenerator.sign(bytesToSign, TestData.validCertificate);
+
+    diagnosisKeyUploadRepository.deleteAll();
+
+    mockMvc.perform(post("/diagnosiskeys/upload")
+        .contentType("application/protobuf; version=1.0")
+        .header("batchTag", TestData.FIRST_BATCHTAG)
+        .header("batchSignature", signature)
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
+        .content(batch.toByteArray())
+      )
+      .andExpect(status().isCreated())
+      .andExpect(result ->
+      {
+        Assertions.assertEquals(batch.getKeysCount(), diagnosisKeyEntityRepository.count());
+        List<DiagnosisKeyUploadBatchEntity> diagnosisKeyUploadBatchEntities = diagnosisKeyUploadRepository.findAll();
+
+        Assertions.assertEquals(1,diagnosisKeyUploadBatchEntities.size());
+        Assertions.assertEquals(TestData.AUTH_CERT_COUNTRY,diagnosisKeyUploadBatchEntities.get(0).getCountry());
+        Assertions.assertEquals(batch.getKeysCount(),diagnosisKeyUploadBatchEntities.get(0).getNumberOfKeys());
+        Assertions.assertEquals(TestData.FIRST_BATCHTAG,diagnosisKeyUploadBatchEntities.get(0).getBatchName());
+      });
   }
 
   @Test

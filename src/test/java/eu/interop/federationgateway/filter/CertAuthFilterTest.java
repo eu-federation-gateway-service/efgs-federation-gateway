@@ -27,6 +27,7 @@ import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
+import eu.interop.federationgateway.repository.DiagnosisKeyDownloadRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.IOException;
@@ -69,6 +70,9 @@ public class CertAuthFilterTest {
   private CertificateRepository certificateRepository;
 
   @Autowired
+  private DiagnosisKeyDownloadRepository diagnosisKeyDownloadRepository;
+
+  @Autowired
   private MockMvc mockMvc;
 
   @BeforeEach
@@ -76,6 +80,7 @@ public class CertAuthFilterTest {
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();
+    diagnosisKeyDownloadRepository.deleteAll();
     diagnosisKeyBatchRepository.deleteAll();
   }
 

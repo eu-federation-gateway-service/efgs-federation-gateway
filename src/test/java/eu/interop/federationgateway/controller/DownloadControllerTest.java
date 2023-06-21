@@ -30,10 +30,12 @@ import eu.interop.federationgateway.TestData;
 import eu.interop.federationgateway.config.EfgsProperties;
 import eu.interop.federationgateway.config.ProtobufConverter;
 import eu.interop.federationgateway.entity.DiagnosisKeyBatchEntity;
+import eu.interop.federationgateway.entity.DiagnosisKeyDownloadEntity;
 import eu.interop.federationgateway.entity.DiagnosisKeyEntity;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.repository.CertificateRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyBatchRepository;
+import eu.interop.federationgateway.repository.DiagnosisKeyDownloadRepository;
 import eu.interop.federationgateway.repository.DiagnosisKeyEntityRepository;
 import eu.interop.federationgateway.testconfig.EfgsTestKeyStore;
 import java.io.ByteArrayInputStream;
@@ -48,6 +50,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.operator.OperatorCreationException;
@@ -76,6 +79,9 @@ public class DownloadControllerTest {
   private DiagnosisKeyBatchRepository diagnosisKeyBatchRepository;
 
   @Autowired
+  private DiagnosisKeyDownloadRepository diagnosisKeyDownloadRepository;
+
+  @Autowired
   private CertificateRepository certificateRepository;
 
   @Autowired
@@ -91,6 +97,7 @@ public class DownloadControllerTest {
     TestData.insertCertificatesForAuthentication(certificateRepository);
 
     diagnosisKeyEntityRepository.deleteAll();
+    diagnosisKeyDownloadRepository.deleteAll();
     diagnosisKeyBatchRepository.deleteAll();
   }
 
@@ -124,7 +131,7 @@ public class DownloadControllerTest {
     ZonedDateTime timestamp2 = ZonedDateTime.now(ZoneOffset.UTC).minusDays(5);
     String batchTag = "batchTag";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp2, batchTag, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp2, batchTag, null, 10));
 
     mockMvc.perform(get("/diagnosiskeys/download/" + getDateString(timestamp))
       .accept("application/protobuf; version=1.0")
@@ -141,8 +148,8 @@ public class DownloadControllerTest {
     String batchTag1 = getDateString(timestamp) + "-14";
     String batchTag2 = getDateString(timestamp) + "-15";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp, batchTag1, batchTag2));
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp2, batchTag2, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp, batchTag1, batchTag2, 10));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp2, batchTag2, null, 10));
 
     mockMvc.perform(get("/diagnosiskeys/download/" + getDateString(timestamp))
       .accept("application/protobuf; version=1.0")
@@ -161,7 +168,7 @@ public class DownloadControllerTest {
     ZonedDateTime timestamp = ZonedDateTime.now(ZoneOffset.UTC).minusDays(2);
     String batchTag1 = getDateString(timestamp) + "-14";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp, batchTag1, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestamp, batchTag1, null, 10));
 
     mockMvc.perform(get("/diagnosiskeys/download/" + getDateString(timestamp))
       .accept("application/protobuf; version=1.0")
@@ -182,7 +189,7 @@ public class DownloadControllerTest {
     ZonedDateTime timestampBatchTag = ZonedDateTime.now(ZoneOffset.UTC);
     String batchTag = getDateString(timestampBatchTag) + "-14";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null, 10));
 
     saveDiagnosisEntityToDb(batchTag, origin1);
     saveDiagnosisEntityToDb(batchTag, origin2);
@@ -217,8 +224,8 @@ public class DownloadControllerTest {
     String batchTag = getDateString(timestampBatchTag) + "-14";
     String batchTag2 = getDateString(timestampBatchTag) + "-15";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, batchTag2));
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag2, batchTag2, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, batchTag2, 10));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag2, batchTag2, null, 10));
 
     saveDiagnosisEntityToDb(batchTag, origin1);
     saveDiagnosisEntityToDb(batchTag, origin2);
@@ -258,9 +265,9 @@ public class DownloadControllerTest {
     String batchTag2 = getDateString(timestampBatchTag) + "-1";
     String batchTag3 = getDateString(timestampBatchTag) + "-2";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null));
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag2, batchTag2, batchTag3));
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag3, batchTag3, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null, 10));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag2, batchTag2, batchTag3, 10));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag3, batchTag3, null, 10));
 
     saveDiagnosisEntityToDb(batchTag, origin1);
     saveDiagnosisEntityToDb(batchTag, origin2);
@@ -298,7 +305,7 @@ public class DownloadControllerTest {
     String otherCountry = "DK";
     ZonedDateTime timestampBatchTag = ZonedDateTime.now(ZoneOffset.UTC).minusDays(2);
     String batchTag = getDateString(timestampBatchTag) + "-1";
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null, 10));
 
     saveDiagnosisEntityToDb(batchTag, origin1, ownCountry);
     saveDiagnosisEntityToDb(batchTag, origin2, ownCountry);
@@ -329,7 +336,7 @@ public class DownloadControllerTest {
     ZonedDateTime timestampBatchTag = ZonedDateTime.now(ZoneOffset.UTC).minusHours(2);
     String batchTag = getDateString(timestampBatchTag) + "-14";
 
-    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null));
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(null, timestampBatchTag, batchTag, null, 10));
 
     saveDiagnosisEntityToDb(batchTag, origin1);
     saveDiagnosisEntityToDb(batchTag, origin2);
@@ -361,6 +368,30 @@ public class DownloadControllerTest {
         Assertions.assertEquals(origin2, response.getKeys(1).getOrigin());
         Assertions.assertEquals(2, response.getKeysCount());
       });
+  }
+
+  @Test
+  public void testRequestAndDiagnosisKeyDownloadEntity() throws Exception {
+    ZonedDateTime timestampBatchTag = ZonedDateTime.now(ZoneOffset.UTC);
+    String batchTag = getDateString(timestampBatchTag) + "-14";
+
+    diagnosisKeyBatchRepository.save(new DiagnosisKeyBatchEntity(1L, timestampBatchTag, batchTag, null, 10));
+
+    mockMvc.perform(get("/diagnosiskeys/download/" + getDateString(timestampBatchTag))
+        .accept("application/protobuf; version=1.0")
+        .header(properties.getCertAuth().getHeaderFields().getThumbprint(), TestData.AUTH_CERT_HASH)
+        .header(properties.getCertAuth().getHeaderFields().getDistinguishedName(), TestData.DN_STRING_DE)
+      )
+      .andExpect(status().isOk())
+      .andExpect(content().contentType("application/protobuf; version=1.0"))
+      .andExpect(mvcResult -> {
+        List<DiagnosisKeyDownloadEntity> diagnosisKeyDownloadEntities = diagnosisKeyDownloadRepository.findAll();
+        //Read and check country
+        Assertions.assertEquals(1,diagnosisKeyDownloadEntities.size());
+        Assertions.assertEquals(TestData.AUTH_CERT_COUNTRY,diagnosisKeyDownloadEntities.get(0).getCountry());
+
+      });
+
   }
 
   private void saveDiagnosisEntityToDb(String batchTag, String origin) {

@@ -20,7 +20,6 @@
 
 package eu.interop.federationgateway.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,17 +33,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This class represents the Batch - entity.
+ * This class represents the Diagnosis Key Upload Batch - entity.
  */
-@Schema(
-  description = "The Diagnosis Key Batch entity."
-)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "diagnosiskeybatch")
-public class DiagnosisKeyBatchEntity implements Serializable {
+@Table(name = "diagnosiskeyuploadbatch")
+public class DiagnosisKeyUploadBatchEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -59,22 +55,11 @@ public class DiagnosisKeyBatchEntity implements Serializable {
   @Column(name = "batchname", unique = true)
   private String batchName;
 
-  @Column(name = "batchlink", unique = true)
-  private String batchLink;
-
   @Column(name = "number_of_keys")
   private Integer numberOfKeys;
 
-
-  /**
-   * This constructor is used for test cases without the numberOfKeys field.
-   */
-  public DiagnosisKeyBatchEntity(Long id, ZonedDateTime createdAt, String batchName,String batchLink) {
-    this.id = id;
-    this.createdAt = createdAt;
-    this.batchName = batchName;
-    this.batchLink = batchLink;
-  }
+  @Column(name = "country")
+  private String country;
 }
 
 

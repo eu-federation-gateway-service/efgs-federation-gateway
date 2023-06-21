@@ -20,7 +20,6 @@
 
 package eu.interop.federationgateway.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,17 +33,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * This class represents the Batch - entity.
+ * This class represents the Diagnosis Key Download - entity.
  */
-@Schema(
-  description = "The Diagnosis Key Batch entity."
-)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "diagnosiskeybatch")
-public class DiagnosisKeyBatchEntity implements Serializable {
+@Table(name = "diagnosiskeydownload")
+public class DiagnosisKeyDownloadEntity implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -53,28 +49,15 @@ public class DiagnosisKeyBatchEntity implements Serializable {
   @Column(name = "id")
   private Long id;
 
-  @Column(name = "created_at")
-  private ZonedDateTime createdAt;
+  @Column(name = "requested_at")
+  private ZonedDateTime requestedAt;
 
-  @Column(name = "batchname", unique = true)
-  private String batchName;
+  @Column(name = "download_batch_id")
+  private Long downloadBatchId;
 
-  @Column(name = "batchlink", unique = true)
-  private String batchLink;
+  @Column(name = "country")
+  private String country;
 
-  @Column(name = "number_of_keys")
-  private Integer numberOfKeys;
-
-
-  /**
-   * This constructor is used for test cases without the numberOfKeys field.
-   */
-  public DiagnosisKeyBatchEntity(Long id, ZonedDateTime createdAt, String batchName,String batchLink) {
-    this.id = id;
-    this.createdAt = createdAt;
-    this.batchName = batchName;
-    this.batchLink = batchLink;
-  }
 }
 
 

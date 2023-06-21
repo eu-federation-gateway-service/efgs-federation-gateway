@@ -28,6 +28,7 @@ import eu.interop.federationgateway.filter.CertificateAuthentificationRequired;
 import eu.interop.federationgateway.mapper.DiagnosisKeyMapper;
 import eu.interop.federationgateway.model.EfgsProto;
 import eu.interop.federationgateway.service.DiagnosisKeyBatchService;
+import eu.interop.federationgateway.service.DiagnosisKeyDownloadService;
 import eu.interop.federationgateway.service.DiagnosisKeyEntityService;
 import eu.interop.federationgateway.utils.EfgsMdc;
 import io.swagger.v3.oas.annotations.Operation;
@@ -78,6 +79,8 @@ public class DownloadController {
   private final DiagnosisKeyBatchService diagnosisKeyBatchService;
 
   private final DiagnosisKeyEntityService diagnosisKeyService;
+
+  private final DiagnosisKeyDownloadService diagnosisKeyDownloadService;
 
   private final DiagnosisKeyMapper diagnosisKeyMapper;
 
@@ -186,6 +189,8 @@ public class DownloadController {
     if (batchEntity.get().getBatchLink() != null) {
       nextBatchTag = batchEntity.get().getBatchLink();
     }
+
+    diagnosisKeyDownloadService.save(batchEntity.get().getId(), downloaderCountry);
 
     log.info("Successful Batch Download");
 

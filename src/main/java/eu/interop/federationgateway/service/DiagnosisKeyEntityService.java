@@ -162,4 +162,8 @@ public class DiagnosisKeyEntityService {
       this.resultMap = resultMap;
     }
   }
+
+  public long countAll() {
+    return diagnosisKeyEntityRepository.count();
+  }
 }

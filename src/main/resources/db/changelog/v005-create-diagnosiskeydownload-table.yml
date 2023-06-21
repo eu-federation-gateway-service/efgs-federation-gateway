@@ -1,0 +1,53 @@
+databaseChangeLog:
+  -  changeSet:
+       id:  createTable-diagnosiskeydownload
+       author: michail.panagiotou@ecdc.europa.eu
+       changes:
+         -  createTable:
+              tableName:  diagnosiskeydownload
+              columns:
+                - column:
+                    remarks: Unique id
+                    name: id
+                    type: BIGINT
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                - column:
+                    remarks: UTC time of the request
+                    name: requested_at
+                    type: Datetime
+                    constraints:
+                      nullable: false
+                - column:
+                    remarks: Foreign key to the DiagnosisKeyBatch table
+                    name: download_batch_id
+                    type: BIGINT
+                    constraints:
+                      nullable: false
+                      foreignKeyName: fk_diagnosiskeydownload_batch
+                      references: diagnosiskeybatch(id)
+                - column:
+                    remarks: The country iso code
+                    name: country
+                    type: VARCHAR(2)
+                    constraints:
+                      nullable: false
+         - createIndex:
+             tableName: diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload_requested_at
+             columns:
+               - column:
+                   name: requested_at
+         - createIndex:
+             tableName: diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload_download_batch_id
+             columns:
+               - column:
+                   name: download_batch_id
+         - createIndex:
+             tableName: diagnosiskeydownload
+             indexName: idx_diagnosiskeydownload_country
+             columns:
+               - column:
+                   name: country

@@ -44,3 +44,15 @@ databaseChangeLog:
   - include: 
       file: changelog/v004-create-index-createdat-key-entity-table.yml
       relativeToChangelogFile: true
+  - include:
+      file: changelog/v005-create-diagnosiskeydownload-table.yml
+      relativeToChangelogFile: true
+  - include:
+      file: changelog/v005-create-diagnosiskeyuploadbatch-table.yml
+      relativeToChangelogFile: true
+  - include:
+      file: changelog/v005-create-diagnosiskeycleanup-table.yml
+      relativeToChangelogFile: true
+  - include:
+      file: changelog/v005-add-number-of-keys-column-diagnosiskeybatch.yml
+      relativeToChangelogFile: true
