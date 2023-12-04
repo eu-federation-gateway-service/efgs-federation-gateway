@@ -1,7 +1,7 @@
 <h1 align="center">
     EU Federation Gateway Service
 </h1>
-
+ 
 <p align="center">
     <a href="https://github.com/eu-federation-gateway-service/efgs-federation-gateway/commits/" title="Last Commit"><img src="https://img.shields.io/github/last-commit/eu-federation-gateway-service/efgs-federation-gateway?style=flat"></a>
     <a href="https://github.com/eu-federation-gateway-service/efgs-federation-gateway/issues" title="Open Issues"><img src="https://img.shields.io/github/issues/eu-federation-gateway-service/efgs-federation-gateway?style=flat"></a>
