@@ -32,13 +32,14 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
-    <owasp.version>8.1.0</owasp.version>
+    <owasp.version>8.4.2</owasp.version>
     <springdoc.version>1.6.14</springdoc.version>
     <protobuf.version>3.21.12</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
-    <bcpkix.version>1.72</bcpkix.version>
+    <bcpkix.version>1.76</bcpkix.version>
     <shedlock.version>5.1.0</shedlock.version>
+    <mysql.version>8.2.0</mysql.version>
     <!-- plugins -->
     <plugin.checkstyle.version>3.2.1</plugin.checkstyle.version>
     <plugin.sonar.version>3.9.1.2184</plugin.sonar.version>
@@ -137,6 +138,7 @@
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
+      <version>${mysql.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
