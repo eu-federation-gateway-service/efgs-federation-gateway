@@ -30,6 +30,7 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -49,6 +50,7 @@ public class CallbackSubscriptionEntity implements Serializable {
   @Column(name = "id")
   private Long id;
 
+  @EqualsAndHashCode.Exclude
   @Column(name = "created_at")
   private ZonedDateTime createdAt;
 
