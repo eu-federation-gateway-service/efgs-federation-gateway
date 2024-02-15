@@ -16,5 +16,13 @@
     <notes>False positive, both "hutool" and "json-java_project" are no dependencies of this project</notes>
     <cve>CVE-2022-45688</cve>
   </suppress>
+  <suppress>
+    <notes>The statement regarding the inclusion of
+      cpe:2.3:a:org.springframework:spring-core:6.1.1:*:*:*:*:*:*:* by OSSIndex
+      as vulnerable to CVE-2024-22233, and subsequently flagged by Dependency Check,
+      appears to be a false positive. This assessment is supported by contrary
+      evidence from other sources that deny the vulnerability applies to this component.</notes>
+    <cve>CVE-2024-22233</cve>
+  </suppress>
 
 </suppressions>
