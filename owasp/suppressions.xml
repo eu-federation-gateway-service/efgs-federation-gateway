@@ -24,5 +24,9 @@
       evidence from other sources that deny the vulnerability applies to this component.</notes>
     <cve>CVE-2024-22233</cve>
   </suppress>
+  <suppress>
+    <notes>CVE-2023-35116 is filed as a false positive, according to the Jackson project maintainers.</notes>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 
 </suppressions>
