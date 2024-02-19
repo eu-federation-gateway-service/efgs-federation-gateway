@@ -60,7 +60,7 @@ public class CertificateEntity implements Serializable {
   @Column(name = "country")
   private String country;
 
-  @Column(name = "type")
+  @Column(name = "type", columnDefinition = "enum ('AUTHENTICATION','SIGNING','CALLBACK')")
   @Enumerated(EnumType.STRING)
   private CertificateType type;
 
