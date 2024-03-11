@@ -39,19 +39,23 @@ National Health Authorities acting the the certificate management process.
 ## Database Design
 
 Entities
-| Table Name     | Content                                          | Delete Strategy                        |
-| -------------- | ------------------------------------------------ | -------------------------------------- |
-| callback_subscription | stores details about the callback subscriptions  | no automatic deletion                |
-| callback_task         | stores details about a specific callback task    | no automatic deletion |
-| certificate           | stores the certificate for the countries         | no automatic deletion |
-| diagnosiskeybatch     | represents donwload batches                      | automated deletion 14 days after inserting into database |
-| diagnosiskey          | represents a single diagnostic key               | automated deletion 14 days after inserting into database |
-| shedlock              | task synchronization infrastructure              | no automatic deletion |
+
+| Table Name                | Content                                               | Delete Strategy                                          |
+|---------------------------|-------------------------------------------------------|----------------------------------------------------------|
+| callback_subscription     | stores details about the callback subscriptions       | no automatic deletion                                    |
+| callback_task             | stores details about a specific callback task         | no automatic deletion                                    |
+| certificate               | stores the certificate for the countries              | no automatic deletion                                    |
+| diagnosiskeybatch         | represents donwload batches                           | no automatic deletion                                    |
+| diagnosiskey              | represents a single diagnostic key                    | automated deletion 3 days after inserting into database  |
+| diagnosiskeyuploadbatch   | stores batch upload operations (used for reporting)   | no automatic deletion                                    |
+| diagnosiskeydownloadbatch | stores batch download operations (used for reporting) | no automatic deletion                                    |
+| diagnosiskeycleanup       | stores cleanup operations (used for statistics)       | no automatic deletion                                    |
+| shedlock                  | task synchronization infrastructure                   | no automatic deletion                                    |
 
 ### Data Deletion
-The semantic scope for automated deletion are all data that is related to human individuals. This data should only be available for 14 days.
+The semantic scope for automated deletion are all data that is related to human individuals. This data should only be available for 3 days.
 
-The automated deletion after 14 days is implemented as scheduled job in the web application, the relevant criteria is the "created_at" attribute of the entity.
+The automated deletion after 3 days is implemented as scheduled job in the web application, the relevant criteria is the "created_at" attribute of the entity.
 
 ### Database Isolation Level
 
