@@ -37,7 +37,7 @@
     <protobuf.version>3.21.12</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
-    <bcpkix.version>1.76</bcpkix.version>
+    <bcpkix.version>1.78</bcpkix.version>
     <shedlock.version>5.1.0</shedlock.version>
     <mysql.version>8.2.0</mysql.version>
     <logback.version>1.4.14</logback.version>
