@@ -234,6 +234,15 @@
       <version>${logback.version}</version>
     </dependency>
 
+    <!-- Explicitly set dependency of spring-web to 6.1.12 in order to address vulnerability CVE-2024-38809.
+         This is a temporary solution, as the spring-cloud-starter-parent 2023.0.3 depends on the vulnerable version 6.1.10.
+         TODO: remove this dependency as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>6.1.12</version>
+    </dependency>
+
     <!-- Test Dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
