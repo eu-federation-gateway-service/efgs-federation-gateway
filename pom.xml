@@ -33,7 +33,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <!-- dependencies -->
     <owasp.version>10.0.2</owasp.version>
-    <springdoc.version>1.6.14</springdoc.version>
+    <springdoc.version>1.8.0</springdoc.version>
     <protobuf.version>4.28.2</protobuf.version>
     <protobuf-format.version>1.4</protobuf-format.version>
     <mapstruct.version>1.5.3.Final</mapstruct.version>
@@ -255,6 +255,15 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
       <version>6.1.13</version>
+    </dependency>
+
+    <!-- Explicitly set dependency of swagger-ui to 5.17.14 in order to address vulnerability CVE-2024-45801.
+     This is a temporary solution, as the springdoc-openapi-ui 1.8.0 depends on the vulnerable version 5.11.8.
+     TODO: remove this dependency as soon as the springdoc-openapi-ui is updated to a future version that address the vulnerability -->
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>swagger-ui</artifactId>
+      <version>5.17.14</version>
     </dependency>
 
 
