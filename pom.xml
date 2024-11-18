@@ -266,6 +266,13 @@
       <version>5.17.14</version>
     </dependency>
 
+    <!-- Explicitly set dependency of netty-common to 4.1.115.Final in order to address vulnerability CVE-2024-47535.
+     TODO: remove this dependency as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-common</artifactId>
+      <version>4.1.115.Final</version>
+    </dependency>
 
     <!-- Test Dependencies -->
     <dependency>
