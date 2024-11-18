@@ -204,14 +204,13 @@
       <artifactId>bcpkix-jdk18on</artifactId>
       <version>${bcpkix.version}</version>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>org.projectreactor</groupId>-->
-    <!--      <artifactId>reactor-spring</artifactId>-->
-    <!--      <version>${reactor.version}</version>-->
-    <!--    </dependency>-->
+    <!-- Explicitly set dependency of spring-security-web to 6.2.7 in order
+         to address vulnerability CVE-2024-38821
+         TODO: remove this dependency version as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-web</artifactId>
+      <version>6.2.7</version>
     </dependency>
     <dependency>
       <groupId>net.javacrumbs.shedlock</groupId>
