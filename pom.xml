@@ -234,13 +234,14 @@
       <version>${logback.version}</version>
     </dependency>
 
-    <!-- Explicitly set dependency of spring-web to 6.1.13 in order to address vulnerability CVE-2024-38809.
-         This is a temporary solution, as the spring-cloud-starter-parent 2023.0.3 depends on the vulnerable version 6.1.10.
+    <!-- Explicitly set dependency of spring-web to 6.1.15 in order to address
+         vulnerabilities CVE-2024-38809, CVE-2024-38820. This is a temporary solution, as
+         the spring-cloud-starter-parent 2023.0.3 depends on the vulnerable version 6.1.10.
          TODO: remove this dependency as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>6.1.13</version>
+      <version>6.1.15</version>
     </dependency>
 
     <!-- Explicitly set dependency of spring-webmvc, spring-webflux to 6.1.13 in order to address vulnerability CVE-2024-38816.
@@ -255,6 +256,60 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
       <version>6.1.13</version>
+    </dependency>
+
+    <!-- Explicitly set dependency of various spring libraries to 6.1.15 in order
+         to address vulnerability CVE-2024-38820
+         TODO: remove this dependency as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-tx</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jcl</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aspects</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>6.1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-expression</artifactId>
+      <version>6.1.15</version>
     </dependency>
 
     <!-- Explicitly set dependency of swagger-ui to 5.17.14 in order to address vulnerability CVE-2024-45801.
