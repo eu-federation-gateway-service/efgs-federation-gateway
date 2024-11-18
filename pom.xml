@@ -243,18 +243,19 @@
       <version>6.1.15</version>
     </dependency>
 
-    <!-- Explicitly set dependency of spring-webmvc, spring-webflux to 6.1.13 in order to address vulnerability CVE-2024-38816.
-     This is a temporary solution, as the spring-cloud-starter-parent 2023.0.3 depends on the vulnerable version 6.1.10.
-     TODO: remove this dependency as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
+    <!-- Explicitly set dependency of spring-webmvc, spring-webflux to 6.1.15 in order to address
+         vulnerabilities CVE-2024-38816, CVE-2024-38819. This is a temporary solution, as
+         the spring-cloud-starter-parent 2023.0.3 depends on the vulnerable version 6.1.10.
+         TODO: remove this dependency as soon as the spring-cloud-starter-parent is updated to a future version that address the vulnerability -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>6.1.13</version>
+      <version>6.1.15</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webflux</artifactId>
-      <version>6.1.13</version>
+      <version>6.1.15</version>
     </dependency>
 
     <!-- Explicitly set dependency of various spring libraries to 6.1.15 in order
