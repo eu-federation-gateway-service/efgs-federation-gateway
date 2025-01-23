@@ -204,7 +204,7 @@ The reverse proxy distributes load over the tomcat instances.
 The main purpose for EFGS is to provide fail over behavior in case a tomcat instance is not available anymore.
 
 ## Database
-The database is implemented as mySQL 5.7
+The database is implemented as mySQL (currently in version 8.0.35)
 
 ## Log Analytics/Monitoring Integration
 
@@ -552,13 +552,13 @@ any specifics related to a stage.
 ## General Software Versions and config 
 
 Tomcat hosting service – tomcat instances that are controlled together. Deployment is performed using Nexus artefact repository. We confirmed in the meantime that the rolling upgrade is possible, but we still need to analyse the requirements against the service capabilities
-- Tomcat version: Tomcat 9.0.37
-- JDK version : JDK 11 (OpenJDK)
+- Tomcat version: Tomcat 9 or above - currently 10.1.26 is used
+- JDK version : JDK 11 or above (OpenJDK) - currently OpenJDK 17.0.12 is used
 - Heap Size (MB): 8GB
 - Meta Space Size (MB): dynamic/default (currently we are not able to specify this)
 - Direct Memory Size (MB): default (currently we are not able to specify this)
 
-MySQL – Supported version: 5.7
+MySQL – Supported version: 5.7 or above - currently 8.0.35 is used
 - Required information to create the instance
 - Character Set : utf8|latin1|utf16|utf32|other>: utf8
 - Estimated DB Size: 10 GB
@@ -611,8 +611,6 @@ Proposal
 - Worker Nodes 3x [4 x Cores, 16 GB RAM, 10 GB free Storage] 
 - Database equivalent to 2x [4 Cores and 16 GB RAM] 
 
-# Data Deletion
-The data base stores 
 
 # Other Constraints and Conditions
 Timezone all times and dates are interpreted as timestamps in UTC (https://en.wikipedia.org/wiki/Coordinated_Universal_Time)
